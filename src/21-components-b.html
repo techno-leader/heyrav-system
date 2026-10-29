@@ -1,0 +1,187 @@
+<page slug="link" title="Link" status="shipped" lede="Inline links sit in --ink-2 over a 55% tint underline. On hover the text goes to ink and the underline darkens - the words never jump." keywords="anchor href underline inline" used="About prose|index.html#about,Facts|case-viewryt.html">
+<example>
+  <p class="prose">I run a <a class="link" href="#">daily component lab</a> and keep my <a class="link" href="#">resume</a> one click away.</p>
+</example>
+<p>The underline is a <code>border-bottom</code> struck from <code>--tint</code> with <code>color-mix()</code>, so it stays a tint over any surface. External links that leave the site may add <code>arrow-up-right</code>; internal ones never carry an icon.</p>
+<h2>Nav links</h2>
+<p>Navigation links are a separate idiom: ink at 65% opacity, full on hover, 44px tall. See <a href="../nav-bar/">Navigation bar</a>.</p>
+</page>
+
+<page slug="menu" title="Menu" status="spec" lede="A list of actions under a button. Arrow keys move, Escape closes and returns focus." keywords="dropdown actions context more options">
+<example class="tall">
+  <div class="pop-anchor">
+    <button class="btn btn-ghost btn-icon" data-menu aria-haspopup="menu" aria-expanded="false" aria-controls="menu-1" aria-label="More actions"><ph dots-three/></button>
+    <div class="menu" id="menu-1" role="menu" hidden>
+      <button role="menuitem"><ph link-simple/> Copy link <span class="kbd">C</span></button>
+      <button role="menuitem"><ph share-network/> Share</button>
+      <button role="menuitem"><ph pencil-simple/> Rename</button>
+      <hr>
+      <button role="menuitem" class="menu-danger"><ph trash/> Delete</button>
+    </div>
+  </div>
+</example>
+<ul><li>Items are 40px tall inside a 6px inset, so the panel edge never touches a hover fill.</li><li>The destructive item is last, after a rule, and is the only coloured one.</li><li>Opening focuses the first item; ↑ ↓ cycle; Escape or an outside click closes.</li></ul>
+</page>
+
+<page slug="pagination" title="Pagination" status="shipped" lede="Previous and next as two quiet cards at the end of a case study. The next one aligns right, the way you are reading." keywords="next previous pager case nav" used="Case nav|case-viewryt.html">
+<example class="block">
+  <nav class="case-nav" aria-label="More case studies">
+    <a href="#"><small>Previous</small><b>IRBS</b></a>
+    <a class="next" href="#"><small>Next</small><b>Dentomate</b></a>
+  </nav>
+</example>
+<p>The border darkens to <code>--ink-3</code> on hover over <code>--d-move</code>; nothing lifts. Stacks to one column at 640. The docs you are reading use the same pattern at the foot of every page.</p>
+</page>
+
+<page slug="popover" title="Popover" status="shipped" lede="Floating paper anchored to a trigger: hairline, --r-md, the one shadow. The glossary term is its shipped instance." keywords="floating panel overlay anchor" used="Glossary|case-viewryt.html">
+<example class="tall">
+  <div class="pop-anchor">
+    <button class="btn btn-ghost" data-pop aria-expanded="false" aria-controls="pop-1">What is --tint?</button>
+    <div class="pop" id="pop-1" role="dialog" aria-label="About --tint" hidden><b>--tint · #939393</b>Never used solid. Translucent marks are struck from it, so they stay a tint over any surface.</div>
+  </div>
+</example>
+<p>Click to open, not hover - a popover can hold a sentence worth reading and must survive a touch. For a two-word label on hover, use a <a href="../tooltip/">Tooltip</a>.</p>
+</page>
+
+<page slug="progress" title="Progress" status="shipped" lede="The comet: a gradient whose tail is its own width, so near the top it is a short dark nib and at the bottom a long sweep." keywords="scroll bar loading meter comet" used="Case pages|case-viewryt.html,Video|index.html#ad-studio">
+<example class="col">
+  <div class="bar d-p25"><i></i></div>
+  <div class="bar d-p60"><i></i></div>
+  <div class="bar bar-solid d-p90"><i></i></div>
+</example>
+<p>Set <code>--p</code> (0 to 1) on <code>.bar</code>. The page-level <code>.progress</code> is fixed at the top and driven by <code>heyrav.js</code> - it is running on this page now.</p>
+<h2>Vertical rail</h2>
+<example>
+  <div class="rail-v d-p40"><i></i></div>
+</example>
+<p>The phone walkthrough's 3px side rail, in <code>--ink-3</code> on <code>--surface-3</code>.</p>
+<h2>Where it is not</h2>
+<p>The home page has no comet: it is a short browse, and a permanent hairline over the hero competes with the one thing that page is for. The loader has none either - its drum already is the progress indicator.</p>
+</page>
+
+<page slug="radio" title="Radio group" status="spec" lede="One of many, all visible. Native radios in a fieldset with a legend." keywords="option choice form">
+<example class="narrow">
+  <fieldset class="radio-group"><legend>Project type</legend>
+    <label class="check"><input type="radio" name="rg" checked> Case study</label>
+    <label class="check"><input type="radio" name="rg"> Experiment</label>
+    <label class="check"><input type="radio" name="rg" disabled> Archived</label>
+  </fieldset>
+</example>
+<p>More than five options: use a <a href="../select/">Select</a>. Two or three short options that change a view: a <a href="../segmented/">Segmented control</a>.</p>
+</page>
+
+<page slug="segmented" title="Segmented control" status="tools" lede="Two to four exclusive options in one inset track. The pressed segment is paper, lifted by an inset ring, not a shadow." keywords="toggle group tabs switcher" used="Tool rails,Docs theme switch|https://system.heyrav.in">
+<example class="narrow">
+  <div class="seg" role="group" aria-label="View"><button aria-pressed="true">Day</button><button aria-pressed="false">Week</button><button aria-pressed="false">Month</button></div>
+</example>
+<p>The theme switch in this sidebar is the same component. Labels stay one word; if they need two, it is a <a href="../tabs/">Tabs</a> problem.</p>
+</page>
+
+<page slug="select" title="Select" status="tools" lede="A native select with the chevron drawn in CSS, so the platform picker still opens on phones." keywords="dropdown picker options form">
+<example class="narrow">
+  <div class="field"><label for="sel-1">Artboard</label><select class="sel" id="sel-1"><option>1280 × 800</option><option>1080 × 1080</option><option>1080 × 1920</option></select></div>
+</example>
+<p>Keep it native. A custom listbox costs keyboard, screen-reader and mobile behaviour that the platform gives away free.</p>
+</page>
+
+<page slug="skeleton" title="Skeleton" status="shipped" lede="Placeholder bars in --surface-2 while content loads. Shipped as the .wire filler inside short specimens." keywords="loading placeholder shimmer wire" used="Evidence reel filler|case-viewryt.html">
+<example class="narrow">
+  <div class="d-stack d-w-full"><span class="skel skel-block"></span><span class="skel"></span><span class="skel d-w-60"></span><div class="d-row"><span class="skel skel-circle"></span><span class="skel d-w-40"></span></div></div>
+</example>
+<p>A slow shimmer (1.4s, <code>--ease-io</code>) says "still loading"; reduced motion keeps the bars and drops the shimmer. Match the shape of what is coming so nothing jumps when it lands.</p>
+</page>
+
+<page slug="slider" title="Slider" status="tools" lede="A 2px track that fills with ink up to the thumb, a hollow thumb, and the value in mono on the right." keywords="range input number control" used="Tool rails">
+<example class="narrow">
+  <div class="field d-w-full"><div class="row-top"><label for="rng-1">Density</label><span class="val">64</span></div><input class="rng" id="rng-1" type="range" min="0" max="100" value="64"><span class="help">How many lines the field draws.</span></div>
+</example>
+<p><code>heyrav.js</code> writes the fill (<code>--f</code>) and the value on input. The track is 2px but the input is 44px tall - the hit area is the row, not the line.</p>
+</page>
+
+<page slug="spinner" title="Spinner" status="spec" lede="An ink arc on a hairline ring. For waits under a few seconds; longer waits deserve a progress bar or a skeleton." keywords="loading busy wait indicator">
+<example>
+  <span class="spinner spinner-sm" role="status" aria-label="Loading"></span>
+  <span class="spinner" role="status" aria-label="Loading"></span>
+  <span class="spinner spinner-lg" role="status" aria-label="Loading"></span>
+</example>
+<p>Under reduced motion it slows to 2.4s rather than stopping - a frozen spinner reads as a crash.</p>
+</page>
+
+<page slug="switch" title="Switch" status="tools" lede="A setting that applies the moment you flip it. Ink when on, a hairline grey when off." keywords="toggle boolean setting" used="Tool rails">
+<example class="col narrow">
+  <label class="tgl">Show grid <input type="checkbox" checked><span class="sw"></span></label>
+  <label class="tgl">Play on load <input type="checkbox"><span class="sw"></span></label>
+  <label class="tgl">Disabled <input type="checkbox" disabled><span class="sw"></span></label>
+</example>
+<p>A visually hidden checkbox inside a label, so the whole 44px row toggles and the form value is real. The knob travels with <code>--ease-snap</code>. If the change waits for a Save button, use a <a href="../checkbox/">Checkbox</a>.</p>
+</page>
+
+<page slug="table" title="Table" status="shipped" lede="Mono headers, hairline rows, no zebra and no boxes. The comparison variant marks your own row with an ink rule." keywords="data grid comparison rows cmp" used="Comparison|case-dentomate.html">
+<example class="block">
+  <div class="table-scroll">
+    <table class="table">
+      <thead><tr><th>Project</th><th>Role</th><th class="num">Result</th></tr></thead>
+      <tbody>
+        <tr><td>ViewRyt</td><td>Landing page, ads</td><td class="num mono">3.2X</td></tr>
+        <tr><td>IRBS</td><td>Booking flow</td><td class="num mono">-40%</td></tr>
+        <tr><td>Dentomate</td><td>Product, brand</td><td class="num mono">₹399</td></tr>
+      </tbody>
+    </table>
+  </div>
+</example>
+<h2>Comparison</h2>
+<example class="block">
+  <div class="table-scroll">
+    <table class="cmp">
+      <thead><tr><th>Option</th><th>Recalls patients</th><th>Cost</th></tr></thead>
+      <tbody>
+        <tr><td>Paper register</td><td><span class="n"><ph x-circle/> No</span></td><td class="mono">₹0</td></tr>
+        <tr><td>Practice software</td><td><span class="n"><ph x-circle/> Manual</span></td><td class="mono">₹6–15k</td></tr>
+        <tr class="us"><td>Dentomate</td><td><span class="y"><ph check-circle/> Automatic</span></td><td class="mono">Per clinic</td></tr>
+      </tbody>
+    </table>
+  </div>
+</example>
+<p>Wrap wide tables in <code>.table-scroll</code> so they scroll inside their container instead of pushing the page sideways. Yes and no carry an icon and a word, never colour alone.</p>
+</page>
+
+<page slug="tabs" title="Tabs" status="spec" lede="Peer views of one thing. A 2px ink underline marks the current tab; arrow keys move between them." keywords="tablist panels switcher">
+<example class="block">
+  <div class="tabs">
+    <div role="tablist" aria-label="Case views">
+      <button role="tab" id="t-1" aria-selected="true" aria-controls="p-1">Problem</button>
+      <button role="tab" id="t-2" aria-selected="false" aria-controls="p-2" tabindex="-1">Approach</button>
+      <button role="tab" id="t-3" aria-selected="false" aria-controls="p-3" tabindex="-1">Result</button>
+    </div>
+    <div role="tabpanel" id="p-1" aria-labelledby="t-1">Visitors were asked for a phone number before they knew what it bought.</div>
+    <div role="tabpanel" id="p-2" aria-labelledby="t-2" hidden>Show the product first; ask once the reader is convinced.</div>
+    <div role="tabpanel" id="p-3" aria-labelledby="t-3" hidden>Conversion rose 3.2X on the same traffic.</div>
+  </div>
+</example>
+<p>Roving tabindex: only the selected tab is in the tab order, ← → move and select. Content that the reader needs in sequence belongs on the page, not behind tabs.</p>
+</page>
+
+<page slug="textarea" title="Textarea" status="tools" lede="The input, taller. Resizes vertically only, so it can never break the column." keywords="multiline text field form message">
+<example class="narrow">
+  <div class="field"><label for="ta-1">Message</label><textarea class="txt" id="ta-1" placeholder="What are you building?"></textarea><span class="help">A sentence or two is plenty.</span></div>
+</example>
+</page>
+
+<page slug="toast" title="Toast" status="tools" lede="A short ink pill at the top of the screen that confirms something happened, then leaves." keywords="notification snackbar alert message feedback" used="Tool copy and export">
+<example>
+  <button class="btn btn-ghost" data-toast="Link copied">Neutral</button>
+  <button class="btn btn-ghost" data-toast="Saved to the system" data-tone="ok">Success</button>
+  <button class="btn btn-ghost" data-toast="Export failed - try a smaller size" data-tone="danger">Error</button>
+</example>
+<div class="code"><pre>heyrav.toast('Link copied');
+heyrav.toast('Export failed - try a smaller size', { tone: 'danger', ms: 4000 });</pre></div>
+<ul><li>Lives in a <code>role="status"</code> region, so screen readers announce it politely.</li><li>2.4s by default; errors deserve longer, and anything the user must act on belongs in the page, not a toast.</li><li>An ink surface in both themes, so its status icons use the opposite theme's values (<code>--ok-inv</code>).</li></ul>
+</page>
+
+<page slug="tooltip" title="Tooltip" status="spec" lede="A two-word label on hover or focus, after a 300ms intent delay. Ink pill, mono 12." keywords="hint hover label title">
+<example>
+  <span class="tip"><button class="btn btn-ghost btn-icon" aria-label="Download" aria-describedby="tt-1"><ph download-simple/></button><span role="tooltip" id="tt-1">Download</span></span>
+  <span class="tip"><button class="btn btn-ghost" aria-describedby="tt-2">Hover me</button><span role="tooltip" id="tt-2">Font family <span class="mut">Redaction 35</span></span></span>
+</example>
+<p>Shows on <code>:hover</code> and <code>:focus-within</code>, so keyboard users get it too. Never put anything essential or interactive in a tooltip - touch has no hover.</p>
+</page>

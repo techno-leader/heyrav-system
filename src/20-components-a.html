@@ -1,0 +1,285 @@
+<page slug="accordion" title="Accordion" status="spec" lede="Native details and summary, restyled. Use it for FAQs and long reference material that most readers skip." keywords="details summary collapsible faq expand">
+<example class="block">
+  <div class="d-w-md">
+    <details class="acc" open><summary>What does Dentomate cost? <ph plus/></summary><div class="acc-body">Pricing is set per clinic after a call. The case study leaves it out on purpose.</div></details>
+    <details class="acc"><summary>Which tools made the brand assets? <ph plus/></summary><div class="acc-body">The heyrav tools: Line Field, Grid Pens, Dot Matrix, Stagger and Glitch.</div></details>
+    <details class="acc"><summary>Is there a dark theme? <ph plus/></summary><div class="acc-body">Defined in the system, opt-in with data-theme="dark". The portfolio stays light.</div></details>
+  </div>
+</example>
+<h2>Guidelines</h2>
+<div class="d-dd">
+  <div><b><ph check/>Do</b><ul><li>Write the summary as the question the reader has.</li><li>Open the first item when the section is the page's main content.</li></ul></div>
+  <div class="dont"><b><ph x/>Don't</b><ul><li>Hide the one thing the reader came for inside a collapsed panel.</li><li>Nest accordions.</li></ul></div>
+</div>
+<h2>Accessibility</h2>
+<p><code>&lt;details&gt;</code> is keyboard and screen-reader ready with no script. The plus rotates to a cross (45°) on open; it is decorative.</p>
+</page>
+
+<page slug="avatar" title="Avatar" status="spec" lede="A person or a client, in a circle. Photos sit grayscale to match the neutral surface; initials are the fallback." keywords="profile picture user initials group">
+<example>
+  <span class="avatar avatar-sm">RP</span>
+  <span class="avatar">RP</span>
+  <span class="avatar avatar-lg">RP</span>
+  <span class="avatar"><img src="../assets/img/observe.webp" alt="Ravindra Pratap"></span>
+</example>
+<h2>Group</h2>
+<example>
+  <div class="avatars"><span class="avatar">VR</span><span class="avatar">DM</span><span class="avatar">IR</span><span class="avatar">+5</span></div>
+</example>
+<h2>Sizes</h2>
+<table class="d-tbl"><thead><tr><th>Class</th><th>Size</th><th>Use</th></tr></thead><tbody>
+<tr><td><code>.avatar-sm</code></td><td>28</td><td>Inline with 14px UI text</td></tr>
+<tr><td><code>.avatar</code></td><td>40</td><td>Lists, comments</td></tr>
+<tr><td><code>.avatar-lg</code></td><td>56</td><td>Testimonials, profile headers</td></tr>
+</tbody></table>
+<p>An avatar is not interactive by itself; wrap it in a link or button when it is, and keep the 44px target on the wrapper.</p>
+</page>
+
+<page slug="badge" title="Badge" status="spec" lede="A short mono label for status or category. Neutral by default; the status tints only when the state is the point." keywords="tag label status pill chip" used="Annotation tag|case-viewryt.html">
+<example>
+  <span class="badge">Neutral</span>
+  <span class="badge badge-solid">Shipped</span>
+  <span class="badge badge-line">Spec</span>
+</example>
+<h2>Status</h2>
+<example>
+  <span class="badge badge-ok"><span class="dot"></span>Live</span>
+  <span class="badge badge-warn"><span class="dot"></span>Review</span>
+  <span class="badge badge-danger"><span class="dot"></span>Failed</span>
+</example>
+<h2>Annotation tag</h2>
+<p>Shipped on the ViewRyt phone walkthrough: a mono chip struck from <code>--tint</code> at 16%, so it stays a tint over any surface.</p>
+<example>
+  <span class="tag">Above the fold</span>
+</example>
+<h2>Guidelines</h2>
+<ul><li>One or two words. A badge is read at a glance, not studied.</li><li>A badge is not a button. If it filters or toggles, use a <a href="../chip/">Chip</a>.</li><li>Pair status colour with a word - colour is never the only signal.</li></ul>
+</page>
+
+<page slug="breadcrumb" title="Breadcrumb" status="tools" lede="Where you are, one level at a time. Text only - no icons in navigation chrome." keywords="crumbs path navigation hierarchy" used="Tools rail">
+<example>
+  <nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="#">heyrav</a></li><li class="sep" aria-hidden="true">/</li><li><a href="#">tools</a></li><li class="sep" aria-hidden="true">/</li><li><span aria-current="page">Line Field</span></li></ol></nav>
+</example>
+<h2>Path variant</h2>
+<p>Shipped on the IRBS case as the IA tree's path: uppercase mono, the current node in ink.</p>
+<example>
+  <div class="ia-path"><span>OneStop</span><span>Services</span><span>Room booking</span></div>
+</example>
+<h2>Accessibility</h2>
+<p>Wrap in <code>&lt;nav aria-label="Breadcrumb"&gt;</code>, mark the current page with <code>aria-current="page"</code>, and hide separators from assistive tech.</p>
+</page>
+
+<page slug="button" title="Button" status="shipped" lede="One form across the site: the solid ink pill. Hover strengthens - the fill goes one measured grade darker, never paler." keywords="cta action pill primary ghost link" used="Explore Case Study|index.html#work,Contact actions|index.html#contact,Video controls|index.html#ad-studio">
+<h2>Variants</h2>
+<example>
+  <button class="btn btn-primary">Primary</button>
+  <button class="btn btn-ghost">Ghost</button>
+  <button class="btn btn-quiet">Quiet</button>
+  <button class="btn btn-danger">Delete</button>
+</example>
+<table class="d-tbl"><thead><tr><th>Variant</th><th>Use</th></tr></thead><tbody>
+<tr><td><code>.btn-primary</code></td><td>The one action a section wants. Shipped as <code>.case-link</code> and <code>.contact-actions .primary</code>.</td></tr>
+<tr><td><code>.btn-ghost</code></td><td>The secondary action next to a primary. Shipped as <code>.contact-actions .ghost</code> (Resume download).</td></tr>
+<tr><td><code>.btn-quiet</code></td><td>Toolbar and dock actions where many sit together.</td></tr>
+<tr><td><code>.btn-danger</code></td><td>Destructive confirmation inside a dialog. Spec.</td></tr>
+</tbody></table>
+<h2>With icon</h2>
+<example>
+  <a class="btn btn-primary" href="#">Explore Case Study <ph arrow-right/></a>
+  <a class="btn btn-ghost" href="#"><ph download-simple/> Resume</a>
+  <button class="btn btn-ghost btn-icon" aria-label="Copy link"><ph link-simple/></button>
+</example>
+<p>A trailing arrow nudges 3px right on hover (<code>--d-slow</code>, <code>--ease-out</code>). Icon-only buttons are 44 × 44 and always carry <code>aria-label</code>.</p>
+<h2>Sizes</h2>
+<example>
+  <button class="btn btn-primary btn-sm">Small</button>
+  <button class="btn btn-primary">Medium</button>
+  <button class="btn btn-primary btn-lg">Large</button>
+</example>
+<p>Every size keeps a 44px minimum height; size changes padding and type, never the target.</p>
+<h2>Shape</h2>
+<example>
+  <button class="btn btn-primary">Pill</button>
+  <button class="btn btn-primary btn-rect">Rect</button>
+</example>
+<p>Pills on the site. <code>.btn-rect</code> (<code>--r-sm</code>) only in dense tool UI, where pills read as chips.</p>
+<h2>States</h2>
+<example>
+  <button class="btn btn-primary" data-pending>Click: pending</button>
+  <button class="btn btn-primary" disabled>Disabled</button>
+  <button class="btn btn-ghost" disabled>Disabled</button>
+</example>
+<p>Pending hides the label behind a spinner and sets <code>aria-busy</code>; the button keeps its width so nothing reflows.</p>
+<h2>Hover grade</h2>
+<p><code>--ink</code> (L* 7.2) to <code>--ink-hover</code> (L* 12.7): a +5.5 step picked from a ladder of five. The old hover went to <code>--ink-3</code>, +39.2, and the button went pale exactly when touched.</p>
+<div class="d-dd">
+  <div><b><ph check/>Do</b><ul><li>One primary per view.</li><li>Use a <code>&lt;button&gt;</code> for actions and an <code>&lt;a&gt;</code> for navigation.</li><li>Label with the outcome: "Explore Case Study", "Resume".</li></ul></div>
+  <div class="dont"><b><ph x/>Don't</b><ul><li>Lift buttons with a shadow or translate on hover.</li><li>Invent a second filled colour.</li><li>Use <code>href="#"</code> for a toggle - it scrolls the page to the top.</li></ul></div>
+</div>
+</page>
+
+<page slug="card" title="Card" status="shipped" lede="Cards are read, not clicked: flat paper, a hairline, no hover. When a card is a link, the border darkens - nothing lifts." keywords="tile panel box surface" used="Findings cards|case-viewryt.html,Case nav|case-irbs.html">
+<example class="block">
+  <div class="cards">
+    <div class="card"><i>Finding 01</i><b>The page asked before it showed</b><p>The form sat above the product, so visitors were asked for a number before they knew what it bought.</p></div>
+    <div class="card plain"><p>No subhead, so the sentence itself has to carry the card - it goes to ink.</p></div>
+  </div>
+</example>
+<h2>Link card</h2>
+<example class="block">
+  <div class="cards">
+    <a class="card" href="#"><i>Case study</i><b>IRBS <ph arrow-right/></b><p>Room bookings inside OneStop.</p></a>
+    <a class="card" href="#"><i>Case study</i><b>Dentomate <ph arrow-right/></b><p>A recall loop for dental clinics.</p></a>
+  </div>
+</example>
+<h2>Anatomy</h2>
+<table class="d-tbl"><thead><tr><th>Part</th><th>Element</th><th>Style</th></tr></thead><tbody>
+<tr><td>Eyebrow</td><td><code>&lt;i&gt;</code></td><td>Mono 12, .14em, <code>--ink-3</code></td></tr>
+<tr><td>Title</td><td><code>&lt;b&gt;</code></td><td>24 / 450 / -.015em</td></tr>
+<tr><td>Body</td><td><code>&lt;p&gt;</code></td><td>18 / 1.6, <code>--mut</code> (ink on <code>.plain</code>)</td></tr>
+<tr><td>Shell</td><td><code>.card</code></td><td>20 padding, <code>--r-md</code>, 1px <code>--line</code></td></tr>
+</tbody></table>
+<p><code>&lt;i&gt;</code> is legitimate inside <code>.card</code> as the eyebrow; it is only chrome inside <code>.impact</code>, where there are no sublabels.</p>
+</page>
+
+<page slug="checkbox" title="Checkbox" status="spec" lede="Native inputs, restyled with appearance:none - forms, labels and keyboard come from the platform." keywords="check tick form boolean">
+<example class="col narrow">
+  <label class="check"><input type="checkbox" checked> Include case studies</label>
+  <label class="check"><input type="checkbox"> Include experiments</label>
+  <label class="check"><input type="checkbox" class="d-indet"> Some selected</label>
+  <label class="check"><input type="checkbox" disabled> Disabled</label>
+</example>
+<h2>Guidelines</h2>
+<ul><li>The whole label is the target; the row is 44px tall even though the box is 18.</li><li>Use a checkbox for independent choices, a <a href="../radio/">Radio group</a> for one-of-many, a <a href="../switch/">Switch</a> for a setting that applies immediately.</li><li>Indeterminate is set from script (<code>el.indeterminate = true</code>), never from markup.</li></ul>
+</page>
+
+<page slug="chip" title="Chip" status="tools" lede="A pressable pill for presets and filters. aria-pressed carries the state; a pressed chip fills with ink." keywords="filter toggle preset pill tag" used="Tool presets">
+<example>
+  <div class="chips"><button class="chip" aria-pressed="true">All</button><button class="chip" aria-pressed="false">Case studies</button><button class="chip" aria-pressed="false">Experiments</button><button class="chip" aria-pressed="false">Writing</button></div>
+</example>
+<h2>Single choice</h2>
+<p>Add <code>data-single</code> to the group and only one chip stays pressed - this is how the tools' presets work.</p>
+<example>
+  <div class="chips" data-single><button class="chip" aria-pressed="true">Calm</button><button class="chip" aria-pressed="false">Dense</button><button class="chip" aria-pressed="false">Wild</button></div>
+</example>
+<p>Chips are 44px tall at <code>--t-ui</code>. If a set of options is exclusive and always visible, consider a <a href="../segmented/">Segmented control</a> instead.</p>
+</page>
+
+<page slug="code" title="Code block" status="spec" lede="Mono on --surface, with an optional file header and copy button. Inline code gets a soft surface-2 pill." keywords="pre snippet syntax mono inline">
+<example class="block">
+  <div class="code">
+    <div class="code-head">tokens.css<button class="d-copy" type="button" aria-label="Copy code"><ph copy/></button></div>
+    <pre>:root{
+  --ink:#161616;
+  --ink-hover:#212121;
+  --r-pill:99px;
+}</pre>
+  </div>
+</example>
+<h2>Inline</h2>
+<example>
+  <p class="prose">Set <code class="inline">--ink</code> on anything filled, and hover it to <code class="inline">--ink-hover</code>.</p>
+</example>
+<p>13px mono at line-height 1.6, tab size 2, horizontal scroll instead of wrapping. Highlighting stays monochrome - tags in ink, attributes in <code>--ink-3</code>, strings italic.</p>
+</page>
+
+<page slug="dialog" title="Dialog" status="spec" lede="Native dialog with showModal(): focus trap, Escape and an inert page come from the platform. 20px shell, one shadow." keywords="modal popup confirm overlay">
+<example>
+  <button class="btn btn-ghost" data-open="dlg-demo">Open dialog</button>
+  <button class="btn btn-ghost" data-open="dlg-danger">Destructive</button>
+  <dialog class="dlg" id="dlg-demo" aria-labelledby="dlg-demo-t">
+    <h2 id="dlg-demo-t">Download the resume?</h2>
+    <p>A one-page PDF, 180 KB. It opens in a new tab.</p>
+    <div class="dlg-actions"><button class="btn btn-ghost btn-sm" data-close>Cancel</button><a class="btn btn-primary btn-sm" href="#" data-close><ph download-simple/> Download</a></div>
+  </dialog>
+  <dialog class="dlg" id="dlg-danger" aria-labelledby="dlg-danger-t">
+    <h2 id="dlg-danger-t">Delete this draft?</h2>
+    <p>The draft and its 3 images are removed. This cannot be undone.</p>
+    <div class="dlg-actions"><button class="btn btn-ghost btn-sm" data-close>Keep draft</button><button class="btn btn-danger btn-sm" data-close>Delete draft</button></div>
+  </dialog>
+</example>
+<h2>Behaviour</h2>
+<ul><li><code>data-open="id"</code> opens, <code>data-close</code> closes, a click on the backdrop closes.</li><li>Opens with a 320ms settle (8px rise, 98% scale); reduced motion drops it.</li><li>Width <code>min(480px, 100vw - 32px)</code>; on a phone it keeps 16px gutters.</li></ul>
+<div class="d-dd">
+  <div><b><ph check/>Do</b><ul><li>Name both buttons with what they do: "Keep draft" / "Delete draft".</li><li>Put the safe action first; the destructive one is the only coloured button.</li></ul></div>
+  <div class="dont"><b><ph x/>Don't</b><ul><li>Use a dialog for something a page could show inline.</li><li>Stack dialogs.</li></ul></div>
+</div>
+</page>
+
+<page slug="divider" title="Divider" status="shipped" lede="One hairline colour for every rule on the site. Rules separate; they never decorate." keywords="hr rule separator line" used="Sections|index.html,Impact columns|case-viewryt.html">
+<example class="col">
+  <hr class="divider">
+  <div class="divider-label">Or</div>
+</example>
+<h2>Vertical</h2>
+<example>
+  <span class="small">Work</span><span class="divider-v"></span><span class="small">About</span><span class="divider-v"></span><span class="small">Resume</span>
+</example>
+<p>Never double a rule: the first case row drops its top border because it would sit a few pixels under the section divider and read as a doubled hairline.</p>
+</page>
+
+<page slug="drawer" title="Drawer" status="spec" lede="A dialog that slides from the right, or rises as a sheet on phones. For settings and detail that keep the page in view." keywords="sheet side panel offcanvas">
+<example>
+  <button class="btn btn-ghost" data-open="drw-demo">Open drawer</button>
+  <button class="btn btn-ghost" data-open="drw-sheet">Open sheet (phone)</button>
+  <dialog class="drawer" id="drw-demo" aria-labelledby="drw-t">
+    <h2 id="drw-t" class="h4">Filters</h2>
+    <div class="d-stack d-drawer-body">
+      <label class="check"><input type="checkbox" checked> Case studies</label>
+      <label class="check"><input type="checkbox"> Experiments</label>
+      <button class="btn btn-primary btn-block" data-close>Apply</button>
+    </div>
+  </dialog>
+  <dialog class="drawer drawer-sheet" id="drw-sheet" aria-labelledby="drw-s">
+    <h2 id="drw-s" class="h4">Share</h2>
+    <div class="d-stack d-drawer-body"><button class="btn btn-ghost btn-block" data-close><ph link-simple/> Copy link</button><button class="btn btn-ghost btn-block" data-close><ph envelope-simple/> Email</button></div>
+  </dialog>
+</example>
+<p>Built on the same native <code>&lt;dialog&gt;</code> as <a href="../dialog/">Dialog</a>. Slides in with <code>--ease-snap</code> over <code>--d-move</code>. Below 640, <code>.drawer-sheet</code> rises from the bottom instead.</p>
+</page>
+
+<page slug="drop-zone" title="Drop zone" status="tools" lede="A dashed target for files. Dashed means empty and waiting; it turns solid once something is in it." keywords="upload file drag drop dropzone" used="Tools image inputs">
+<example class="narrow">
+  <label class="drop"><ph upload-simple/> Drop an image or click to choose<small>PNG, JPG or WebP, up to 10 MB</small><input type="file" class="sr-only" accept="image/*"></label>
+</example>
+<p>The whole zone is a <code>&lt;label&gt;</code> for a visually hidden file input, so click and keyboard work without script. Add <code>.over</code> while dragging.</p>
+</page>
+
+<page slug="glossary" title="Glossary term" status="shipped" lede="A term the reader may not know, defined in place on click - the sentence stays short and nobody leaves the page." keywords="define definition popover term tooltip inline" used="Case pages|case-viewryt.html,Home|index.html">
+<example class="left">
+  <p class="prose">The page converted through a <span class="define"><button class="define-t" aria-expanded="false" aria-controls="def-1">CTA<ph info class="define-i"/></button><span class="define-box" id="def-1" role="note" hidden>Call to action - the one button a section wants you to press.</span></span> placed under the fold.</p>
+</example>
+<h2>Behaviour</h2>
+<ul><li>A real <code>&lt;button&gt;</code> with <code>aria-expanded</code> and <code>aria-controls</code>; the box is <code>hidden</code> until opened.</li><li>One open at a time; outside click or Escape closes and returns focus.</li><li>The Phosphor Info glyph is one shape, so nothing sits off-centre the way a bordered "i" did.</li></ul>
+<p>Use it for one or two terms per page. If every paragraph needs one, the copy needs rewriting instead.</p>
+</page>
+
+<page slug="input" title="Input" status="tools" lede="44px tall, hairline border, ink on focus. Label above, help or error below - never placeholder-as-label." keywords="text field form textbox search otp" used="Tool rails">
+<example class="narrow">
+  <div class="field"><label for="in-1">Project name</label><input class="input" id="in-1" placeholder="ViewRyt"><span class="help">Shown on the case card.</span></div>
+</example>
+<h2>States</h2>
+<example class="col narrow">
+  <div class="field"><label for="in-2">Phone</label><input class="input" id="in-2" value="98290" aria-invalid="true" aria-describedby="in-2-e"><span class="error" id="in-2-e"><ph warning-circle/> Enter a 10-digit phone number</span></div>
+  <div class="field"><label for="in-3">Disabled</label><input class="input" id="in-3" value="heyrav.in" disabled></div>
+</example>
+<h2>With icon and shortcut</h2>
+<example class="narrow">
+  <div class="input-group"><ph magnifying-glass/><input class="input" placeholder="Search" aria-label="Search"><span class="kbd">/</span></div>
+</example>
+<h2>One-time code</h2>
+<example>
+  <div class="otp" role="group" aria-label="Verification code"><input class="input" inputmode="numeric" maxlength="1" aria-label="Digit 1" value="4"><input class="input" inputmode="numeric" maxlength="1" aria-label="Digit 2" value="2"><input class="input" inputmode="numeric" maxlength="1" aria-label="Digit 3"><input class="input" inputmode="numeric" maxlength="1" aria-label="Digit 4"></div>
+</example>
+<h2>Accessibility</h2>
+<ul><li>Every input has a visible <code>&lt;label&gt;</code>. Placeholders are examples, not labels.</li><li>Errors set <code>aria-invalid</code> and are linked with <code>aria-describedby</code>; the message says how to fix it.</li><li>Focus shows a 3px ink halo plus an ink border - visible without colour.</li></ul>
+</page>
+
+<page slug="kbd" title="Kbd" status="tools" lede="A keyboard key. Mono, a hairline cap with a 1px base." keywords="keyboard shortcut key hotkey" used="Tool dock">
+<example>
+  <span class="kbd">⌘</span><span class="kbd">K</span><span class="small">Search</span>
+  <span class="kbd">Z</span><span class="small">Undo</span>
+  <span class="kbd">Shift</span><span class="kbd">Z</span><span class="small">Redo</span>
+</example>
+<p>Hide shortcuts below 900px - phones have no keyboard to press them with.</p>
+</page>

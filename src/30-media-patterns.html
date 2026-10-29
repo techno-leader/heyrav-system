@@ -1,0 +1,246 @@
+<page slug="figure" title="Figure" status="shipped" lede="Specimens sit on --surface in a 20px shell with 40px of air. A caption, when needed, is a mono label pinned bottom-left." keywords="image frame screenshot specimen caption" used="Case figures|case-irbs.html">
+<example class="block">
+  <figure class="fig"><img src="../assets/img/dash.webp" alt="Sahyog ambulance-tracking dashboard" width="900" height="595" loading="lazy"><figcaption>Dashboard · 2024</figcaption></figure>
+</example>
+<h2>Dark specimen</h2>
+<p><code>.fig.dark</code> - the one inverted surface, for specimens that are themselves dark. Captions switch to <code>--mut-inv</code> (5.4:1).</p>
+<example class="block">
+  <figure class="fig dark"><img src="../assets/img/studio.webp" alt="Ad Studio template workflow" width="715" height="423" loading="lazy"><figcaption>Ad Studio</figcaption></figure>
+</example>
+<h2>Pair</h2>
+<example class="block">
+  <div class="fig-grid">
+    <figure class="fig"><img src="../assets/img/observe.webp" alt="Before" width="477" height="320" loading="lazy"><figcaption>Before</figcaption></figure>
+    <figure class="fig"><img src="../assets/img/shot.webp" alt="After" width="900" height="488" loading="lazy"><figcaption>After</figcaption></figure>
+  </div>
+</example>
+<h2>Illustration shell</h2>
+<p><code>.fx-wrap</code> holds the particle-field case illustrations: 4:3, <code>--r-lg</code>, a <code>--line-2</code> hairline on paper. Images inside step down to <code>--r-sm</code>.</p>
+</page>
+
+<page slug="device" title="Device frame" status="shipped" lede="A phone with no bezel and no shadow - a 2px hairline on the device radius. The screen radius derives from it." keywords="phone mockup mobile screen frame" used="Phone walkthrough|case-viewryt.html,Evidence reel|case-irbs.html">
+<example class="surface">
+  <figure class="phone"><div class="screen"><img src="../assets/img/torq.webp" alt="Torq app onboarding screen" width="431" height="900" loading="lazy"></div><div class="pbar d-p40"><i></i></div></figure>
+  <figure class="phone"><div class="screen"><div class="wire"><i class="d-w-60"></i><i></i><i></i><i class="d-w-40"></i><i></i><i></i></div></div></figure>
+</example>
+<ul><li>One value moves the whole device: change <code>--r-device</code> and the screen follows via <code>calc(var(--r-device) - 2px)</code>.</li><li>The side rail (<code>.pbar</code>) shows how far through the screen the reader has scrolled.</li><li>Short specimens fill with <code>.wire</code> bars so a screenshot never floats in an empty phone.</li><li>Type inside a mockup is the product's, not the system's - it is exempt from the 18px floor.</li></ul>
+</page>
+
+<page slug="video" title="Video" status="shipped" lede="A 3:1 thumbnail that morphs to the film's 16:9 on play. Controls are the site's one button form: an ink pill." keywords="film player media controls play" used="TAE Ad Studio|index.html#ad-studio">
+<example class="block">
+  <div class="vid"><img src="../assets/img/shot.webp" alt="" width="900" height="488"><button class="vid-start" aria-label="Play the film"><span class="ring"><ph play/></span></button></div>
+</example>
+<h2>Playing</h2>
+<example class="block">
+  <div class="vid open d-vid-demo"><img src="../assets/img/shot.webp" alt="" width="900" height="488">
+    <div class="vid-bar"><button class="vid-btn" aria-label="Pause"><ph pause/></button><button class="vid-btn" aria-label="Mute"><ph speaker-high/></button><button class="vid-btn" aria-label="Full screen"><ph corners-out/></button></div>
+    <div class="vid-prog"></div>
+  </div>
+</example>
+<ul><li>The poster and the video are both full 16:9 frames under <code>object-fit:cover</code> at a fixed width, so the morph only uncovers the top and bottom - it never zooms.</li><li>The play ring breathes two halos half a beat apart; reduced motion stops them.</li><li>Control buttons are 88 × 44 - twice the target wide, because three at 44 square read cramped.</li><li>Progress is the comet, inverted to paper on the dark film.</li><li>Below 640 the thumbnail goes 2:1, because 3:1 at phone width is a 110px letterbox.</li></ul>
+</page>
+
+<page slug="lightbox" title="Lightbox" status="shipped" lede="Any image with .zoomable opens full-screen in a shared native dialog. Click anywhere or press Escape to close." keywords="zoom image viewer modal gallery" used="Component lab|https://heyrav.in/components.html">
+<example>
+  <img class="zoomable d-thumb" src="../assets/img/torq.webp" alt="Torq onboarding screen" data-caption="Torq - onboarding, 2023" width="431" height="900">
+  <img class="zoomable d-thumb" src="../assets/img/dash.webp" alt="Sahyog dashboard" width="900" height="595">
+</example>
+<p>One <code>&lt;dialog class="lb"&gt;</code> is created on first use and reused. The caption comes from <code>data-caption</code>, falling back to the alt text.</p>
+</page>
+
+<page slug="nav-bar" title="Navigation bar" status="shipped" lede="68px, opaque paper, closed by a hairline. Pinned for the first 5% of the page, tucks on scroll down, returns on scroll up." keywords="header nav top bar menu" used="Every page|index.html">
+<example class="block flush">
+  <nav class="nav"><a class="logo" href="#"><img class="d-invert" src="../assets/brand/lockup.svg" alt="Ravindra Pratap" width="86" height="28"></a><div class="links"><a href="#">Work</a><a href="#">About</a><a href="#">Resume</a></div></nav>
+</example>
+<ul><li>Logo + Work / About / Resume only. Resume opens <code>resume.pdf</code> in a new tab.</li><li>Opaque, not a wash - content scrolls under it rather than showing through.</li><li>Links at 65% opacity, full on hover; the logo is identity and always full.</li><li><code>.is-tucked</code> slides it up 100% (border included); <code>:focus-within</code> brings it back so keyboard focus is never stranded.</li><li>Under reduced motion it still tucks - in one frame.</li></ul>
+</page>
+
+<page slug="footer" title="Footer" status="shipped" lede="One thing: the lockup, signing the page off and doubling as the way home." keywords="sign off bottom lockup" used="Case pages|case-viewryt.html,Home (under the grid)|index.html#contact">
+<example class="block">
+  <footer class="foot"><a class="sig" href="#"><img class="d-invert" src="../assets/brand/lockup.svg" alt="heyrav home" width="99" height="32"></a></footer>
+</example>
+<p>32px tall - deliberately under the type scale so the lockup reads as one mark - with a 44px hit area. It dims to 60% on hover; pure black artwork cannot recolour. On the home page it is centred and hidden under the closing grid, uncovered only by the overscroll stretch.</p>
+</page>
+
+<page slug="hero" title="Hero" status="shipped" lede="Exactly one viewport. A centred 13ch headline with one Redaction word, a credential line pinned to the bottom, and the aurora behind." keywords="header landing headline aurora convert" used="Home|index.html">
+<example class="surface tall">
+  <div class="d-hero-demo">
+    <h1 class="h1 d-center">I make designs that <em>convert.</em></h1>
+    <p class="d-cred">2+ years exp. designing for performance marketing <span class="d-dot">·</span> IIT Eng. Grad.</p>
+  </div>
+</example>
+<ul><li><code>max-width:13ch</code> + <code>margin-inline:auto</code>: the measure decides the line breaks, the auto margins centre it.</li><li>"convert." is a real <code>&lt;button&gt;</code> that inherits the h1's type - keyboard-reachable, read as a word.</li><li>The credential line is <code>position:absolute</code>, never a second flex child, or it pushes the h1 up and the loader stops landing on it.</li><li>At 640 each claim gets its own line, so breaks fall on meaning, not mid-phrase.</li><li><code>#content</code> (z 25, opaque paper) slides up over the hero (z 10), so Selected work covers it.</li></ul>
+<h2>The hint</h2>
+<p>A glitch tear on "convert.", a pixel hand that presses it and a field of code rain - once at 1.2s, then every 5s, killed for good by the first click, never scheduled under reduced motion. Tune it in the <a href="../tools/">Glitch tool</a>.</p>
+</page>
+
+<page slug="section-heading" title="Section heading" status="shipped" lede="Two idioms. The home page centres its heading between two hairlines; case pages lead with a mono label that runs into a rule." keywords="sec head label title divider" used="Home sections|index.html#work,Case sections|case-viewryt.html">
+<example class="block">
+  <div class="sec-head"><h2>Selected <em>work</em></h2></div>
+</example>
+<example class="block">
+  <div class="sec-label">The problem</div>
+  <h2 class="h2 d-mt">Visitors were asked <em>before</em> they were shown</h2>
+</example>
+<p>The section label has no number and no counterweight - the hairline is the one piece of chrome still doing work.</p>
+</page>
+
+<page slug="case-row" title="Case row" status="shipped" lede="Text and a particle illustration side by side, alternating sides down the page, one pill to the case study." keywords="project card work list home" used="Selected work|index.html#work">
+<example class="block">
+  <div class="d-case">
+    <div><h3 class="h3">ViewRyt</h3><p class="prose">A single product page that had to sell an eye-care supplement to cold traffic.</p><ul class="did"><li>Rebuilt the page around proof</li><li>Shipped 12 ad creatives</li></ul><a class="case-link" href="#">Explore Case Study <ph arrow-right/></a></div>
+    <div class="fx-wrap"><img src="../assets/img/dots.webp" alt="" loading="lazy"></div>
+  </div>
+</example>
+<ul><li>Grid <code>1fr 1.05fr</code>, gap 64; <code>.flip</code> puts the visual first on alternate rows.</li><li>Rows are separated by a hairline, but the first drops it so it never doubles the section divider.</li><li>Stacks below 900 with the visual under the text, whatever the flip.</li></ul>
+</page>
+
+<page slug="facts" title="Facts strip" status="shipped" lede="Role, timeline and links under a case title: three columns of mono label over a short value." keywords="meta details role timeline" used="Case header|case-viewryt.html">
+<example class="block">
+  <div class="facts"><div><small>Role</small><b>Design, copy, ads</b></div><div><small>Timeline</small><b>2022 → April 2023</b></div><div><small>Live</small><b><a class="link" href="#">viewryt.com</a></b></div></div>
+</example>
+<p>Three columns, two at 900, one at 640 - two columns at phone width leaves a ragged orphan.</p>
+</page>
+
+<page slug="metrics" title="Impact metrics" status="shipped" lede="Three figures at one size. The lead wins on tone alone (--ink-2) - no number is scaled up to argue for itself." keywords="impact numbers stats kpi count up results" used="Case results|case-viewryt.html">
+<example class="block">
+  <div class="impact">
+    <div class="lead"><b data-count="3.2" data-suf="X">3.2X</b><span>conversion rate on the same traffic</span></div>
+    <div><b data-count="399" data-pre="₹">₹399</b><span>average order value</span></div>
+    <div><b data-count="31" data-suf="X">31X</b><span>return on ad spend at peak</span></div>
+  </div>
+  <button class="btn btn-ghost btn-sm d-mt" data-replay>Replay count</button>
+</example>
+<ul><li><code>.lead</code> goes on the first tile only.</li><li>No <code>&lt;i&gt;</code> sublabels - the span is body copy, read rather than scanned.</li><li>Numbers count up once on entry (<code>data-count</code>, <code>data-pre</code>, <code>data-suf</code>), tabular so they do not jitter.</li></ul>
+</page>
+
+<page slug="quotes" title="Quotes" status="shipped" lede="One pull quote per case, in Onest italic at 40px. Interview verbatims in a lighter register, because several run in a row." keywords="pull quote testimonial verbatim interview" used="Pull quote|case-viewryt.html,Verbatims|case-irbs.html">
+<example class="block">
+  <p class="pull">People did not distrust the product. They distrusted the page.</p>
+</example>
+<example class="block">
+  <div class="quotes">
+    <div class="quote"><p>"I booked the room on paper, then walked over to check it was free."</p><i>Lab coordinator</i></div>
+    <div class="quote"><p>"OneStop already has my login. Why is this a separate site?"</p><i>PhD scholar</i></div>
+  </div>
+</example>
+<p>The pull quote used to be Redaction with a side rule; it is now Onest italic with neither, because Redaction is for single-word accents.</p>
+</page>
+
+<page slug="steps" title="Steps" status="shipped" lede="A numbered sequence with hairlines between. The number is a mono counter, zero-padded, never a big decorative figure." keywords="process numbered list sequence how" used="IRBS process|case-irbs.html">
+<example class="block">
+  <div class="steps">
+    <div class="step"><div><b>Find the room</b><p>Search by building, capacity and equipment.</p></div></div>
+    <div class="step"><div><b>Check the slot</b><p>See live availability before asking.</p></div></div>
+    <div class="step"><div><b>Book inside OneStop</b><p>No second login, no paper.</p></div></div>
+  </div>
+</example>
+<h2>Arrow list</h2>
+<example class="block">
+  <ul class="did"><li>Rebuilt the page around proof</li><li>Moved the form under the product</li><li>Shipped 12 ad creatives</li></ul>
+</example>
+</page>
+
+<page slug="annotations" title="Annotations" status="shipped" lede="One note at a time beside a pinned phone, each fading in only while its stretch of the page is on screen." keywords="scrolly callout note walkthrough evidence reel" used="Phone walkthrough|case-viewryt.html,Evidence reel|case-irbs.html">
+<example class="surface">
+  <div class="ann d-w-sm"><span class="tag">Fold</span><b>The form came first</b><p>Above the fold, before a single photo of the product.</p></div>
+  <figure class="phone"><div class="screen"><img src="../assets/img/torq.webp" alt="" width="431" height="900" loading="lazy"></div><div class="pbar d-p25"><i></i></div></figure>
+</example>
+<ul><li>The stage is <code>position:sticky; height:100vh</code> inside a tall runway (560vh for the walkthrough, 820vh for the evidence reel).</li><li>Notes sit right-aligned in a rail to the left and read into the phone; below 900 the phone leads and the active note sits under it.</li><li>Invisible snap stops are parked at each beat so a long pinned run still snaps.</li><li>Captions are hidden with <code>display:none</code> when inactive on mobile, not just opacity.</li></ul>
+<p>See it live on <a href="https://heyrav.in/case-viewryt.html">ViewRyt</a>; the reel was chosen off a three-way bench (axis A, 200vh).</p>
+</page>
+
+<page slug="pins" title="Pins &amp; keys" status="shipped" lede="Numbered ink dots on a real screen, with their notes in the text column - nothing is laid over the UI it explains." keywords="hotspot callout numbered marker beat" used="Product beats|case-dentomate.html">
+<example class="block">
+  <div class="d-case">
+    <ul class="keys"><li><span class="k">1</span>Overdue patients, sorted by value</li><li><span class="k">2</span>One tap sends the recall</li></ul>
+    <div class="pins"><img class="d-pinimg" src="../assets/img/dash.webp" alt="Dashboard with two numbered pins" width="900" height="595" loading="lazy"><span class="pin d-pin1">1</span><span class="pin d-pin2">2</span></div>
+  </div>
+</example>
+<p>Pins position with <code>--x</code>/<code>--y</code> percentages and carry a 5px halo of 14% ink so they read on any screenshot.</p>
+</page>
+
+<page slug="process-loop" title="Process loop" status="shipped" lede="Four states a person passes through, in rings joined by arrows. The last ring is filled - that is the cost." keywords="flow diagram journey cycle" used="Problem loop|case-dentomate.html">
+<example class="block">
+  <div class="loop">
+    <div class="loop-node"><span class="ring"><ph check/></span><b>Treatment done</b></div><span class="loop-arrow"><ph arrow-right/></span>
+    <div class="loop-node"><span class="ring"><ph envelope-simple/></span><b>No reminder sent</b></div><span class="loop-arrow"><ph arrow-right/></span>
+    <div class="loop-node"><span class="ring"><ph eye/></span><b>Patient forgets</b></div><span class="loop-arrow"><ph arrow-right/></span>
+    <div class="loop-node end"><span class="ring"><ph x/></span><b>Revenue lost</b></div>
+  </div>
+</example>
+</page>
+
+<page slug="ia-tree" title="IA tree" status="shipped" lede="A path and its branches, proving where something lives without a screenshot." keywords="information architecture sitemap hierarchy" used="IRBS|case-irbs.html">
+<example class="block">
+  <div class="ia-tree">
+    <div class="ia-path"><span>OneStop</span><span>Services</span><span>Room booking</span></div>
+    <div class="ia-branches"><div class="ia-leaf">Search</div><div class="ia-leaf">Availability</div><div class="ia-leaf">Book</div><div class="ia-leaf">My bookings</div></div>
+  </div>
+</example>
+</page>
+
+<page slug="closing-grid" title="Closing grid" status="shipped" lede="The home page ends in a full-bleed field of the work itself, with the contact pitch in the hole. Grayscale at rest; hover lights a project." keywords="contact footer grid gallery cta" used="Contact|index.html#contact">
+<example class="block flush">
+  <div class="d-grid-demo">
+    <img src="../assets/img/ad-01.webp" alt=""><img src="../assets/img/observe.webp" alt=""><img src="../assets/img/torq.webp" alt=""><img src="../assets/img/dash.webp" alt="">
+    <div class="d-grid-cap"><p class="h3">Let's make something that <em>converts.</em></p><div class="contact-actions"><a class="primary" href="#"><ph envelope-simple/> Email me</a><a class="ghost" href="#"><ph download-simple/> Resume</a></div></div>
+    <img src="../assets/img/shot.webp" alt=""><img src="../assets/img/ad-02.webp" alt=""><img src="../assets/img/studio.webp" alt=""><img src="../assets/img/ad-03.webp" alt="">
+  </div>
+</example>
+<ul><li>A 24 × 14 field, about three-fifths filled, so the white is the subject. 12 × 18 in portrait.</li><li>Gutters are padding on each tile, not <code>gap</code>, so the void geometry stays exact.</li><li>Tiles are <code>&lt;button&gt;</code>s: they light their group, they never scroll the page.</li><li>Per-asset <code>--grade</code> pulls ten greys to one exposure; film grain uses overlay blend so paper stays paper.</li><li>A one-time clockwise colour sweep hints the interaction when the grid is fully in view.</li></ul>
+</page>
+
+<page slug="loader" title="Loader" status="shipped" lede="An iOS-style picker drum of services that collapses into the headline. Skips on deep links, repeat visits and under 400px." keywords="loading screen veil intro drum splash" used="Home|index.html">
+<example class="surface">
+  <p class="h1 d-center">I make <span class="d-drum"><span>websites</span><span>ads</span><b>designs</b><span>brands</span><span>films</span></span></p>
+</example>
+<ul><li>A real cylinder: rows rotate about the drum axis and push out by the radius, so they compress toward the edges.</li><li>Laid out by the same <code>.wrap</code> and <code>h1</code> rules as the hero, so landing is structural, not a magic number.</li><li>No progress bar - the drum already is the progress indicator.</li><li>Exits by fading (the veil is the same paper as the page), and still runs under reduced motion with every transition snapped.</li></ul>
+</page>
+
+<page slug="reveal" title="Scroll reveal" status="shipped" lede="Content rises 36px out of a 6px blur as it enters, once. Visuals add a 3.5% scale. Siblings stagger by 100ms." keywords="animation entrance fade in scroll intersection" used="Every page|index.html">
+<example class="col">
+  <p class="h3 rv">The heading arrives</p>
+  <p class="prose rv rv-d1">then the line under it, 100ms later</p>
+  <div class="card rv rv-vis rv-d2 d-w-sm"><b>and the visual</b><p>with a little scale.</p></div>
+  <button class="btn btn-ghost btn-sm" data-replay>Replay</button>
+</example>
+<p>Driven by one IntersectionObserver at 15% visibility; <code>.in</code> is added once and the element is unobserved. <code>--d-reveal</code> (950ms) on <code>--ease-out</code>. Under reduced motion, everything is simply visible.</p>
+</page>
+
+<page slug="tool-shell" title="Tool shell" status="tools" lede="One quiet control rail on the left, the work on the right, a floating dock at the bottom. The anatomy every heyrav tool shares." keywords="rail dock editor generator app layout" used="heyrav tools">
+<example class="block flush">
+  <div class="d-tool">
+    <div class="d-tool-rail">
+      <div class="label">Line Field</div>
+      <div class="chips" data-single><button class="chip" aria-pressed="true">Calm</button><button class="chip" aria-pressed="false">Dense</button></div>
+      <div class="field"><div class="row-top"><label for="ts-1">Lines</label><span class="val">48</span></div><input class="rng" id="ts-1" type="range" min="8" max="120" value="48"><span class="help">How many ribbons cross the mark.</span></div>
+      <label class="tgl">Perspective <input type="checkbox" checked><span class="sw"></span></label>
+      <div class="seg" role="group" aria-label="Size"><button aria-pressed="true">16:10</button><button aria-pressed="false">1:1</button></div>
+    </div>
+    <div class="d-tool-stage"><img src="../assets/img/lines.webp" alt="Line Field output" loading="lazy">
+      <div class="d-dock"><button class="btn btn-quiet btn-sm">Undo <span class="kbd">Z</span></button><button class="btn btn-quiet btn-sm">Random <span class="kbd">R</span></button><button class="btn btn-primary btn-sm"><ph download-simple/> Export</button></div>
+    </div>
+  </div>
+</example>
+<ul><li>Presets as chips, lowercase labels, the value on the right in mono, one grey help line under every control, collapsible groups.</li><li>State lives in the URL hash (only the diff from defaults), with undo/redo on Z / Shift+Z.</li><li>The dock is the only floating surface, so it is the only one with <code>--shadow-pop</code>.</li></ul>
+</page>
+
+<page slug="tools" title="Tools" status="tools" lede="The generators that make heyrav's brand assets from the master paths. Each one exports PNG, WebM or the exact CSS it previews." keywords="generator lines pens dots stagger glitch">
+<div class="d-grid-links">
+  <a href="#lines"><img src="../assets/img/lines.webp" alt="Line Field" loading="lazy"><b>Line Field</b><span>The mark as hairline ribbons, isometric or perspective, with click ripples.</span></a>
+  <a href="#pens"><img src="../assets/img/pens.webp" alt="Grid Pens" loading="lazy"><b>Grid Pens</b><span>Tiles and pens drawing the D, the swash and arcs. Exports animated SVG.</span></a>
+  <a href="#dots"><img src="../assets/img/dots.webp" alt="Dot Matrix" loading="lazy"><b>Dot Matrix</b><span>Halftone or ASCII, flat, wrapped or on a globe, with sweep and scan.</span></a>
+  <a href="#stagger"><img src="../assets/img/stagger.webp" alt="Stagger" loading="lazy"><b>Stagger</b><span>The hero entrance on a gantt timeline with a bezier editor. Exports the CSS it previews.</span></a>
+  <a href="#glitch"><img src="../assets/img/glitch.webp" alt="Glitch" loading="lazy"><b>Glitch</b><span>The hero tear, code rain and pixel hand. The CSS export keeps the two-half 46/54 clip.</span></a>
+</div>
+<h2>How they connect to the system</h2>
+<table class="d-tbl"><thead><tr><th>System piece</th><th>Tool</th></tr></thead><tbody>
+<tr id="lines"><td><a href="../brand/">Brand</a> applications</td><td>Line Field, Dot Matrix, Grid Pens - all draw the master SVG paths, never a redrawing.</td></tr>
+<tr id="stagger"><td><a href="../motion/">Motion</a>, <a href="../reveal/">Scroll reveal</a></td><td>Stagger tunes delays and curves and exports them as CSS on the system's easing tokens.</td></tr>
+<tr id="glitch"><td><a href="../hero/">Hero</a> hint</td><td>Glitch - the <code>--g-a/-b/-c</code> hues are the only colour the tools offer by name.</td></tr>
+<tr id="pens"><td><a href="../imagery/">Imagery</a></td><td>Case illustrations and thumbnails.</td></tr>
+<tr id="dots"><td><a href="../tool-shell/">Tool shell</a></td><td>All five share one kit: the rail, controls and dock documented here.</td></tr>
+</tbody></table>
+<p>The tools are hosted separately from this documentation; their UI is documented under <a href="../tool-shell/">Tool shell</a> and the components marked <span class="badge">In tools</span>.</p>
+</page>

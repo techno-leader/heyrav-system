@@ -1,0 +1,149 @@
+<page slug="index" title="Introduction" keywords="home start overview">
+<div class="d-hero">
+  <img class="bg" src="assets/img/lines.webp" alt="">
+  <div class="in">
+    <span class="label">heyrav.in</span>
+    <h1>The heyrav<br><em>design system</em></h1>
+    <p>Every token, component and pattern behind heyrav.in - with live examples, the code that makes them, and the reasoning for each decision.</p>
+    <div class="btn-group">
+      <a class="btn btn-primary" href="button/">Browse components <ph arrow-right class="icon icon-trail"/></a>
+      <a class="btn btn-ghost" href="usage/">Use the system</a>
+    </div>
+  </div>
+</div>
+
+<div class="d-bento">
+  <div class="d-tile w3">
+    <small><a href="input/">Input</a></small>
+    <div class="field d-w-sm">
+      <label for="i-name">Project name</label>
+      <input class="input" id="i-name" placeholder="ViewRyt">
+      <span class="help">Shown on the case card.</span>
+    </div>
+  </div>
+  <div class="d-tile w3">
+    <small><a href="button/">Button</a></small>
+    <a class="btn btn-primary" href="button/">Explore Case Study <ph arrow-right/></a>
+    <button class="btn btn-ghost btn-sm" data-pending>Pending state</button>
+  </div>
+  <div class="d-tile w2">
+    <small><a href="typography/">Typography</a></small>
+    <p class="h3">Designs that <em>convert.</em></p>
+  </div>
+  <div class="d-tile w2">
+    <small><a href="tooltip/">Tooltip</a></small>
+    <span class="tip"><button class="btn btn-ghost btn-sm">Hover me</button><span role="tooltip">Font family <span class="mut">Redaction 35</span></span></span>
+  </div>
+  <div class="d-tile w2">
+    <small><a href="switch/">Switch</a></small>
+    <label class="tgl d-w-sm">Reduce motion <input type="checkbox" checked><span class="sw"></span></label>
+    <div class="seg d-w-sm" role="group" aria-label="Theme"><button aria-pressed="true">Day</button><button aria-pressed="false">Week</button><button aria-pressed="false">Month</button></div>
+  </div>
+  <div class="d-tile w4">
+    <small><a href="metrics/">Impact metrics</a></small>
+    <div class="impact d-w-full">
+      <div class="lead"><b>3.2X</b><span>conversion rate</span></div>
+      <div><b>₹399</b><span>average order</span></div>
+      <div><b>31X</b><span>return on ad spend</span></div>
+    </div>
+  </div>
+  <div class="d-tile w2">
+    <small><a href="toast/">Toast</a></small>
+    <button class="btn btn-primary btn-sm" data-toast="Saved to the system" data-tone="ok">Show toast</button>
+    <span class="badge badge-ok"><span class="dot"></span>Live</span>
+  </div>
+</div>
+
+<h2>What is in here</h2>
+<div class="d-grid-links">
+  <a href="colour/"><b>Foundations</b><span>12 pages: brand, colour, type, spacing, layout, radius, elevation, motion, icons, imagery, accessibility, voice.</span></a>
+  <a href="accordion/"><b>Components</b><span>33 primitives, from accordion to tooltip. Each one is live, themed and keyboard-ready.</span></a>
+  <a href="figure/"><b>Media</b><span>Figures, device frames, the video player and the lightbox.</span></a>
+  <a href="nav-bar/"><b>Patterns</b><span>17 compositions the portfolio is built from: hero, case rows, metrics, evidence, the closing grid.</span></a>
+  <a href="tools/"><b>Tools</b><span>The generators that make heyrav's brand assets: lines, pens, dots, stagger, glitch.</span></a>
+  <a href="audit/"><b>Audit</b><span>Where heyrav.in drifts from this system today, and what to fix first.</span></a>
+</div>
+
+<h2>Status, at a glance</h2>
+<p>Every component carries one of three labels, shown on its page and as a dot in the sidebar.</p>
+<div class="d-spec"><code><span class="badge badge-solid">Shipped</span></code><span class="d-p">Live on heyrav.in. The CSS here is ported verbatim from the page that ships it, and the page links to where you can see it.</span></div>
+<div class="d-spec"><code><span class="badge">In tools</span></code><span class="d-p">Live in the heyrav tools UI (control rails, sliders, toggles). Same tokens, denser sizes.</span></div>
+<div class="d-spec"><code><span class="badge badge-line">Spec</span></code><span class="d-p">Defined here first, built from the same tokens, ready for the next page that needs it. Not on the site yet.</span></div>
+</page>
+
+<page slug="principles" title="Principles" lede="Six rules every decision on heyrav.in has been tested against. When two options both look fine, these decide." keywords="values rules philosophy">
+<h2>1. Neutral first, colour only where it means something</h2>
+<p>The whole interface is a single grey ramp. Colour appears in exactly four deliberate places - the aurora hero, the pointer gradient on case illustrations, text selection and the hero word's glitch - plus status colours where a form genuinely needs to say ok, careful or wrong. If colour does not carry information, it is noise.</p>
+<h2>2. One of everything</h2>
+<p>One button form (the solid ink pill). One elevation (<code>--shadow-pop</code>). One hairline colour. One reveal curve. When two components do the same job, they share one pattern - a second variant has to argue for itself.</p>
+<h2>3. Stepped, never fluid</h2>
+<p>Type and spacing step down at 900 and 640px rather than sliding through <code>clamp()</code>. A clamp renders sizes that are not on the scale (59.4px at 900 wide), which defeats the point of having one.</p>
+<h2>4. Read, not clicked - and the difference is visible</h2>
+<p>Cards and figures that are only read get a flat surface, a hairline and no hover state. Anything clickable gets a 44px target and a hover that <strong>strengthens</strong> (ink goes darker, borders go darker) - never one that makes the control paler under the cursor.</p>
+<h2>5. Measure, do not eyeball</h2>
+<p>Contrast ratios are computed, lightness steps are measured in L*, webfonts are proven with width probes, and every colour in the system lists its ratio. Decisions here cite a number or a bench, not taste alone.</p>
+<h2>6. Calm motion, always optional</h2>
+<p>Motion settles (<code>--ease-out</code>), plays once on entry, and has a reduced-motion branch that removes it without removing meaning. Loading and layout responses still happen - they just happen in one frame.</p>
+</page>
+
+<page slug="usage" title="Using the system" lede="Link one stylesheet, use the classes. Tokens are also published as W3C design-token JSON for tools and other platforms." keywords="install setup getting started tokens json css cdn">
+<h2>Link it</h2>
+<p>Everything - tokens and components - is one file. Load Onest from Google Fonts; Redaction 35 is declared inside the stylesheet and comes from jsDelivr.</p>
+<div class="code"><div class="code-head">index.html<button class="d-copy" type="button" aria-label="Copy"><ph copy/></button></div><pre>&lt;link href="https://fonts.googleapis.com/css2?family=Onest:wght@400..600&amp;display=swap" rel="stylesheet"&gt;
+&lt;link rel="stylesheet" href="https://system.heyrav.in/heyrav.css"&gt;
+&lt;script src="https://system.heyrav.in/js/heyrav.js" defer&gt;&lt;/script&gt;</pre></div>
+<p><code>heyrav.js</code> is optional: it only wires the interactive pieces (popovers, tabs, dialogs, toasts, reveal, count-up, the scroll comet). Everything static works on CSS alone.</p>
+
+<h2>Files</h2>
+<table class="d-tbl"><thead><tr><th>File</th><th>What it is</th></tr></thead><tbody>
+<tr><td><a href="../heyrav.css"><code>heyrav.css</code></a></td><td>Tokens + every component. The one file pages link.</td></tr>
+<tr><td><a href="../css/tokens.css"><code>css/tokens.css</code></a></td><td>Tokens only, generated - for a page that brings its own components.</td></tr>
+<tr><td><a href="../tokens/tokens.json"><code>tokens/tokens.json</code></a></td><td>The source of truth, in W3C Design Tokens (DTCG) format. Dark values and status live in <code>$extensions.heyrav</code>.</td></tr>
+<tr><td><a href="../js/heyrav.js"><code>js/heyrav.js</code></a></td><td>Behaviour for interactive components. No dependencies, about 9 KB.</td></tr>
+</tbody></table>
+
+<h2>Dark theme is opt-in</h2>
+<p>heyrav.in is light-only today, so linking the stylesheet can never flip a page by itself. Dark values are defined for every colour token and switch on with an attribute:</p>
+<div class="code"><pre>&lt;html data-theme="dark"&gt;</pre></div>
+<p>The docs you are reading run on the same contract - the theme switch in the sidebar sets that attribute.</p>
+
+<h2>Naming</h2>
+<ul>
+<li>Token names are the ones heyrav.in already uses (<code>--ink</code>, <code>--mut</code>, <code>--r-md</code>, <code>--t-body</code>), so pages can adopt the file without renaming anything.</li>
+<li>New scales are self-describing: <code>--s-N</code> is N × 4px, <code>--d-*</code> durations are named by role (<code>fast</code>, <code>base</code>, <code>move</code>, <code>slow</code>, <code>reveal</code>).</li>
+<li>Shipped class names are kept verbatim (<code>.case-link</code>, <code>.impact</code>, <code>.define-t</code>). New components get plain names (<code>.btn</code>, <code>.badge</code>, <code>.menu</code>), and where a shipped class is an instance of a new one it is listed as an alias.</li>
+</ul>
+
+<h2>Changing a token</h2>
+<p>Edit <code>tokens/tokens.json</code>, run <code>node build.mjs</code>. The build regenerates the CSS, every swatch and table in these docs (contrast ratios included), the search index and the sitemap. No dependencies.</p>
+</page>
+
+<page slug="audit" title="Audit" lede="Where heyrav.in drifts from this system today. Measured against the four shipped pages and the tools kit on 29 Oct 2026, ordered by how visible the fix is." keywords="drift debt todo migration">
+<h2>Fix first</h2>
+<table class="d-tbl"><thead><tr><th>Where</th><th>Today</th><th>System</th></tr></thead><tbody>
+<tr><td>Nav logo, all pages</td><td>Ships the old stacked "R." mark (<code>assets/brand/mark.webp</code>)</td><td>The new identity is the swash lockup and the master D, as vector SVG - see <a href="../brand/">Brand</a>.</td></tr>
+<tr><td>Case pages, case links</td><td>Still carry the old arrow-in-a-ring link, per project notes</td><td>One button form: <code>.btn-primary</code> / <code>.case-link</code>.</td></tr>
+<tr><td>Mono label sizes</td><td><code>.ann i</code> at 10px, <code>.ev-cap i</code> at 10.5px, <code>.pull .mono</code> hardcoded 12px</td><td>Every mono label is <code>--t-label</code> (12px).</td></tr>
+<tr><td>Label tracking</td><td>Seven values: .06, .1, .12, .14, .16, .18, .2, .24em</td><td>Two: <code>.14em</code> for labels, <code>.24em</code> for the section label only.</td></tr>
+</tbody></table>
+
+<h2>Tokenise next</h2>
+<table class="d-tbl"><thead><tr><th>Where</th><th>Today</th><th>System</th></tr></thead><tbody>
+<tr><td>Transitions</td><td>Literal durations: .2, .25, .3, .32, .45, .5, .95s</td><td><code>--d-fast</code> 200 · <code>--d-base</code> 250 · <code>--d-move</code> 320 · <code>--d-slow</code> 450 · <code>--d-reveal</code> 950</td></tr>
+<tr><td>Easing</td><td><code>cubic-bezier(.22,1,.36,1)</code> written out ~20 times</td><td><code>--ease-out</code>, <code>--ease-io</code>, <code>--ease-snap</code></td></tr>
+<tr><td>Spacing</td><td>Literal px, many off the 4px grid (10, 14, 18, 22, 26, 30, 34, 38)</td><td><code>--s-*</code> scale on a 4px base. Round to the nearest step when a section is next touched.</td></tr>
+<tr><td>Nav type</td><td><code>font-size:13px</code></td><td>Kept as a documented exception; <code>--t-ui</code> (14px) for any new dense UI.</td></tr>
+<tr><td>Z-index</td><td>Literals 0 / 5 / 10 / 15 / 20 / 25 / 30 / 40 / 60</td><td><code>--z-*</code> tokens with the same values, plus overlay (50) and toast (70).</td></tr>
+</tbody></table>
+
+<h2>Reconcile</h2>
+<table class="d-tbl"><thead><tr><th>Where</th><th>Today</th><th>System</th></tr></thead><tbody>
+<tr><td>Body copy colour</td><td>Case pages use <code>--ink-body</code> (#5c5c5c); the home page sets prose in <code>--mut</code></td><td>Long-form prose: <code>--ink-body</code>. Secondary/supporting lines: <code>--mut</code>.</td></tr>
+<tr><td>Tools stage grey</td><td><code>--wash:#f5f5f5</code></td><td>Aliased to <code>--surface-2</code> (#f4f4f4) - one grey, 1.004:1 apart.</td></tr>
+<tr><td>Containers</td><td>1180px home, 1080px case pages</td><td>Intended: <code>--wrap</code> for browsing, <code>--wrap-read</code> for reading.</td></tr>
+<tr><td><code>case-irbs.html</code></td><td>Dead <code>.serif{}</code> rule; no markup uses it</td><td>Delete.</td></tr>
+</tbody></table>
+
+<h2>Not on the site yet</h2>
+<p>Dark theme, status colours, and every component labelled <span class="badge badge-line">Spec</span>. They are defined so the next page that needs a form, a dialog or a toast starts from the system instead of from a blank file.</p>
+</page>

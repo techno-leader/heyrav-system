@@ -1,0 +1,314 @@
+<page slug="brand" title="Brand" lede="Two marks: the swash lockup for signing things off, the master D for holding things. Pure black artwork - it dims, it never recolours." keywords="logo mark lockup identity swash d" status="shipped" used="Nav logo|index.html,Footer sign-off|case-viewryt.html">
+<h2>The lockup</h2>
+<p>The swash (a leaf, 90 × 58 units), its dot, and the name set beside it. It signs every page off in the footer and doubles as the way home.</p>
+<example class="surface">
+  <img src="../assets/brand/lockup.svg" alt="Ravindra Pratap" width="194" height="63" class="d-invert">
+</example>
+<h2>The master D</h2>
+<p>A rectangle and a true semicircle (R = H / 2) holding a 10-unit grid at 30%, with the lockup knocked out in white at (50.9, 112). The construction is the identity - every generator in <a href="../tools/">Tools</a> draws from these exact paths, never from a redrawing.</p>
+<example class="surface">
+  <img src="../assets/brand/master.svg" alt="The heyrav master D with its construction grid" width="290" height="207" class="d-invert">
+</example>
+<h2>Sizes</h2>
+<table class="d-tbl"><thead><tr><th>Use</th><th>Height</th><th>Why</th></tr></thead><tbody>
+<tr><td>Nav</td><td><code>28px</code></td><td>Sits inside the 44px target of a 68px bar.</td></tr>
+<tr><td>Footer sign-off</td><td><code>32px</code></td><td>The name's cap height is 0.256 of the lockup, so 32px renders an 8.2px cap - just under the 12px label floor. At that size the lockup reads as one mark, not a line of copy. The link keeps a 44px <code>min-height</code>.</td></tr>
+<tr><td>Favicon</td><td><code>16 / 32 / 180</code></td><td>The D alone; the swash disappears below 32px.</td></tr>
+</tbody></table>
+<h2>Rules</h2>
+<div class="d-dd">
+  <div><b><ph check/>Do</b><ul><li>Use the SVG from <code>assets/brand/</code>; let CSS set height with <code>width:auto</code>.</li><li>Dim it on hover (<code>opacity:.6</code>) - the artwork is pure black.</li><li>Invert it, whole, on a dark surface.</li></ul></div>
+  <div class="dont"><b><ph x/>Don't</b><ul><li>Recolour, outline or add effects to the mark.</li><li>Set the nav logo at 65% like the other nav links - identity is not a de-emphasised item.</li><li>Redraw the swash; the curve is two arcs on a diagonal and drifts if traced.</li></ul></div>
+</div>
+<h2>Applications</h2>
+<p>Made with the heyrav tools from the master paths.</p>
+<div class="d-grid-links">
+  <a href="../tools/"><img src="../assets/img/lines.webp" alt="The master D lifted into an isometric relief of hairlines" loading="lazy"><b>Line Field</b><span>The D as hairline ribbons.</span></a>
+  <a href="../tools/"><img src="../assets/img/dots.webp" alt="The master D mapped as dots onto a globe" loading="lazy"><b>Dot Matrix</b><span>Halftone, wrapped onto a globe.</span></a>
+  <a href="../tools/"><img src="../assets/img/pens.webp" alt="Grid tiles with pens tracing the swash" loading="lazy"><b>Grid Pens</b><span>Pens tracing the swash, exported as animated SVG.</span></a>
+</div>
+</page>
+
+<page slug="colour" title="Colour" lede="One neutral ramp carries the whole interface. Every text grey is measured against paper, and each dark value mirrors its light ratio step for step." keywords="color palette ink grey neutral dark mode contrast swatches status">
+<h2>Text</h2>
+<p>Five greys, each with one job. Left half of a chip is light theme, right half is dark. Click any chip to copy its variable.</p>
+<swatches group="color.text"/>
+<div class="d-note"><b>The ladder is the point.</b> 18.1 · 8.86 · 6.69 · 5.10 · 4.54 in light, 16.0 · 8.93 · 6.74 · 5.15 · 4.61 in dark. <code>--mut</code> is the floor - it was <code>#8b8b8b</code> (3.4:1) and failed AA for 18px prose, so it was darkened rather than restricted to large text.</div>
+<h2>Fill</h2>
+<swatches group="color.fill"/>
+<p><code>--ink-hover</code> is one measured grade above <code>--ink</code>: L* 7.2 to 12.7, a +5.5 step chosen off a ladder of five. Filled buttons used to hover to <code>--ink-3</code> (+39.2), which made them go pale exactly when touched.</p>
+<h2>Surfaces</h2>
+<swatches group="color.surface"/>
+<h2>Lines</h2>
+<swatches group="color.line"/>
+<p><code>--tint</code> is never used solid. Translucent marks are struck from it with <code>color-mix()</code> so they stay a tint over any surface: 16% for the dot grid and annotation chip, 55% for link underlines.</p>
+<h2>Inverse</h2>
+<swatches group="color.inverse"/>
+<h2>Status</h2>
+<p>Spec. Colour that carries meaning: success, warning, error. Hues are fixed in OKLCH (150, 70, 27); each foreground clears 4.5:1 on paper <em>and</em> on its own tint.</p>
+<swatches group="color.status"/>
+<example>
+  <span class="badge badge-ok"><span class="dot"></span>Published</span>
+  <span class="badge badge-warn"><span class="dot"></span>Draft</span>
+  <span class="badge badge-danger"><span class="dot"></span>Failed</span>
+</example>
+<h2>The four places colour lives</h2>
+<swatches group="color.accent"/>
+<table class="d-tbl"><thead><tr><th>Where</th><th>What</th></tr></thead><tbody>
+<tr><td>Aurora hero</td><td>GLSL constants <code>CA/CB/CC</code> in OKLCH - not CSS, so palette sweeps miss them.</td></tr>
+<tr><td>Case illustrations</td><td>The pointer gradient (<code>ga*/gb*</code> uniforms). Resting colour is neutral; colour peaks only under the cursor.</td></tr>
+<tr><td>Selection</td><td><code>--sel</code>, sampled from 535,647 rendered aurora pixels (mean <code>#b0fded</code>) and pushed to the lightest in-gamut point on hue 180: 16.1:1 behind ink.</td></tr>
+<tr><td>Glitch</td><td><code>--g-a/-b/-c</code>, the shader's hues at L .62 - the most chroma sRGB will hold, so the magenta finally reaches the screen.</td></tr>
+</tbody></table>
+<h2>Auditing for stray colour</h2>
+<p>Scan the browser-serialised CSSOM, not the source: <code>hsl(255 40% 96.5%)</code> once survived a hex/rgb grep and only surfaced as <code>rgb(244,243,250)</code> after the browser normalised it.</p>
+<h2>All colour tokens</h2>
+<tokentable group="color"/>
+</page>
+
+<page slug="typography" title="Typography" lede="Onest carries display and body alike. Redaction 35 italic is the accent - on single words, never a whole block. Mono is for labels and numbers." keywords="type font onest redaction mono scale heading body label weight" status="shipped" used="Every page|index.html">
+<h2>Families</h2>
+<div class="d-spec"><code>--sans</code><span><span class="h3">Onest - display &amp; body</span><br><span class="small">Variable 400..600 from Google Fonts. A subrange request: 7 @font-face rules instead of 21.</span></span></div>
+<div class="d-spec"><code>--serif</code><span><span class="h3"><em>Redaction 35 - accents</em></span><br><span class="small">Italic 400 only, from jsDelivr (OFL). The number is how destroyed the face is; cleaner is downward, and 35 is settled.</span></span></div>
+<div class="d-spec"><code>--mono</code><span><span class="label">ui-monospace - labels, numbers, code</span><br><span class="small">The system stack. Uppercase, tracked, 12px.</span></span></div>
+<h2>Scale</h2>
+<p>Seven steps and nothing between them. 18px is the floor for anything meant to be read; the 12px mono label sits outside the scale because it is chrome, not copy.</p>
+<example class="col left">
+  <div class="d-spec"><code>--t-head-lg</code><span class="h1">64 Page title</span></div>
+  <div class="d-spec"><code>--t-head</code><span class="h2">56 Section heading</span></div>
+  <div class="d-spec"><code>--t-sub-lg</code><span class="h3">40 Case title</span></div>
+  <div class="d-spec"><code>--t-sub-md</code><span class="h3 d-md">32 Beat title</span></div>
+  <div class="d-spec"><code>--t-sub</code><span class="h4">24 Card title, lede</span></div>
+  <div class="d-spec"><code>--t-body</code><span class="prose">18 Body copy, the reading floor</span></div>
+  <div class="d-spec"><code>--t-ui</code><span class="small">14 Dense UI: rails, menus, docs</span></div>
+  <div class="d-spec"><code>--t-label</code><span class="label">12 Mono label</span></div>
+</example>
+<h2>Stepping down</h2>
+<table class="d-tbl"><thead><tr><th>Role</th><th>Desktop</th><th>≤ 900</th><th>≤ 640</th></tr></thead><tbody>
+<tr><td>h1</td><td>64</td><td>56</td><td>40</td></tr>
+<tr><td>h2</td><td>56</td><td>40</td><td>32</td></tr>
+<tr><td>h3 (case title)</td><td>40</td><td>32</td><td>24</td></tr>
+<tr><td>Pull quote</td><td>40</td><td>24</td><td>24</td></tr>
+</tbody></table>
+<p>At 640, h1 and h2 were both 40px once, which flattened the two; h2 now steps to 32 so the pair stays apart.</p>
+<h2>Headings</h2>
+<example class="col left">
+  <h1 class="h1">Selling through a <em>single</em> product page</h1>
+  <h2 class="h2">What the <em>data</em> said</h2>
+</example>
+<h2>Text</h2>
+<example class="col left">
+  <p class="lede">A lede sits one step under the heading at 24px, in --mut.</p>
+  <p class="prose">Body copy is 18px at line-height 1.7, set in <code class="inline">--ink-body</code> with a 62ch measure. <strong>Inline strong</strong> goes to ink at 600 - at the heading weight of 450 it would stop reading as emphasis.</p>
+  <span class="label">Mono label · 12px · .14em</span>
+</example>
+<h2>Weights</h2>
+<tokentable group="font.weight"/>
+<p>450 is a genuine instance of Onest's variable axis, not a synthesised in-between: a width probe gives 746.25 / 749.77 / 753.16 / 759.69px at 400 / 450 / 500 / 600, strictly monotonic.</p>
+<h2>Rules</h2>
+<div class="d-dd">
+  <div><b><ph check/>Do</b><ul><li>Accent one word per heading with Redaction - the word the sentence turns on.</li><li>Use tabular numbers for anything that counts.</li><li>Prove a webfont loads with a width probe, never by eye.</li></ul></div>
+  <div class="dont"><b><ph x/>Don't</b><ul><li>Set a whole paragraph or pull quote in Redaction - the pull quote is Onest italic.</li><li>Ask Redaction for 500 or 600: only italic 400 is declared, anything else synthesises.</li><li>Use <code>clamp()</code> for type.</li></ul></div>
+</div>
+<h2>All type tokens</h2>
+<tokentable group="font"/>
+</page>
+
+<page slug="spacing" title="Spacing" lede="A 4px base. --s-N is N × 4px, so the name tells you the value. One vertical beat, --case-pad, separates every section." keywords="space padding margin gap rhythm scale">
+<h2>Scale</h2>
+<example class="col left">
+  <div class="d-spec"><code>--s-1 · 4</code><span class="d-bar d-s1"></span></div>
+  <div class="d-spec"><code>--s-2 · 8</code><span class="d-bar d-s2"></span></div>
+  <div class="d-spec"><code>--s-3 · 12</code><span class="d-bar d-s3"></span></div>
+  <div class="d-spec"><code>--s-4 · 16</code><span class="d-bar d-s4"></span></div>
+  <div class="d-spec"><code>--s-5 · 20</code><span class="d-bar d-s5"></span></div>
+  <div class="d-spec"><code>--s-6 · 24</code><span class="d-bar d-s6"></span></div>
+  <div class="d-spec"><code>--s-7 · 28</code><span class="d-bar d-s7"></span></div>
+  <div class="d-spec"><code>--s-8 · 32</code><span class="d-bar d-s8"></span></div>
+  <div class="d-spec"><code>--s-10 · 40</code><span class="d-bar d-s10"></span></div>
+  <div class="d-spec"><code>--s-11 · 44</code><span class="d-bar d-s11"></span></div>
+  <div class="d-spec"><code>--s-14 · 56</code><span class="d-bar d-s14"></span></div>
+  <div class="d-spec"><code>--s-16 · 64</code><span class="d-bar d-s16"></span></div>
+  <div class="d-spec"><code>--s-21 · 84</code><span class="d-bar d-s21"></span></div>
+</example>
+<tokentable group="space"/>
+<h2>Vertical rhythm</h2>
+<p>Every section pads <code>var(--case-pad) 0</code> (84px, 64px at 900). Two halves stacked make every section break 168px - the same as the gap between two cases - so the page has one beat between blocks instead of 169, 244 and 40px. Heading to content is 108px in Work and About alike.</p>
+<h2>Inside components</h2>
+<table class="d-tbl"><thead><tr><th>Gap</th><th>Value</th></tr></thead><tbody>
+<tr><td>Icon to label, body text</td><td><code>10px</code> - the flex gap replaces the whitespace node <code>inline-flex</code> drops</td></tr>
+<tr><td>Icon to label, mono</td><td><code>6px</code></td></tr>
+<tr><td>Card padding</td><td><code>20px</code> (<code>--s-5</code>)</td></tr>
+<tr><td>Card grid gap</td><td><code>14px</code> - shipped; new grids use <code>--s-4</code></td></tr>
+<tr><td>Figure padding</td><td><code>40px</code>, <code>20px</code> at 640</td></tr>
+</tbody></table>
+</page>
+
+<page slug="layout" title="Layout" lede="Two containers, one gutter, three breakpoints. Browse at 1180, read at 1080." keywords="grid container wrap breakpoint gutter responsive z-index">
+<h2>Containers</h2>
+<tokentable group="layout"/>
+<p>Every inner section uses the same container as its page - a sub-section never narrows itself independently. Prose keeps its own measure (<code>max-width:62ch</code>) inside the container instead.</p>
+<h2>Breakpoints</h2>
+<table class="d-tbl"><thead><tr><th>Width</th><th>What changes</th></tr></thead><tbody>
+<tr><td><code>1180</code></td><td>Evidence reel narrows its caption column.</td></tr>
+<tr><td><code>900</code></td><td>Type steps down one; two-column layouts stack; <code>--case-pad</code> 84 → 64.</td></tr>
+<tr><td><code>640</code></td><td>Type steps again; gutter 44 → 22; card grids go single-column; figure padding halves.</td></tr>
+<tr><td><code>400</code></td><td>The loader skips - the headline re-wraps and the drum cannot land on it.</td></tr>
+</tbody></table>
+<p>Custom properties cannot be used in media queries, so breakpoints are documented values, not tokens.</p>
+<h2>Columns</h2>
+<example class="block">
+  <div class="cols">
+    <div class="d-box d-w-full">1fr</div>
+    <div class="d-box d-w-full">1fr · gap 56</div>
+  </div>
+</example>
+<p><code>.cols</code> is the case-page split. The home page case row is <code>1fr 1.05fr</code> with a 64px gap, flipping its visual to the left on alternate rows.</p>
+<h2>Stacking</h2>
+<tokentable group="z"/>
+</page>
+
+<page slug="radius" title="Radius" lede="Outer shell 20, inner element 14, innermost 8. Corners step down as they nest, and every corner resolves to one of six values." keywords="corner border radius rounded pill" status="shipped">
+<example>
+  <div class="d-stack"><div class="d-box r-xs"></div><code>--r-xs · 4</code></div>
+  <div class="d-stack"><div class="d-box r-sm"></div><code>--r-sm · 8</code></div>
+  <div class="d-stack"><div class="d-box r-md"></div><code>--r-md · 14</code></div>
+  <div class="d-stack"><div class="d-box r-lg"></div><code>--r-lg · 20</code></div>
+  <div class="d-stack"><div class="d-box r-device"></div><code>--r-device · 34</code></div>
+  <div class="d-stack"><div class="d-box r-pill"></div><code>--r-pill · 99</code></div>
+</example>
+<tokentable group="radius"/>
+<h2>Nesting</h2>
+<p>A figure (<code>--r-lg</code>) holding images steps them to <code>--r-md</code>; a card (<code>--r-md</code>) holding a leaf steps it to <code>--r-sm</code>. A device frame derives its screen radius from its own token: <code>calc(var(--r-device) - 2px)</code>, so changing one value moves the whole phone.</p>
+</page>
+
+<page slug="elevation" title="Elevation" lede="One shadow. Surfaces are flat; only things that float above text get lifted." keywords="shadow depth elevation flat" status="shipped">
+<example class="surface">
+  <div class="card d-w-sm"><b>Flat</b><p>A hairline and paper. Cards, figures, shots: no shadow.</p></div>
+  <div class="pop d-static d-w-sm"><b>--shadow-pop</b>Popovers, menus, dialogs, toasts and the tool dock.</div>
+</example>
+<tokentable group="shadow"/>
+<div class="d-dd">
+  <div><b><ph check/>Do</b><p>Lift only what overlaps content: if it can cover a sentence, it gets <code>--shadow-pop</code>.</p></div>
+  <div class="dont"><b><ph x/>Don't</b><p>Use shadow for hover on cards or buttons - a darker border or fill carries the affordance. Device frames have no bezel and no shadow, just a 2px hairline.</p></div>
+</div>
+</page>
+
+<page slug="motion" title="Motion" lede="Things settle. One house curve, five durations named by role, every animation behind prefers-reduced-motion." keywords="animation easing duration transition reduced motion" status="shipped">
+<h2>Easing</h2>
+<example class="col">
+  <div class="d-motion-track ease-out"><span class="d-motion"></span></div>
+  <div class="d-motion-track ease-io"><span class="d-motion"></span></div>
+  <div class="d-motion-track ease-snap"><span class="d-motion"></span></div>
+  <button class="btn btn-ghost btn-sm" data-replay>Play: out · io · snap</button>
+</example>
+<tokentable group="motion"/>
+<h2>Rules</h2>
+<ul>
+<li><strong>Entry only.</strong> Reveals play once as content arrives and never again on scroll back.</li>
+<li><strong>Cursors do not ease.</strong> The hero's pixel hand moves with <code>steps(1,end)</code> - smooth reads as a floating illustration.</li>
+<li><strong>Two animations do not compose <code>transform</code>.</strong> Split them across nested elements.</li>
+<li><strong>Reduce removes motion, not meaning.</strong> The nav still tucks and the loader still runs - each in one frame.</li>
+</ul>
+<h2>Reduced motion</h2>
+<div class="code"><pre>@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none;filter:none;transition:none;}
+  .nav{transition:none;}   /* still tucks - a layout response, not decoration */
+}</pre></div>
+</page>
+
+<page slug="icons" title="Iconography" lede="Phosphor Regular, inlined as SVG. Sized in em so one rule fits a 12px label and an 18px button." keywords="icon phosphor svg glyph" status="shipped">
+<example>
+  <ph arrow-right/><ph arrow-up-right/><ph arrow-left/><ph download-simple/><ph play/><ph pause/><ph speaker-high/><ph speaker-slash/><ph corners-out/><ph info/><ph magnifying-glass/><ph check/><ph x/><ph plus/><ph copy/><ph envelope-simple/><ph link-simple/><ph warning-circle/><ph check-circle/><ph caret-down/>
+</example>
+<h2>The rule</h2>
+<div class="code"><pre>.icon{width:1em;height:1em;fill:currentColor;flex:none;vertical-align:-.125em;}</pre></div>
+<example>
+  <span class="label"><ph arrow-right/> Mono label</span>
+  <span class="prose">Body text <ph arrow-up-right/></span>
+  <a class="btn btn-primary" href="#">Button <ph arrow-right/></a>
+</example>
+<h2>Rules</h2>
+<ul>
+<li><strong>Fetch the real path, never hand-write it:</strong> <code>curl -sL https://raw.githubusercontent.com/phosphor-icons/core/main/assets/regular/&lt;name&gt;.svg</code></li>
+<li>Parents are usually <code>inline-flex</code>, which drops the whitespace between icon and label - add <code>gap</code> (10px body, 6px mono).</li>
+<li><code>→</code> in a range (<code>2022 → 2023</code>) is prose, not an icon. Metrics use a capital <code>X</code>, not <code>×</code>.</li>
+<li>Decorative icons get <code>aria-hidden="true"</code>; an icon-only button gets <code>aria-label</code>.</li>
+<li>Optical centring beats box centring: the play triangle moves back 0.037em because its box sits right of its centroid.</li>
+</ul>
+</page>
+
+<page slug="imagery" title="Imagery" lede="Real work, shown honestly: screenshots in quiet frames, creatives at one size, illustrations made from the brand geometry." keywords="image photo screenshot grayscale particle illustration alt" status="shipped">
+<h2>Screenshots</h2>
+<p>Product screens sit in a device frame with no bezel and no shadow, or in a figure on <code>--surface</code>. Evidence is cropped to the part being discussed, never decorated.</p>
+<h2>Creatives</h2>
+<example class="block">
+  <div class="ads">
+    <img src="../assets/img/ad-01.webp" alt="ViewRyt Meta ad, product on a plain background" width="600" height="600" loading="lazy">
+    <img src="../assets/img/ad-02.webp" alt="ViewRyt Meta ad, testimonial layout" width="600" height="600" loading="lazy">
+    <img src="../assets/img/ad-03.webp" alt="ViewRyt Meta ad, offer layout" width="600" height="600" loading="lazy">
+  </div>
+</example>
+<p>Three at one size, so none reads as the hero. They carry their own edges, so no panel frames them.</p>
+<h2>Grayscale grade</h2>
+<p>The closing grid shows ten assets grayscale at rest. A flat <code>grayscale(1)</code> made logos read as black holes next to a white ad (mean luminance 56 to 226), so each tile carries a per-asset <code>--grade</code> that pulls the set to 138-168. Colour returns, ungraded, on hover.</p>
+<example>
+  <img class="d-gray" src="../assets/img/observe.webp" alt="A close-up observational photograph" width="477" height="320" loading="lazy">
+</example>
+<h2>Illustration</h2>
+<p>Case thumbnails are particle fields built from the brand paths, neutral at rest, coloured only under the pointer. Generated with the <a href="../tools/">heyrav tools</a>.</p>
+<h2>Image hygiene</h2>
+<ul>
+<li>Always pair <code>width</code>/<code>height</code> attributes with <code>height:auto</code> - the attributes are presentational hints that beat <code>aspect-ratio</code>.</li>
+<li>Lazy-load below the fold; never force eager loading to make a check pass.</li>
+<li>Alt text says what the image proves, not what it looks like.</li>
+</ul>
+</page>
+
+<page slug="accessibility" title="Accessibility" lede="AA is the floor, measured. 44px targets, visible focus, real buttons, and every moving part behind a reduced-motion switch." keywords="a11y wcag contrast focus keyboard screen reader target">
+<h2>Contrast</h2>
+<p>Every text colour clears 4.5:1 on paper in both themes - the ratios are computed at build time and printed on the <a href="../colour/">Colour</a> swatches. 12px mono labels use <code>--ink-3</code> (5.1:1), not <code>--mut</code>.</p>
+<h2>Targets</h2>
+<p>44 × 44px minimum on everything interactive. The padding lives on the link, not the bar, so the target is real. Where art is smaller (the 32px footer lockup), <code>min-height:44px</code> keeps the hit area legal.</p>
+<h2>Focus</h2>
+<example>
+  <button class="btn btn-primary d-focus">Focused</button>
+  <button class="btn btn-ghost d-focus">Focused</button>
+  <span class="chip d-focus">Chip</span>
+</example>
+<p><code>outline:2px solid var(--ink); outline-offset:2px</code>, on <code>:focus-visible</code> only. A tucked nav returns on <code>:focus-within</code> so keyboard focus is never stranded off-screen.</p>
+<h2>Semantics</h2>
+<ul>
+<li>Toggles are <code>&lt;button&gt;</code>, not <code>&lt;a href="#"&gt;</code> - a link to # scrolls to the top, and a button gives Enter/Space and focus for free.</li>
+<li>Hidden layers use <code>visibility</code>, not just opacity, or a screen reader reads both at once.</li>
+<li>Hover-revealed content is gated in <code>@media (hover:hover)</code>; touch browsers leave a sticky hover on the last tap.</li>
+<li>Dialogs use native <code>&lt;dialog&gt;</code> with <code>showModal()</code>: focus trap, Escape and inert background come from the platform.</li>
+</ul>
+<h2>Motion</h2>
+<p>See <a href="../motion/">Motion</a>. The reduced-motion block in <code>heyrav.css</code> covers every transition and animation in the system in one place.</p>
+</page>
+
+<page slug="voice" title="Voice &amp; copy" lede="Direct, specific, short. Each section should be read in about ten seconds." keywords="writing copy tone microcopy style em dash">
+<h2>House rules</h2>
+<table class="d-tbl"><thead><tr><th>Rule</th><th>Example</th></tr></thead><tbody>
+<tr><td>No em dashes - a spaced hyphen instead</td><td><code>Built for one page - and it sold.</code></td></tr>
+<tr><td>Straight quotes, not curly</td><td><code>"like this"</code></td></tr>
+<tr><td>Multipliers take a capital X</td><td><code>3.2X · 31X</code>, never <code>3.2×</code></td></tr>
+<tr><td>Rupees with the symbol</td><td><code>₹399</code></td></tr>
+<tr><td>Ranges with an arrow in prose, en dash in numbers</td><td><code>2022 → 2023 · ₹6–15k</code></td></tr>
+<tr><td>British spelling in UI</td><td><code>colour</code></td></tr>
+<tr><td>Sentence case for headings and buttons</td><td><code>Explore Case Study</code> is the one title-case exception, kept as shipped</td></tr>
+</tbody></table>
+<h2>Case-study copy</h2>
+<ul>
+<li>Lead with the claim, then the evidence. One claim per section.</li>
+<li>Name the problem, not the process: "Why patients never came back", not "Research phase".</li>
+<li>Annotations say what to look at, in one line.</li>
+<li>No process theatre - personas and SWOT are cut unless they changed a decision.</li>
+</ul>
+<h2>Microcopy</h2>
+<div class="d-dd">
+  <div><b><ph check/>Do</b><ul><li>"Copied to clipboard"</li><li>"Nothing matches that."</li><li>"Enter a 10-digit phone number"</li></ul></div>
+  <div class="dont"><b><ph x/>Don't</b><ul><li>"Success!"</li><li>"Oops! Something went wrong :("</li><li>"Invalid input"</li></ul></div>
+</div>
+</page>
