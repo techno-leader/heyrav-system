@@ -70,9 +70,11 @@
   --ease-snap:cubic-bezier(.32,.72,0,1);
   --d-fast:200ms;
   --d-base:250ms;
-  --d-move:320ms;
+  --d-press:160ms;
+  --d-move:240ms;
   --d-slow:450ms;
-  --d-reveal:950ms;
+  --d-modal:320ms;
+  --d-reveal:400ms;
   --z-hero:10;
   --z-sticky:15;
   --z-pop:20;

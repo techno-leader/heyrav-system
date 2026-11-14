@@ -126,6 +126,8 @@ function layout(p, idx) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#181818" media="(prefers-color-scheme: dark)">
 <title>${title}</title>
 <meta name="description" content="${desc.replace(/"/g, '&quot;')}">
 <meta name="d-root" content="${R}">

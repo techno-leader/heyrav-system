@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#181818" media="(prefers-color-scheme: dark)">
 <title>Audit - heyrav Design System</title>
 <meta name="description" content="Where heyrav.in drifts from this system today. Measured against the four shipped pages and the tools kit on 29 Oct 2026, ordered by how visible the fix is.">
 <meta name="d-root" content="../">
@@ -42,7 +44,7 @@
 
 <h2 id="tokenise-next">Tokenise next</h2>
 <table class="d-tbl"><thead><tr><th>Where</th><th>Today</th><th>System</th></tr></thead><tbody>
-<tr><td>Transitions</td><td>Literal durations: .2, .25, .3, .32, .45, .5, .95s</td><td><code>--d-fast</code> 200 · <code>--d-base</code> 250 · <code>--d-move</code> 320 · <code>--d-slow</code> 450 · <code>--d-reveal</code> 950</td></tr>
+<tr><td>Transitions</td><td>Literal durations: .2, .25, .3, .32, .45, .5, .95s</td><td><code>--d-fast</code> 200 · <code>--d-base</code> 250 · <code>--d-press</code> 160 · <code>--d-move</code> 240 · <code>--d-modal</code> 320 · <code>--d-slow</code> 450 · <code>--d-reveal</code> 400</td></tr>
 <tr><td>Easing</td><td><code>cubic-bezier(.22,1,.36,1)</code> written out ~20 times</td><td><code>--ease-out</code>, <code>--ease-io</code>, <code>--ease-snap</code></td></tr>
 <tr><td>Spacing</td><td>Literal px, many off the 4px grid (10, 14, 18, 22, 26, 30, 34, 38)</td><td><code>--s-*</code> scale on a 4px base. Round to the nearest step when a section is next touched.</td></tr>
 <tr><td>Nav type</td><td><code>font-size:13px</code></td><td>Kept as a documented exception; <code>--t-ui</code> (14px) for any new dense UI.</td></tr>
