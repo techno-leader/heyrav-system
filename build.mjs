@@ -108,8 +108,7 @@ const THEME_BOOT = `<script>(function(){var m;try{m=localStorage.getItem('hr-the
 function sidebar(cur, R) {
   return NAV.map(([g, slugs]) => `<h3>${g}</h3>` + slugs.filter(s => pages[s]).map(s => {
     const p = pages[s], href = s === 'index' ? R : `${R}${s}/`;
-    const dot = ['Components', 'Media', 'Patterns'].includes(g) ? `<span class="d-st ${p.status || ''}" title="${p.status || ''}"></span>` : '';
-    return `<a href="${href}"${s === cur ? ' aria-current="page"' : ''}>${p.nav || p.title}${dot}</a>`;
+    return `<a href="${href}"${s === cur ? ' aria-current="page"' : ''}>${p.nav || p.title}</a>`;
   }).join('')).join('');
 }
 function layout(p, idx) {

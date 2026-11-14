@@ -19,9 +19,6 @@ body.d{background:var(--surface);font-size:var(--t-ui);}
 .d-nav a{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 8px;border-radius:var(--r-sm);color:var(--ink-2);text-decoration:none;}
 .d-nav a:hover{background:var(--surface-2);color:var(--ink);}
 .d-nav a[aria-current="page"]{background:var(--surface-3);color:var(--ink);font-weight:var(--w-head);}
-.d-nav a .d-st{margin-left:auto;width:6px;height:6px;border-radius:50%;background:var(--line-2);}
-.d-nav a .d-st.shipped{background:var(--ink);}
-.d-nav a .d-st.tools{background:var(--ink-3);}
 .d-foot{display:grid;gap:8px;padding-top:12px;border-top:1px solid var(--line);}
 .d-foot .seg button{min-height:36px;}
 .d-foot .btn{min-height:40px;}
