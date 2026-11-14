@@ -117,7 +117,10 @@ function layout(p, idx) {
   const prev = order[idx - 1], next = order[idx + 1];
   const pn = `<nav class="d-pn" aria-label="Pager">${prev ? `<a href="${prev.slug === 'index' ? R : R + prev.slug + '/'}"><small>Previous</small><b>${pages[prev.slug].title}</b></a>` : ''}${next ? `<a class="n" href="${R + next.slug}/"><small>Next</small><b>${pages[next.slug].title}</b></a>` : ''}</nav>`;
   const used = p.used ? `<div class="d-used"><span>Used on</span>${p.used.split(',').map(u => { const [l, h] = u.split('|'); return h ? `<a href="${h.startsWith('http') ? h : 'https://heyrav.in/' + h}">${l}</a>` : `<span>${l}</span>`; }).join('')}</div>` : '';
-  const head = p.slug === 'index' ? '' : `<header class="d-head"><div class="d-eyebrow"><span class="label">${order[idx].g}</span>${badge(p.status)}</div><h1>${p.h1 || p.title}</h1>${p.lede ? `<p class="d-lede">${p.lede}</p>` : ''}${used}</header>`;
+  // Speed control only where the page's own demos move. Motion carries it in the body.
+  const SPEED = new Set(['button', 'accordion', 'switch', 'checkbox', 'tabs', 'tooltip', 'popover', 'menu', 'dialog', 'drawer', 'toast', 'lightbox', 'progress', 'skeleton', 'spinner', 'loader', 'reveal', 'video', 'nav-bar', 'pagination', 'closing-grid', 'process-loop']);
+  const speed = SPEED.has(p.slug) ? `<div class="d-speed"><span>Animation speed</span><div class="seg" role="group" aria-label="Animation speed, S toggles slow motion"><button data-speed="0.1" aria-pressed="false">.1X</button><button data-speed="0.25" aria-pressed="false">.25X</button><button data-speed="0.5" aria-pressed="false">.5X</button><button data-speed="1" aria-pressed="true">1X</button></div><span class="kbd" title="Toggles slow motion">S</span></div>` : '';
+  const head = p.slug === 'index' ? '' : `<header class="d-head"><div class="d-eyebrow"><span class="label">${order[idx].g}</span>${badge(p.status)}</div><h1>${p.h1 || p.title}</h1>${p.lede ? `<p class="d-lede">${p.lede}</p>` : ''}${used}${speed}</header>`;
   const toc = heads.length > 1 ? `<nav class="d-toc" aria-label="On this page"><b>On this page</b>${heads.map(([t, id]) => `<a href="#${id}">${t}</a>`).join('')}</nav>` : '<div></div>';
   const title = p.slug === 'index' ? 'heyrav Design System' : `${p.title} - heyrav Design System`;
   const desc = (p.lede || 'The design system behind heyrav.in: tokens, components and patterns, with live examples and code.').replace(/<[^>]+>/g, '');
@@ -152,7 +155,6 @@ ${CLARITY}
   <nav class="d-nav" aria-label="Sections">${sidebar(p.slug, R)}</nav>
   <div class="d-foot">
     <div class="seg" role="group" aria-label="Theme"><button data-theme-set="system" aria-pressed="false">System</button><button data-theme-set="light" aria-pressed="false">Light</button><button data-theme-set="dark" aria-pressed="false">Dark</button></div>
-    <div class="seg" role="group" aria-label="Animation speed, S toggles slow motion" title="Animation speed - S toggles"><button data-speed="0.1" aria-pressed="false">.1X</button><button data-speed="0.25" aria-pressed="false">.25X</button><button data-speed="0.5" aria-pressed="false">.5X</button><button data-speed="1" aria-pressed="true">1X</button></div>
     <a class="btn btn-ghost btn-sm btn-block" href="https://heyrav.in">Open heyrav.in ${icon('arrow-up-right')}</a>
   </div>
 </aside>
