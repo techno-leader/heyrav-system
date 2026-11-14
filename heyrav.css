@@ -586,7 +586,7 @@ code.inline,.prose code{font-family:var(--mono);font-size:.85em;padding:.1em .35
 /* IA tree */
 .ia-tree{border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;background:var(--surface);}
 .ia-tree .ia-path{margin-bottom:22px;}
-.ia-branches{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding-top:18px;border-top:1px solid var(--line);}
+.ia-branches{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(130px,100%),1fr));gap:10px;padding-top:18px;border-top:1px solid var(--line);}
 .ia-leaf{border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 10px;background:var(--paper);font-size:var(--t-body);color:var(--ink-body);text-align:center;}
 /* scroll reveal */
 .rv{opacity:0;transform:translateY(36px);filter:blur(6px);transition:opacity var(--d-reveal) var(--ease-out),transform var(--d-reveal) var(--ease-out),filter var(--d-reveal) ease;}

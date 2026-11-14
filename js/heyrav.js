@@ -4,6 +4,7 @@
 (() => {
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let rate = 1, slow = 0.25; // animation speed - see "speed" below
 
   /* glossary + popover: [aria-controls] toggles its box; outside click / Esc closes */
   document.addEventListener('click', e => {
@@ -123,8 +124,9 @@
     const to = parseFloat(el.dataset.count), dec = (el.dataset.count.split('.')[1] || '').length;
     const pre = el.dataset.pre || '', suf = el.dataset.suf || '';
     if (reduce) { el.textContent = pre + to.toFixed(dec) + suf; return; }
-    const t0 = performance.now(), dur = 1200;
-    const step = now => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 4); el.textContent = pre + (to * e).toFixed(dec) + suf; if (k < 1) requestAnimationFrame(step); };
+    // elapsed time advances at the current speed, so slow-motion slows this too
+    let last = performance.now(), ms = 0; const dur = 1200;
+    const step = now => { ms += (now - last) * rate; last = now; const k = Math.min(1, ms / dur), e = 1 - Math.pow(1 - k, 4); el.textContent = pre + (to * e).toFixed(dec) + suf; if (k < 1) requestAnimationFrame(step); };
     requestAnimationFrame(step);
   }
   const cio = 'IntersectionObserver' in window && new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting) { countUp(en.target); cio.unobserve(en.target); } }), { threshold: .5 });
@@ -137,5 +139,30 @@
     addEventListener('scroll', set, { passive: true }); set();
   }
 
-  window.heyrav = { toast, countUp };
+  /* speed: play every animation on the page at a fraction of its speed, to
+     judge easing, origin and overlap frame by frame. Covers CSS transitions,
+     CSS animations and the Web Animations API through document.getAnimations();
+     rAF-driven motion opts in by reading heyrav.speed() or the heyrav:speed
+     event. Buttons: [data-speed="0.25"]. S toggles between 1x and the last
+     slow speed, but only on pages that carry a speed control. */
+  const retime = () => { if (document.getAnimations) for (const a of document.getAnimations()) if (a.playbackRate !== rate) a.playbackRate = rate; };
+  ['transitionrun', 'animationstart'].forEach(t => document.addEventListener(t, () => rate !== 1 && retime(), true));
+  function speed(r) {
+    if (r === undefined) return rate;
+    rate = Math.max(.05, Math.min(4, +r) || 1);
+    if (rate < 1) slow = rate;
+    document.documentElement.toggleAttribute('data-slowmo', rate !== 1);
+    retime();
+    $$('[data-speed]').forEach(b => b.setAttribute('aria-pressed', +b.dataset.speed === rate));
+    dispatchEvent(new CustomEvent('heyrav:speed', { detail: rate }));
+    return rate;
+  }
+  document.addEventListener('click', e => { const b = e.target.closest('[data-speed]'); if (b) speed(b.dataset.speed); });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 's' && e.key !== 'S' || e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+    if (e.target.closest?.('input,textarea,select,[contenteditable]') || !document.querySelector('[data-speed]')) return;
+    speed(rate === 1 ? slow : 1);
+  });
+
+  window.heyrav = { toast, countUp, speed };
 })();

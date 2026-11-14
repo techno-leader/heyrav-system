@@ -151,6 +151,7 @@ ${CLARITY}
   <nav class="d-nav" aria-label="Sections">${sidebar(p.slug, R)}</nav>
   <div class="d-foot">
     <div class="seg" role="group" aria-label="Theme"><button data-theme-set="system" aria-pressed="false">System</button><button data-theme-set="light" aria-pressed="false">Light</button><button data-theme-set="dark" aria-pressed="false">Dark</button></div>
+    <div class="seg" role="group" aria-label="Animation speed, S toggles slow motion" title="Animation speed - S toggles"><button data-speed="0.1" aria-pressed="false">.1X</button><button data-speed="0.25" aria-pressed="false">.25X</button><button data-speed="0.5" aria-pressed="false">.5X</button><button data-speed="1" aria-pressed="true">1X</button></div>
     <a class="btn btn-ghost btn-sm btn-block" href="https://heyrav.in">Open heyrav.in ${icon('arrow-up-right')}</a>
   </div>
 </aside>
