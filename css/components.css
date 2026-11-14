@@ -504,3 +504,23 @@ code.inline,.prose code{font-family:var(--mono);font-size:.85em;padding:.1em .35
   .skel::after,.vid-start .ring::before,.vid-start .ring::after{animation:none;}
   .spinner,.btn.is-pending::after{animation-duration:2.4s;}
 }
+
+/* ---------- scrollbars [spec] ----------
+   A thin rounded thumb on no track: no gutter, no track border, no arrows.
+   Faint at rest, firmer while the pointer is over the scroller. Colours mix
+   from --ink, so the dark theme follows on its own. Standard properties for
+   Chrome and Firefox; the -webkit- rules only apply where scrollbar-color
+   is unsupported (Safari), since Chrome ignores them once it is set. */
+:root{
+  --scroll-thumb:color-mix(in srgb,var(--ink) 14%,transparent);
+  --scroll-thumb-hover:color-mix(in srgb,var(--ink) 32%,transparent);
+}
+*{scrollbar-width:thin;scrollbar-color:var(--scroll-thumb) transparent;}
+*:hover{scrollbar-color:var(--scroll-thumb-hover) transparent;}
+@supports not (scrollbar-color:auto){
+  ::-webkit-scrollbar{width:10px;height:10px;background:transparent;}
+  ::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent;border:0;box-shadow:none;}
+  ::-webkit-scrollbar-thumb{background-color:var(--scroll-thumb);background-clip:padding-box;border:3px solid transparent;border-radius:99px;}
+  :hover::-webkit-scrollbar-thumb{background-color:var(--scroll-thumb-hover);}
+  ::-webkit-scrollbar-button{display:none;}
+}
