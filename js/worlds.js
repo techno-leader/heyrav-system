@@ -20,7 +20,6 @@
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
   const current = () => root.dataset.world || 'studio';
   const HERE = (document.currentScript && document.currentScript.src) ? new URL('.', document.currentScript.src).href : '/js/';
-  const VER = (document.currentScript && new URL(document.currentScript.src).search) || '';
 
   /* ---------- loading: a world's fonts, icons and module arrive only when visited ---------- */
   const scripts = {};
@@ -39,8 +38,9 @@
     const faces = sheet.then(() => Promise.all((w.families || []).map(f => document.fonts.load(`1em ${f}`).catch(() => {}))));
     return Promise.race([faces, new Promise(r => setTimeout(r, 900))]);
   }
-  const iconSet = w => (w && w.icons) ? script(`${HERE}icons/${w.icons}.js${VER}`).catch(() => {}) : Promise.resolve();
-  const moduleOf = w => (w && w.module) ? script(`${HERE}worlds/${w.id}.js${VER}`).catch(() => {}) : Promise.resolve();
+  /* each module and icon set carries its own content hash, so a change to one is never served stale */
+  const iconSet = w => (w && w.icons) ? script(`${HERE}icons/${w.icons}.js?v=${(w.v && w.v.i) || ''}`).catch(() => {}) : Promise.resolve();
+  const moduleOf = w => (w && w.module) ? script(`${HERE}worlds/${w.id}.js?v=${(w.v && w.v.m) || ''}`).catch(() => {}) : Promise.resolve();
   const warm = w => Promise.all([fonts(w), iconSet(w)]);
 
   /* ---------- icons: same name, the world's drawing ---------- */
