@@ -1,0 +1,11 @@
+{
+  "$description": "Studio - a heyrav world. base: any theme; light/dark: per theme. Keys are token names without the --.",
+  "order": 0,
+  "name": "Studio",
+  "line": "The system as it ships: ink on paper, hairlines, quiet motion.",
+  "chips": [
+    "#ffffff",
+    "#161616",
+    "#bbfff0"
+  ]
+}

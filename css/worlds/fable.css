@@ -1,0 +1,46 @@
+
+/* ---- Fable: what tokens cannot say ----
+   Soft serifs with their wonky axis on, petal shapes that are never quite
+   symmetrical, stitched edges, dotted rules, and a little bounce in everything. */
+[data-world="fable"]{--w-reveal-ease:cubic-bezier(.34,1.3,.64,1);--w-reveal-d:900ms;--stitch:color-mix(in srgb,var(--accent) 26%,transparent);}
+
+/* type: the italic accent becomes a petal gradient */
+[data-world="fable"] :is(.h1,.h2,.h3,.sec-head h2,.d-hero h1,.d-head h1){font-optical-sizing:auto;}
+[data-world="fable"] :is(.h1,.h2,.h3,.sec-head h2,.d-hero h1,.d-head h1) em{font-weight:500;background:var(--accent-fill);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.08em;}
+[data-world="fable"] .pull{font-family:var(--head-font);}
+
+/* petal shapes: each corner a little different */
+[data-world="fable"] :is(.card,.case-nav a,.ia-leaf){border-radius:28px 22px 30px 18px/22px 30px 18px 28px;}
+[data-world="fable"] :is(.fig,.d-ex,.ia-tree,.code){border-radius:34px 28px 36px 26px/28px 36px 26px 34px;}
+/* stitched: a dashed thread just inside the edge */
+[data-world="fable"] :is(.card,.case-nav a,.dlg,.d-note){outline:1.5px dashed var(--stitch);outline-offset:-7px;}
+[data-world="fable"] :is(a.card,.case-nav a){transition:border-color var(--d-move),color var(--d-move),box-shadow var(--d-move) var(--ease-out),translate var(--d-move) var(--ease-out),rotate var(--d-move) var(--ease-out);}
+@media (hover:hover) and (pointer:fine){
+  [data-world="fable"] :is(a.card:hover,.case-nav a:hover){translate:0 -4px;rotate:-.4deg;}
+  [data-world="fable"] .btn-primary:hover{translate:0 -2px;}
+}
+
+/* dotted rules instead of hairlines */
+[data-world="fable"] :is(.sec-label::after,.sec-head::before,.sec-head::after,.divider-label::before,.divider-label::after,.divider,hr.divider){height:4px;background:radial-gradient(circle,var(--line-2) 1.3px,transparent 1.8px) 0 50%/9px 4px repeat-x;}
+
+/* controls with a softer hand */
+[data-world="fable"] .check input{border-radius:7px;border-color:var(--tint);}
+[data-world="fable"] .tgl .sw{height:22px;width:38px;}
+[data-world="fable"] .tgl .sw::after{width:18px;height:18px;box-shadow:0 2px 6px rgba(120,40,110,.25);}
+[data-world="fable"] .tgl input:checked + .sw{background:var(--accent-fill);}
+[data-world="fable"] .bar{height:6px;}
+[data-world="fable"] .bar i{background:var(--accent-fill);}
+[data-world="fable"] .bar::after{width:6px;}
+[data-world="fable"] .progress{height:3px;background:var(--accent-fill);}
+[data-world="fable"] .rng::-webkit-slider-thumb{width:18px;height:18px;margin-top:-8px;border-width:3px;}
+[data-world="fable"] .tabs [role="tab"][aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--accent);}
+[data-world="fable"] .badge{font-family:var(--sans);font-weight:700;letter-spacing:.02em;}
+
+/* the air: motes that drift up and glow, and sparks behind the pointer */
+[data-world="fable"] .w-mote{left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--s) * 7px);height:calc(var(--s) * 7px);border-radius:50%;
+  background:radial-gradient(circle,#fff 0 22%,rgba(255,170,215,.85) 40%,transparent 72%);opacity:0;
+  animation:fb-float var(--t) ease-in-out var(--d) infinite;}
+[data-world="fable"] .w-mote:nth-child(3n){background:radial-gradient(circle,#fff 0 22%,rgba(170,230,205,.85) 40%,transparent 72%);}
+[data-world="fable"] .w-mote:nth-child(3n+1){background:radial-gradient(circle,#fff 0 22%,rgba(200,180,255,.85) 40%,transparent 72%);}
+@keyframes fb-float{0%{opacity:0;transform:translate(0,30px) scale(.6);}25%{opacity:.9;}50%{transform:translate(18px,-20px) scale(1);}75%{opacity:.6;}100%{opacity:0;transform:translate(-10px,-80px) scale(.5);}}
+[data-world="fable"] .w-spark{background:var(--accent-fill);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);}

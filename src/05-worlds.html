@@ -1,0 +1,100 @@
+<page slug="worlds" title="Worlds" nav="Worlds" h1="The mother of all *design systems*" lede="One set of components, many worlds. A world re-tunes type, colour, shape, depth, motion and texture through tokens, so the same markup becomes an 8-bit platformer, a fairy tale, a polar night or something alive - in one click, the way light and dark switch." keywords="themes worlds skins styles pixel fable aurora symbiote mother of all design systems switch">
+
+<div class="d-worldgrid">
+  <button type="button" class="d-wcard" data-world-set="studio" aria-pressed="false"><i style="--a:#ffffff;--b:#161616;--c:#bbfff0"></i><b>Studio</b><span>The system as it ships: ink on paper, hairlines, quiet motion.</span></button>
+  <button type="button" class="d-wcard" data-world-set="pixel" aria-pressed="false"><i style="--a:#9fd8ff;--b:#d93a1e;--c:#ffd23f"></i><b>Pixel</b><span>An 8-bit platformer: square steps, hard shadows, frames instead of tweens.</span></button>
+  <button type="button" class="d-wcard" data-world-set="fable" aria-pressed="false"><i style="--a:#fff7fb;--b:#b23a8f;--c:#9be3c4"></i><b>Fable</b><span>A whimsical fairy world: soft serifs, petal colours, things that bounce.</span></button>
+  <button type="button" class="d-wcard" data-world-set="aurora" aria-pressed="false"><i style="--a:#060a18;--b:#3be8a8;--c:#a77bff"></i><b>Aurora</b><span>A polar sky: glass panels over moving light, slow and luminous.</span></button>
+  <button type="button" class="d-wcard" data-world-set="symbiote" aria-pressed="false"><i style="--a:#060608;--b:#f5f5f7;--c:#5d5d6b"></i><b>Symbiote</b><span>Liquid black: wet gloss, living shapes, motion with a snap to it.</span></button>
+</div>
+<p class="d-note">Each world has a light and a dark side - the theme switch still works inside it. The choice is remembered, set before the first paint, and followed by every open tab.</p>
+
+<h2>The tour</h2>
+<p>The same components, untouched. Switch worlds and watch them change with nothing in their markup.</p>
+<div class="d-bento">
+  <div class="d-tile w4 d-tour-hero">
+    <span class="label">Case study</span>
+    <p class="h2">Designs that <em>convert.</em></p>
+    <div class="btn-group"><a class="btn btn-primary" href="#the-tour">Explore case study <ph arrow-right class="icon icon-trail"/></a><button class="btn btn-ghost" type="button">Resume</button></div>
+  </div>
+  <div class="d-tile w2">
+    <small>Field</small>
+    <div class="field d-w-sm"><label for="w-name">Project name</label><input class="input" id="w-name" placeholder="ViewRyt"><span class="help">Shown on the case card.</span></div>
+  </div>
+  <div class="d-tile w2">
+    <small>Controls</small>
+    <div class="d-w-sm" style="display:grid;gap:4px">
+      <label class="tgl">Reduce motion <input type="checkbox" checked><span class="sw"></span></label>
+      <label class="check"><input type="checkbox" checked> Send me the case</label>
+      <label class="check"><input type="radio" name="w-r" checked> Weekly</label>
+    </div>
+  </div>
+  <div class="d-tile w2">
+    <small>Chips and badges</small>
+    <div class="chips"><button class="chip" aria-pressed="true" type="button">Research</button><button class="chip" aria-pressed="false" type="button">UI</button><button class="chip" aria-pressed="false" type="button">Motion</button></div>
+    <div class="chips"><span class="badge badge-solid">Shipped</span><span class="badge badge-ok"><span class="dot"></span>Live</span><span class="badge badge-warn">Draft</span></div>
+  </div>
+  <div class="d-tile w2">
+    <small>Card</small>
+    <a class="card" href="#the-tour"><i>01 - The problem</i><b>Checkout lost one in three</b><p>Six steps, two of them asking for the same address.</p></a>
+  </div>
+  <div class="d-tile w2">
+    <small>Tabs and progress</small>
+    <div class="tabs d-w-sm" data-tabs><div role="tablist"><button role="tab" aria-selected="true" type="button">Overview</button><button role="tab" aria-selected="false" type="button" tabindex="-1">Specs</button></div></div>
+    <div class="d-w-sm" style="display:grid;gap:10px;margin-top:6px"><div class="row-top"><span>Progress</span><span class="val">64%</span></div><div class="bar" style="--p:.64"><i></i></div><input class="rng" type="range" value="64" aria-label="Amount" style="--f:64%"></div>
+  </div>
+  <div class="d-tile w2">
+    <small>Steps</small>
+    <div class="steps d-w-sm"><div class="step"><div><b>Map the drop-off</b><p>Session replays, one funnel.</p></div></div><div class="step"><div><b>Cut a step</b><p>Address once, card once.</p></div></div></div>
+  </div>
+  <div class="d-tile w6">
+    <small>Metrics and quote</small>
+    <div class="impact d-w-sm" style="grid-template-columns:1fr 1fr;padding-top:20px"><div class="lead"><b>+38%</b><span>conversion</span></div><div><b>-2</b><span>steps</span></div></div>
+    <div class="quote d-w-sm"><p>"It finally reads like one product."</p><i>Head of product</i></div>
+  </div>
+</div>
+
+<h2>What a world changes</h2>
+<div class="d-scroll"><table class="d-tbl">
+  <thead><tr><th>Layer</th><th>Studio</th><th>Pixel</th><th>Fable</th><th>Aurora</th><th>Symbiote</th></tr></thead>
+  <tbody>
+    <tr><td>Palette</td><td>Ink on paper</td><td>Sky, cream, brick, coin gold</td><td>Petal, plum, orchid gradient</td><td>Night, sea-green to violet</td><td>Black and bone, glossy white</td></tr>
+    <tr><td>Type</td><td>Onest, mono labels</td><td>Pixelify Sans, Silkscreen caps</td><td>Fraunces soft, Nunito, handwritten labels</td><td>Unbounded, Manrope, Space Mono</td><td>Bricolage condensed caps, Archivo, Martian Mono</td></tr>
+    <tr><td>Shape</td><td>Pills and soft corners</td><td>Stepped corners, square controls</td><td>Petals, every corner different</td><td>Soft and wide</td><td>Organic, shifts under the pointer</td></tr>
+    <tr><td>Depth</td><td>Flat, hairlines</td><td>2px outlines, hard offset shadows, buttons that sink</td><td>Pastel glows, stitched edges</td><td>Frosted glass, glow</td><td>Wet gloss, specular edges</td></tr>
+    <tr><td>Motion</td><td>Quick ease-out</td><td>Frames, not tweens</td><td>Springy overshoot</td><td>Slow and smooth</td><td>Elastic, with a snap</td></tr>
+    <tr><td>Air</td><td>-</td><td>Pixel clouds, stars at night</td><td>Floating motes, a sparkle trail</td><td>Moving aurora, stars</td><td>A sheen that follows the pointer</td></tr>
+    <tr><td>Switch</td><td colspan="5">The new world spreads from the clicked swatch, in that world's own motion.</td></tr>
+  </tbody>
+</table></div>
+
+<h2>How it works</h2>
+<p>Four layers, each optional past the first. A page that never sets a world is Studio, byte for byte.</p>
+<div class="steps">
+  <div class="step"><div><b>The contract</b><p>Components read a small set of personality tokens - heading face, label case, line weight, lift, press depth, action colour, texture, cursor. Their defaults are Studio, so the contract changes nothing until a world fills it in.</p></div></div>
+  <div class="step"><div><b>The world file</b><p><code>tokens/worlds/&lt;id&gt;.json</code> overrides any token in three parts: <code>base</code> for both themes, then <code>light</code> and <code>dark</code>. The build refuses unknown tokens, light values without a dark partner, and reports text below 4.5:1.</p></div></div>
+  <div class="step"><div><b>Flourishes</b><p><code>css/worlds/&lt;id&gt;.css</code> holds what tokens cannot say - stepped corners, outlined accents, dotted rules, the ambient sky - scoped to <code>[data-world]</code>.</p></div></div>
+  <div class="step"><div><b>The switch</b><p><code>js/worlds.js</code> sets the attribute, loads only the fonts of a world being visited, reveals it from the click, and runs its ambient layer. Reduced motion gets an instant switch and a still sky.</p></div></div>
+</div>
+<div class="code"><div class="code-head"><span>page.html</span></div><pre>&lt;!-- a page in a world: one attribute, one stylesheet, one script --&gt;
+&lt;html data-world="aurora"&gt;
+&lt;link rel="stylesheet" href="https://system.heyrav.in/heyrav.css"&gt;
+&lt;link rel="stylesheet" href="https://system.heyrav.in/worlds.css"&gt;
+&lt;script src="https://system.heyrav.in/js/worlds-data.js" defer&gt;&lt;/script&gt;
+&lt;script src="https://system.heyrav.in/js/worlds.js" defer&gt;&lt;/script&gt;
+
+&lt;!-- any button becomes a world switch --&gt;
+&lt;button data-world-set="pixel"&gt;Pixel&lt;/button&gt;</pre></div>
+
+<h2>The world contract</h2>
+<p>The personality tokens. Everything else a world sets - colours, fonts, radii, motion - is an ordinary token from the foundations.</p>
+<tokentable group="world"/>
+
+<h2>Make a world</h2>
+<div class="steps">
+  <div class="step"><div><b>Start from a feeling, not a palette</b><p>Name what the world is - a platformer, a fairy tale - and decide its type, shape, depth and motion before its colours.</p></div></div>
+  <div class="step"><div><b>Write the file</b><p>Copy a world JSON, give it an <code>order</code>, a <code>name</code>, a one-line <code>line</code>, three <code>chips</code> for the picker and its Google Fonts query. Fill <code>base</code>, then <code>light</code> and <code>dark</code>.</p></div></div>
+  <div class="step"><div><b>Add flourishes last</b><p>Only for what no token covers. Scope every rule to the world.</p></div></div>
+  <div class="step"><div><b>Build and walk it</b><p><code>node build.mjs</code>, fix every contrast line it prints, then walk every page in both themes.</p></div></div>
+</div>
+</page>

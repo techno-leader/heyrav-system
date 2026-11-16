@@ -1,0 +1,36 @@
+
+/* ---- Symbiote: what tokens cannot say ----
+   Condensed heavy caps, outlined accents, surfaces that look wet and shapes
+   that shift under the pointer as if something lives inside them. */
+[data-world="symbiote"]{--w-reveal-ease:cubic-bezier(.7,-0.3,.2,1.3);--w-reveal-d:760ms;}
+
+/* type: tall and tight; the accent word is only an outline */
+[data-world="symbiote"] :is(.h1,.h2,.h3,.h4,.sec-head h2,.d-hero h1,.d-head h1,.d-doc > h2,.d-doc section > h2,.card b,.step b,.case-nav b,.impact b,.dlg h2){font-stretch:75%;}
+[data-world="symbiote"] :is(.h1,.h2,.h3,.sec-head h2,.d-hero h1,.d-head h1) em{font-style:normal;font-weight:800;text-transform:var(--head-case);color:transparent;-webkit-text-stroke:1.5px var(--ink);}
+[data-world="symbiote"] .pull{font-family:var(--head-font);font-style:normal;font-weight:700;font-stretch:75%;text-transform:uppercase;}
+
+/* living shapes: they shift as the pointer arrives */
+[data-world="symbiote"] :is(.card,.case-nav a,.ia-leaf){border-radius:30px 16px 34px 20px/18px 34px 16px 30px;transition:border-radius var(--d-slow) var(--ease-out),border-color var(--d-move),box-shadow var(--d-move);}
+@media (hover:hover) and (pointer:fine){
+  [data-world="symbiote"] :is(a.card,.case-nav a,.card):hover{border-radius:16px 34px 20px 32px/34px 18px 32px 16px;}
+  [data-world="symbiote"] :is(.btn,.case-link):hover{scale:1.04 .97;}
+  [data-world="symbiote"] .chip:hover{scale:1.05 .96;}
+}
+[data-world="symbiote"] :is(.btn,.case-link,.chip){transition:background var(--d-base) ease,color var(--d-base) ease,scale var(--d-move) var(--ease-snap),box-shadow var(--d-press) var(--ease-out),translate var(--d-press) var(--ease-out);}
+
+/* wet surfaces: a highlight along the top edge of anything raised */
+[data-world="symbiote"] :is(.dlg,.menu,.pop,.define-box,.d-panel){box-shadow:var(--lift),var(--shadow-pop);}
+[data-world="symbiote"] .toast,[data-world="symbiote"] .tip [role="tooltip"]{background:var(--accent-fill);color:var(--on-accent);}
+[data-world="symbiote"] .bar{height:3px;}
+[data-world="symbiote"] .bar i,[data-world="symbiote"] .progress{background:linear-gradient(90deg,transparent,var(--ink));}
+[data-world="symbiote"] .tgl .sw::after{background:var(--accent-fill);}
+[data-world="symbiote"] .tgl input:checked + .sw::after{background:var(--on-accent);}
+[data-world="symbiote"] .tgl input:checked + .sw{background:var(--accent-fill);}
+[data-world="symbiote"] .link{border-bottom-width:2px;}
+
+/* the sheen: a wet highlight that follows the pointer */
+[data-world="symbiote"] .w-sheen{inset:0;background:radial-gradient(640px circle at var(--mx,62%) var(--my,18%),rgba(255,255,255,.075),transparent 62%);transition:background .2s linear;}
+[data-world="symbiote"]:not([data-theme="dark"]) .w-sheen{background:radial-gradient(640px circle at var(--mx,62%) var(--my,18%),rgba(255,255,255,.55),transparent 62%);}
+[data-world="symbiote"] body.d{background-color:transparent;}
+[data-world="symbiote"] .w-sky{background-color:var(--surface);background-image:var(--tex);}
+html[data-world="symbiote"]{background-color:var(--surface);background-image:var(--tex);}

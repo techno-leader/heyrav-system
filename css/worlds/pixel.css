@@ -1,0 +1,64 @@
+
+/* ---- Pixel: what tokens cannot say ----
+   Corners step instead of curve where the browser can cut them (corner-shape),
+   and stay square where it cannot. Everything moves in frames. */
+[data-world="pixel"]{--w-reveal-ease:steps(9,end);--w-reveal-d:540ms;--cl:#ffffff;--cs:#d7ecff;}
+[data-world="pixel"][data-theme="dark"]{--cl:#2a3270;--cs:#20285c;}
+@supports (corner-shape:notch){
+  [data-world="pixel"]{--r-xs:3px;--r-sm:6px;--r-md:9px;--r-lg:9px;--r-device:12px;--r-pill:6px;}
+  [data-world="pixel"] :is(.btn,.case-link,.chip,.card,.input,.txt,.sel,.dlg,.drawer,.menu,.pop,.define-box,.badge,.tag,.seg,.seg button,.code,.fig,.fx-wrap,.phone,.phone .screen,.vid,.toast,.case-nav a,.ia-tree,.ia-leaf,.kbd,kbd,.skel,.skel-block,.tip [role="tooltip"],.d-panel,.d-ex,.d-search,.d-nav a,.d-note,.d-tile,.d-hero,.d-k,.d-world,.d-worlds,.d-wcard,.vid-bar,.vid-btn,.drop,.otp .input,.tabs [role="tab"],.menu [role="menuitem"],code.inline,.prose code,.d-doc code){corner-shape:notch;}
+}
+/* round things become pixel blocks */
+[data-world="pixel"] :is(.avatar,.tgl .sw,.check input[type="radio"],.skel-circle,.badge .dot,.pin,.keys .k,.loop-node .ring,.vid-start .ring,.d-world i,.d-wcard i){border-radius:0;}
+[data-world="pixel"] .check input{border-radius:0;border-width:2px;}
+[data-world="pixel"] .d-world i{background:conic-gradient(from 0deg,var(--a) 0 25%,var(--b) 0 50%,var(--c) 0 75%,var(--a) 0);}
+
+/* type: titles get a coin-gold drop, accents turn red instead of italic */
+[data-world="pixel"] :is(.h1,.h2,.d-hero h1,.d-head h1){text-shadow:3px 3px 0 var(--sel);}
+[data-world="pixel"][data-theme="dark"] :is(.h1,.h2,.d-hero h1,.d-head h1){text-shadow:3px 3px 0 #05071a;}
+[data-world="pixel"] :is(.h1,.h2,.h3,.sec-head h2,.d-hero h1,.d-head h1) em{font-style:normal;color:var(--accent);}
+[data-world="pixel"] :is(.code pre,.d-code pre){font-size:18px;line-height:1.3;}
+[data-world="pixel"] :is(code.inline,.prose code,.d-doc code,kbd,.kbd){font-size:1.15em;}
+[data-world="pixel"] .pull,[data-world="pixel"] .quote p{font-style:normal;}
+
+/* outlines: every block has its dark edge */
+[data-world="pixel"] :is(.btn:not(.btn-quiet),.case-link,.contact-actions a){border-color:var(--line-2);}
+[data-world="pixel"] :is(.card,.case-nav a,.dlg,.drawer,.menu,.pop,.define-box,.toast,.d-panel,.d-ex,.d-wcard,.ia-tree,.ia-leaf,.code,.fig,.vid,.d-k){border-color:var(--line-2);}
+[data-world="pixel"] .case-nav a{background:var(--panel);}
+[data-world="pixel"] a.card:hover,[data-world="pixel"] .case-nav a:hover{translate:-2px -2px;}
+[data-world="pixel"] :focus-visible{outline:3px dashed var(--focus);outline-offset:3px;}
+[data-world="pixel"] .toast,[data-world="pixel"] .tip [role="tooltip"]{box-shadow:4px 4px 0 var(--line-2);}
+
+/* controls in blocks */
+[data-world="pixel"] .tgl .sw{height:22px;border:2px solid var(--line-2);background:var(--panel);}
+[data-world="pixel"] .tgl .sw::after{border-radius:0;top:2px;left:2px;width:14px;height:14px;background:var(--line-2);box-shadow:none;}
+[data-world="pixel"] .tgl input:checked + .sw{background:var(--accent);}
+[data-world="pixel"] .tgl input:checked + .sw::after{background:var(--panel);}
+[data-world="pixel"] .rng::-webkit-slider-runnable-track{height:6px;border-radius:0;}
+[data-world="pixel"] .rng::-webkit-slider-thumb{width:16px;height:16px;margin-top:-5px;border-radius:0;border:3px solid var(--line-2);background:var(--panel);}
+[data-world="pixel"] .rng::-moz-range-thumb{border-radius:0;}
+[data-world="pixel"] .seg{box-shadow:inset 0 0 0 2px var(--line-2);}
+[data-world="pixel"] .seg button[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--line-2);background:var(--panel);}
+
+/* progress in segments, like a health bar */
+[data-world="pixel"] .bar{height:12px;border:2px solid var(--line-2);background:var(--panel);border-radius:0;}
+[data-world="pixel"] .bar i{width:100%;background:repeating-linear-gradient(90deg,var(--accent) 0 8px,transparent 8px 10px);transition-timing-function:steps(6,end);}
+[data-world="pixel"] .bar::after{display:none;}
+[data-world="pixel"] .progress{height:4px;background:repeating-linear-gradient(90deg,var(--accent) 0 8px,transparent 8px 10px);}
+[data-world="pixel"] :is(.spinner,.btn.is-pending::after){animation-timing-function:steps(8,end);border-radius:0;}
+[data-world="pixel"] .skel::after{animation-timing-function:steps(6,end);}
+[data-world="pixel"] .sec-label::after{height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 10px);}
+[data-world="pixel"] .divider,[data-world="pixel"] hr.divider{height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 10px);}
+[data-world="pixel"] .d-world[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--line-2);}
+[data-world="pixel"] img:not(.d-invert):not([src$=".svg"]){image-rendering:pixelated;}
+
+/* the sky: clouds by day, stars by night */
+[data-world="pixel"] .w-cloud{left:0;top:calc(4vh + var(--y) * .5vh);width:8px;height:8px;box-shadow:32px 0px 0 var(--cl),40px 0px 0 var(--cl),48px 0px 0 var(--cl),56px 0px 0 var(--cl),16px 8px 0 var(--cl),24px 8px 0 var(--cl),32px 8px 0 var(--cl),40px 8px 0 var(--cl),48px 8px 0 var(--cl),56px 8px 0 var(--cl),64px 8px 0 var(--cl),72px 8px 0 var(--cl),80px 8px 0 var(--cl),0px 16px 0 var(--cl),8px 16px 0 var(--cl),16px 16px 0 var(--cl),24px 16px 0 var(--cl),32px 16px 0 var(--cl),40px 16px 0 var(--cl),48px 16px 0 var(--cl),56px 16px 0 var(--cl),64px 16px 0 var(--cl),72px 16px 0 var(--cl),80px 16px 0 var(--cl),88px 16px 0 var(--cl),0px 24px 0 var(--cl),8px 24px 0 var(--cl),16px 24px 0 var(--cl),24px 24px 0 var(--cl),32px 24px 0 var(--cl),40px 24px 0 var(--cl),48px 24px 0 var(--cl),56px 24px 0 var(--cl),64px 24px 0 var(--cl),72px 24px 0 var(--cl),80px 24px 0 var(--cl),88px 24px 0 var(--cl),8px 32px 0 var(--cs),16px 32px 0 var(--cs),24px 32px 0 var(--cs),32px 32px 0 var(--cs),40px 32px 0 var(--cs),48px 32px 0 var(--cs),56px 32px 0 var(--cs),64px 32px 0 var(--cs),72px 32px 0 var(--cs),80px 32px 0 var(--cs);opacity:.9;
+  animation:px-drift calc(var(--t) * 4) steps(320,end) infinite;animation-delay:calc(var(--d) * 4);}
+@keyframes px-drift{from{transform:translateX(-120px);}to{transform:translateX(calc(100vw + 40px));}}
+[data-world="pixel"] .w-stars{inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='200' shape-rendering='crispEdges' fill='%23fff'%3E%3Crect x='22' y='31' width='3' height='3'/%3E%3Crect x='131' y='12' width='3' height='3'/%3E%3Crect x='201' y='77' width='3' height='3'/%3E%3Crect x='64' y='120' width='3' height='3'/%3E%3Crect x='170' y='160' width='3' height='3'/%3E%3Crect x='101' y='71' width='2' height='2'/%3E%3Crect x='12' y='176' width='2' height='2'/%3E%3Crect x='226' y='140' width='2' height='2'/%3E%3C/svg%3E") 0 0/240px 200px;opacity:0;}
+[data-world="pixel"] .w-stars-2{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='260' shape-rendering='crispEdges' fill='%23ffd23f'%3E%3Crect x='80' y='40' width='3' height='3'/%3E%3Crect x='240' y='120' width='3' height='3'/%3E%3Crect x='30' y='210' width='3' height='3'/%3E%3Crect x='170' y='230' width='2' height='2'/%3E%3C/svg%3E") 0 0/300px 260px;}
+[data-world="pixel"][data-theme="dark"] .w-stars{opacity:.75;animation:px-twinkle 2.4s steps(2,end) infinite;}
+[data-world="pixel"][data-theme="dark"] .w-stars-2{animation-duration:3.2s;animation-delay:-1s;}
+[data-world="pixel"][data-theme="dark"] .w-cloud{opacity:.55;}
+@keyframes px-twinkle{50%{opacity:.35;}}

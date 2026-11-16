@@ -33,7 +33,10 @@
   });
 
   /* keep the current page visible in the sidebar */
-  document.querySelector('.d-nav a[aria-current="page"]')?.scrollIntoView({ block: 'center' });
+  /* centre the current page in the sidebar - the sidebar only: scrollIntoView
+     would also scroll the page, landing pages low in the list below their title */
+  { const nav = document.querySelector('.d-nav'), cur = nav?.querySelector('a[aria-current="page"]');
+    if (cur) nav.scrollTop = cur.offsetTop - nav.offsetTop - nav.clientHeight / 2 + cur.offsetHeight / 2; }
 
   /* TOC scrollspy */
   const links = [...document.querySelectorAll('.d-toc a')];

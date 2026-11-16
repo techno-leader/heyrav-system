@@ -1,0 +1,13 @@
+
+/* ---- the switch: the new world spreads from where it was asked for ---- */
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal;}
+html.w-switching::view-transition-new(root){animation:w-reveal var(--w-reveal-d,720ms) var(--w-reveal-ease,cubic-bezier(.65,0,.15,1)) both;}
+/* the reveal is the only motion: components arrive settled, not mid-transition */
+html.w-switching *,html.w-switching *::before,html.w-switching *::after{transition:none!important;}
+@keyframes w-reveal{from{clip-path:circle(0 at var(--wx,50%) var(--wy,50%));}to{clip-path:circle(var(--wr,150vmax) at var(--wx,50%) var(--wy,50%));}}
+
+/* ---- the ambient layer: behind everything, never in the way ---- */
+.w-sky{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;contain:strict;}
+.w-sky i{position:absolute;display:block;}
+.w-spark{position:fixed;z-index:var(--z-toast);pointer-events:none;width:12px;height:12px;}
+@media (prefers-reduced-motion:reduce){.w-sky,.w-sky *{animation:none!important;}}
