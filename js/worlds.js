@@ -1,12 +1,16 @@
-/* worlds.js - one system, many worlds. A world is a set of token values and
-   a few flourishes, scoped to [data-world] on <html>; no attribute is Studio.
-   This file switches between them in one click: it loads the world's fonts,
-   reveals the new world from the point that was clicked, and runs the small
-   ambient layer a world may have (clouds, motes, aurora, a wet sheen).
-   Registry: js/worlds-data.js (generated). No dependencies.
+/* worlds.js - one system, many worlds. A world is token values and a few
+   flourishes scoped to [data-world] on <html> (no attribute is Studio), plus
+   an optional module - js/worlds/<id>.js - that brings the world's scene,
+   its hidden interactions and the way its components behave. This file
+   switches worlds in one click: fonts, icon set, voice, the reveal, and the
+   module's life cycle. Registry: js/worlds-data.js (generated).
 
    Markup:  <button data-world-set="pixel">Pixel</button>
-   Script:  heyravWorlds.set('aurora')  ·  heyravWorlds.current()  ·  'worldchange' event */
+            <svg class="icon" data-i="check">   - swapped for the world's icon set
+            <span data-say="toc">On this page</span> - reworded in the world's voice
+   Script:  heyravWorlds.set(id) · .current() · .say(key, fallback) · .celebrate(el)
+            heyravWorlds.define(id, ctx => ({ unmount, celebrate }))   (modules)
+            'worldchange' event on window */
 (() => {
   const root = document.documentElement;
   const LIST = window.HR_WORLDS || [];
@@ -15,8 +19,15 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
   const current = () => root.dataset.world || 'studio';
+  const HERE = (document.currentScript && document.currentScript.src) ? new URL('.', document.currentScript.src).href : '/js/';
+  const VER = (document.currentScript && new URL(document.currentScript.src).search) || '';
 
-  /* ---------- fonts: only a world you visit is ever downloaded ---------- */
+  /* ---------- loading: a world's fonts, icons and module arrive only when visited ---------- */
+  const scripts = {};
+  const script = src => scripts[src] || (scripts[src] = new Promise((res, rej) => {
+    const s = Object.assign(document.createElement('script'), { src, async: true, onload: res, onerror: rej });
+    document.head.append(s);
+  }));
   function fonts(w) {
     if (!w || !w.fonts) return Promise.resolve();
     let link = document.querySelector(`link[data-world-fonts="${w.id}"]`);
@@ -25,69 +36,106 @@
       link.dataset.worldFonts = w.id; link.onload = link.onerror = res;
       document.head.append(link);
     });
-    /* the stylesheet only declares the faces; asking for each one starts the download */
     const faces = sheet.then(() => Promise.all((w.families || []).map(f => document.fonts.load(`1em ${f}`).catch(() => {}))));
     return Promise.race([faces, new Promise(r => setTimeout(r, 900))]);
   }
+  const iconSet = w => (w && w.icons) ? script(`${HERE}icons/${w.icons}.js${VER}`).catch(() => {}) : Promise.resolve();
+  const moduleOf = w => (w && w.module) ? script(`${HERE}worlds/${w.id}.js${VER}`).catch(() => {}) : Promise.resolve();
+  const warm = w => Promise.all([fonts(w), iconSet(w)]);
 
-  /* ---------- ambient layers ---------- */
-  let sky = null, offFx = null;
-  const motes = (n, cls) => Array.from({ length: n }, (_, i) => `<i class="${cls}" style="--i:${i};--x:${(i * 37 + 11) % 100};--y:${(i * 53 + 7) % 100};--s:${.6 + ((i * 29) % 10) / 10};--t:${14 + (i * 7) % 16}s;--d:${-((i * 3.7) % 20)}s"></i>`).join('');
-  const SKY = {
-    clouds: () => motes(6, 'w-cloud') + '<i class="w-stars"></i><i class="w-stars w-stars-2"></i>',
-    motes: () => motes(18, 'w-mote'),
-    aurora: () => '<i class="w-stars"></i><i class="w-band w-band-1"></i><i class="w-band w-band-2"></i><i class="w-band w-band-3"></i>',
-    sheen: () => '<i class="w-sheen"></i>',
-  };
-  /* pointer-driven extras: the fairy trail and the wet sheen */
-  const POINTER = {
-    motes() {
-      if (!fine.matches) return null;
-      let last = 0, live = 0;
-      const on = e => {
-        const now = performance.now(); if (now - last < 45 || live > 14 || reduce.matches) return; last = now;
-        const s = document.createElement('i'); s.className = 'w-spark'; s.setAttribute('aria-hidden', 'true');
-        s.style.left = e.clientX + 'px'; s.style.top = e.clientY + 'px';
-        document.body.append(s); live++;
-        const dx = (Math.random() - .5) * 28, dy = 18 + Math.random() * 22, r = (Math.random() - .5) * 120;
-        s.animate([{ opacity: 1, transform: 'translate(-50%,-50%) scale(1) rotate(0)' }, { opacity: 0, transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.2) rotate(${r}deg)` }],
-          { duration: 700 + Math.random() * 300, easing: 'cubic-bezier(.2,.7,.3,1)' }).onfinish = () => { s.remove(); live--; };
-      };
-      addEventListener('pointermove', on, { passive: true });
-      return () => removeEventListener('pointermove', on);
-    },
-    sheen() {
-      if (!fine.matches) return null;
-      let raf = 0, x = 50, y = 30;
-      const on = e => { x = e.clientX / innerWidth * 100; y = e.clientY / innerHeight * 100; if (!raf) raf = requestAnimationFrame(() => { raf = 0; root.style.setProperty('--mx', x.toFixed(1) + '%'); root.style.setProperty('--my', y.toFixed(1) + '%'); }); };
-      addEventListener('pointermove', on, { passive: true });
-      return () => { removeEventListener('pointermove', on); root.style.removeProperty('--mx'); root.style.removeProperty('--my'); };
-    },
-  };
-  function mountFx(w) {
-    offFx && offFx(); offFx = null;
-    if (sky) { sky.remove(); sky = null; }
-    if (!w || !w.fx || !SKY[w.fx]) return;
-    sky = Object.assign(document.createElement('div'), { className: 'w-sky', innerHTML: SKY[w.fx]() });
-    sky.setAttribute('aria-hidden', 'true');
-    document.body.prepend(sky);
-    if (POINTER[w.fx]) offFx = POINTER[w.fx]();
+  /* ---------- icons: same name, the world's drawing ---------- */
+  const ORIGINAL = new WeakMap();
+  function swapIcon(svg, set) {
+    const n = svg.dataset.i, S = set && window.HR_ICONS && window.HR_ICONS[set];
+    if (!ORIGINAL.has(svg)) ORIGINAL.set(svg, [svg.getAttribute('viewBox'), svg.innerHTML]);
+    if (S && S.i[n]) { if (svg.dataset.iset !== set) { svg.setAttribute('viewBox', S.vb); svg.innerHTML = S.i[n]; svg.dataset.iset = set; } }
+    else if (svg.dataset.iset) { const [vb, html] = ORIGINAL.get(svg); svg.setAttribute('viewBox', vb); svg.innerHTML = html; delete svg.dataset.iset; }
   }
+  const swapIcons = (scope, w) => scope.querySelectorAll('svg[data-i]').forEach(s => swapIcon(s, w && w.icons));
+  /* icons added later (toasts, menus) take the world's set too */
+  new MutationObserver(list => {
+    const w = BY[current()]; if (!w || !w.icons) return;
+    for (const m of list) for (const n of m.addedNodes) if (n.nodeType === 1) { if (n.matches('svg[data-i]')) swapIcon(n, w.icons); else swapIcons(n, w); }
+  }).observe(document.documentElement, { childList: true, subtree: true });
+
+  /* ---------- voice: a few words reworded per world; Studio's are kept to restore ---------- */
+  function voice(w) {
+    document.querySelectorAll('[data-say]').forEach(el => {
+      if (!('say0' in el.dataset)) el.dataset.say0 = el.innerHTML;
+      const v = w && w.voice && w.voice[el.dataset.say];
+      el.innerHTML = v != null ? v : el.dataset.say0;
+    });
+    document.querySelectorAll('[data-say-ph]').forEach(el => {
+      if (!('sayPh0' in el.dataset)) el.dataset.sayPh0 = el.placeholder;
+      const v = w && w.voice && w.voice[el.dataset.sayPh];
+      el.placeholder = v != null ? v : el.dataset.sayPh0;
+    });
+  }
+  const say = (key, fallback) => { const w = BY[current()]; return (w && w.voice && w.voice[key] != null) ? w.voice[key] : fallback; };
+
+  /* ---------- modules ---------- */
+  const DEFS = {};
+  let live = null, liveId = null;
+  function context(id) {
+    const offs = [];
+    const ctx = {
+      id, root, here: HERE,
+      reduce: () => reduce.matches, fine: () => fine.matches,
+      dark: () => root.dataset.theme === 'dark',
+      say, icon: (n, cls = 'icon') => { const S = window.HR_ICONS && window.HR_ICONS[BY[id] && BY[id].icons]; return S && S.i[n] ? `<svg class="${cls}" viewBox="${S.vb}" aria-hidden="true">${S.i[n]}</svg>` : ''; },
+      /* a fixed layer, removed with the world; behind content unless asked */
+      layer(cls, front) {
+        const el = document.createElement('div'); el.className = 'w-layer ' + cls; el.setAttribute('aria-hidden', 'true');
+        if (front) el.dataset.front = ''; document.body[front ? 'append' : 'prepend'](el);
+        offs.push(() => el.remove()); return el;
+      },
+      on(target, type, fn, opts) { target.addEventListener(type, fn, opts); offs.push(() => target.removeEventListener(type, fn, opts)); },
+      /* an animation loop that sleeps while the tab is hidden or motion is reduced */
+      loop(fn) {
+        let raf = 0, t0 = performance.now(), on = true;
+        const tick = t => { raf = 0; if (!on) return; fn((t - t0) / 1000, t); if (!document.hidden && !reduce.matches) raf = requestAnimationFrame(tick); };
+        const wake = () => { if (on && !raf && !document.hidden && !reduce.matches) raf = requestAnimationFrame(tick); };
+        document.addEventListener('visibilitychange', wake); reduce.addEventListener('change', wake);
+        wake(); if (reduce.matches) fn(0, t0);
+        offs.push(() => { on = false; cancelAnimationFrame(raf); document.removeEventListener('visibilitychange', wake); reduce.removeEventListener('change', wake); });
+      },
+      onTheme(fn) { const mo = new MutationObserver(() => fn(ctx.dark())); mo.observe(root, { attributes: true, attributeFilter: ['data-theme'] }); offs.push(() => mo.disconnect()); },
+      later(fn, ms) { const t = setTimeout(fn, ms); offs.push(() => clearTimeout(t)); return t; },
+      cleanup(fn) { offs.push(fn); },
+      /* a polite announcement for screen readers, for anything a scene says */
+      announce(text) { let r = document.getElementById('w-live'); if (!r) { r = Object.assign(document.createElement('div'), { id: 'w-live', className: 'sr-only' }); r.setAttribute('aria-live', 'polite'); document.body.append(r); } r.textContent = ''; setTimeout(() => { r.textContent = text; }, 30); },
+    };
+    ctx._off = () => { while (offs.length) try { offs.pop()(); } catch {} };
+    return ctx;
+  }
+  function unmount() { if (live) { try { live.api && live.api.unmount && live.api.unmount(); } catch {} live.ctx._off(); } live = null; liveId = null; }
+  function mount(id) {
+    if (liveId === id) return;
+    unmount();
+    if (!DEFS[id]) return;
+    const ctx = context(id);
+    liveId = id; live = { ctx, api: null };
+    try { live.api = DEFS[id](ctx) || {}; } catch (e) { console.error(e); }
+  }
+  function define(id, factory) { DEFS[id] = factory; if (current() === id) mount(id); }
 
   /* ---------- switching ---------- */
   function apply(id) {
     if (id === 'studio') delete root.dataset.world; else root.dataset.world = id;
     store.set('hr-world', id);
     document.querySelectorAll('[data-world-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.worldSet === id)));
-    mountFx(BY[id]);
+    swapIcons(document, BY[id]);
+    voice(BY[id]);
+    mount(id);
     dispatchEvent(new CustomEvent('worldchange', { detail: { world: id } }));
   }
   async function set(id, from) {
     if (!BY[id] || id === current()) return;
-    await fonts(BY[id]);
+    await Promise.all([warm(BY[id]), moduleOf(BY[id])]);
+    const done = () => root.classList.remove('w-switching');
     if (!document.startViewTransition || reduce.matches) {
       root.classList.add('w-switching'); apply(id);
-      requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove('w-switching')));
+      requestAnimationFrame(() => requestAnimationFrame(done));
       return;
     }
     /* the new world spreads from where it was asked for */
@@ -97,20 +145,30 @@
     root.style.setProperty('--wr', Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)) + 'px');
     root.classList.add('w-switching');
     const t = document.startViewTransition(() => apply(id));
-    const done = () => root.classList.remove('w-switching');
     t.finished.finally(done); setTimeout(done, 2500);
   }
+  /* a success worth celebrating: each world answers in its own way */
+  const celebrate = (el, kind) => { try { live && live.api && live.api.celebrate && live.api.celebrate(el, kind); } catch {} };
 
   document.addEventListener('click', e => { const b = e.target.closest('[data-world-set]'); if (b) set(b.dataset.worldSet, b); });
-  /* warm the fonts on intent, so the switch itself rarely waits */
-  document.addEventListener('pointerover', e => { const b = e.target.closest('[data-world-set]'); if (b) fonts(BY[b.dataset.worldSet]); }, { passive: true });
-  /* another tab changed world: follow it */
-  addEventListener('storage', e => { if (e.key === 'hr-world' && e.newValue && BY[e.newValue] && e.newValue !== current()) fonts(BY[e.newValue]).then(() => apply(e.newValue)); });
-  reduce.addEventListener('change', () => mountFx(BY[current()]));
+  /* small choices - a tick, a switch, a tab, a chip - are answered in the world's own way */
+  const nudge = (el, kind) => { if (reduce.matches) return; try { live && live.api && live.api.nudge && live.api.nudge(el, kind); } catch {} };
+  document.addEventListener('change', e => { const i = e.target; if (i.matches && i.matches('.check input:checked,.tgl input:checked')) nudge(i.closest('.check,.tgl') || i, 'on'); });
+  document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('.chip,[role="tab"],.seg button'); if (t) nudge(t, 'pick'); });
+  document.addEventListener('pointerover', e => { const b = e.target.closest('[data-world-set]'); if (b) { const w = BY[b.dataset.worldSet]; warm(w); moduleOf(w); } }, { passive: true });
+  addEventListener('storage', e => { if (e.key === 'hr-world' && e.newValue && BY[e.newValue] && e.newValue !== current()) Promise.all([warm(BY[e.newValue]), moduleOf(BY[e.newValue])]).then(() => apply(e.newValue)); });
+
+  window.heyravWorlds = { set, current, say, celebrate, define, list: () => LIST.map(w => w.id), get: id => BY[id || current()] };
 
   const start = BY[current()] ? current() : 'studio';
   if (start !== current()) delete root.dataset.world;
   document.querySelectorAll('[data-world-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.worldSet === start)));
-  mountFx(BY[start]);
-  window.heyravWorlds = { set, current, list: () => LIST.map(w => w.id) };
+  if (start !== 'studio') {
+    const w = BY[start];
+    iconSet(w).then(() => swapIcons(document, w));
+    voice(w);
+    moduleOf(w);
+    /* components that set up before this file ran hear the world once */
+    dispatchEvent(new CustomEvent('worldchange', { detail: { world: start, boot: true } }));
+  }
 })();

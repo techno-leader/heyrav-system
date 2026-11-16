@@ -2,10 +2,10 @@
 
 <div class="d-worldgrid">
   <button type="button" class="d-wcard" data-world-set="studio" aria-pressed="false"><i style="--a:#ffffff;--b:#161616;--c:#bbfff0"></i><b>Studio</b><span>The system as it ships: ink on paper, hairlines, quiet motion.</span></button>
-  <button type="button" class="d-wcard" data-world-set="pixel" aria-pressed="false"><i style="--a:#9fd8ff;--b:#d93a1e;--c:#ffd23f"></i><b>Pixel</b><span>An 8-bit platformer: square steps, hard shadows, frames instead of tweens.</span></button>
-  <button type="button" class="d-wcard" data-world-set="fable" aria-pressed="false"><i style="--a:#fff7fb;--b:#b23a8f;--c:#9be3c4"></i><b>Fable</b><span>A whimsical fairy world: soft serifs, petal colours, things that bounce.</span></button>
-  <button type="button" class="d-wcard" data-world-set="aurora" aria-pressed="false"><i style="--a:#060a18;--b:#3be8a8;--c:#a77bff"></i><b>Aurora</b><span>A polar sky: glass panels over moving light, slow and luminous.</span></button>
-  <button type="button" class="d-wcard" data-world-set="symbiote" aria-pressed="false"><i style="--a:#060608;--b:#f5f5f7;--c:#5d5d6b"></i><b>Symbiote</b><span>Liquid black: wet gloss, living shapes, motion with a snap to it.</span></button>
+  <button type="button" class="d-wcard" data-world-set="pixel" aria-pressed="false"><i style="--a:#9fd8ff;--b:#d93a1e;--c:#ffd23f"></i><b>Pixel</b><span>An 8-bit platformer: square steps, hard shadows, frames instead of tweens, and things hidden in the blocks.</span></button>
+  <button type="button" class="d-wcard" data-world-set="fable" aria-pressed="false"><i style="--a:#f7f0df;--b:#1e5c48;--c:#e2bd62"></i><b>Fable</b><span>A storybook: worn type, parchment and moss by day, a moonlit wood by night, and small wonders between the pages.</span></button>
+  <button type="button" class="d-wcard" data-world-set="aurora" aria-pressed="false"><i style="--a:#060a18;--b:#3be8a8;--c:#a77bff"></i><b>Aurora</b><span>A polar sky: glass panels over light that moves, and answers the pointer.</span></button>
+  <button type="button" class="d-wcard" data-world-set="symbiote" aria-pressed="false"><i style="--a:#060608;--b:#f5f5f7;--c:#5d5d6b"></i><b>Symbiote</b><span>Liquid black: slime that reaches for whatever the pointer nears, gloss on every surface, shapes that never sit still.</span></button>
 </div>
 <p class="d-note">Each world has a light and a dark side - the theme switch still works inside it. The choice is remembered, set before the first paint, and followed by every open tab.</p>
 
@@ -47,6 +47,22 @@
     <small>Steps</small>
     <div class="steps d-w-sm"><div class="step"><div><b>Map the drop-off</b><p>Session replays, one funnel.</p></div></div><div class="step"><div><b>Cut a step</b><p>Address once, card once.</p></div></div></div>
   </div>
+  <div class="d-tile w2">
+    <small>Morph button</small>
+    <div class="morph" data-morph id="m-tour" style="--morph-vt:m-tour">
+      <button class="btn btn-primary morph-btn" type="button">
+        <span class="morph-face morph-idle"><ph upload-simple/><span data-morph-say="idle">Update</span></span>
+        <span class="morph-face morph-busy" aria-hidden="true"><svg class="morph-ring" viewBox="0 0 20 20"><circle class="bg" cx="10" cy="10" r="8"/><circle class="fg" cx="10" cy="10" r="8" pathLength="100"/></svg><i class="morph-bar"><i></i></i><span data-morph-say="busy">Updating</span><b class="num">0%</b></span>
+        <span class="morph-face morph-done" aria-hidden="true"><ph check/><span data-morph-say="done">Up to date</span></span>
+      </button>
+      <section class="morph-panel" hidden tabindex="-1" aria-labelledby="m-tour-h">
+        <h3 id="m-tour-h" data-morph-say="open">Version 2.4</h3>
+        <p>Three components gained a world-aware state. Nothing in their markup changed.</p>
+        <button class="btn btn-ghost btn-sm" type="button" data-morph-close><span data-morph-say="close">Close</span></button>
+      </section>
+      <span class="sr-only" role="status"></span>
+    </div>
+  </div>
   <div class="d-tile w6">
     <small>Metrics and quote</small>
     <div class="impact d-w-sm" style="grid-template-columns:1fr 1fr;padding-top:20px"><div class="lead"><b>+38%</b><span>conversion</span></div><div><b>-2</b><span>steps</span></div></div>
@@ -58,15 +74,28 @@
 <div class="d-scroll"><table class="d-tbl">
   <thead><tr><th>Layer</th><th>Studio</th><th>Pixel</th><th>Fable</th><th>Aurora</th><th>Symbiote</th></tr></thead>
   <tbody>
-    <tr><td>Palette</td><td>Ink on paper</td><td>Sky, cream, brick, coin gold</td><td>Petal, plum, orchid gradient</td><td>Night, sea-green to violet</td><td>Black and bone, glossy white</td></tr>
-    <tr><td>Type</td><td>Onest, mono labels</td><td>Pixelify Sans, Silkscreen caps</td><td>Fraunces soft, Nunito, handwritten labels</td><td>Unbounded, Manrope, Space Mono</td><td>Bricolage condensed caps, Archivo, Martian Mono</td></tr>
-    <tr><td>Shape</td><td>Pills and soft corners</td><td>Stepped corners, square controls</td><td>Petals, every corner different</td><td>Soft and wide</td><td>Organic, shifts under the pointer</td></tr>
-    <tr><td>Depth</td><td>Flat, hairlines</td><td>2px outlines, hard offset shadows, buttons that sink</td><td>Pastel glows, stitched edges</td><td>Frosted glass, glow</td><td>Wet gloss, specular edges</td></tr>
-    <tr><td>Motion</td><td>Quick ease-out</td><td>Frames, not tweens</td><td>Springy overshoot</td><td>Slow and smooth</td><td>Elastic, with a snap</td></tr>
-    <tr><td>Air</td><td>-</td><td>Pixel clouds, stars at night</td><td>Floating motes, a sparkle trail</td><td>Moving aurora, stars</td><td>A sheen that follows the pointer</td></tr>
-    <tr><td>Switch</td><td colspan="5">The new world spreads from the clicked swatch, in that world's own motion.</td></tr>
+    <tr><td>Palette</td><td>Ink on paper</td><td>Sky, cream, brick, coin gold</td><td>Parchment and moss; a moonlit wood; emerald and gold</td><td>Night, sea-green to violet; ice by day</td><td>Wet black and dry bone, one gloss</td></tr>
+    <tr><td>Titles</td><td>Onest</td><td>Silkscreen caps</td><td>IM Fell English</td><td>Unbounded</td><td>Bricolage, condensed caps</td></tr>
+    <tr><td>Reading</td><td>Onest</td><td>Atkinson Hyperlegible Next</td><td>Alegreya</td><td>Manrope</td><td>Archivo</td></tr>
+    <tr><td>Labels</td><td>Mono caps</td><td>Silkscreen</td><td>Fell small capitals</td><td>Space Mono</td><td>Martian Mono</td></tr>
+    <tr><td>Icons</td><td>Phosphor Regular</td><td>Pixel icons, 24-grid</td><td>Phosphor Duotone</td><td>Phosphor Light</td><td>Phosphor Fill</td></tr>
+    <tr><td>Spacing</td><td>4px steps</td><td>4px steps, in blocks</td><td>A quarter wider</td><td>A tenth wider</td><td>A tenth tighter</td></tr>
+    <tr><td>Shape and depth</td><td>Pills, hairlines, flat</td><td>Stepped corners, outlines, hard shadows</td><td>Uneven page corners, gilt dots, warm shadows</td><td>Frosted glass, glow</td><td>Shapes that shift, wet highlights</td></tr>
+    <tr><td>Motion</td><td>Quick ease-out</td><td>Frames, not tweens</td><td>Overshoot and settle</td><td>Slow and smooth</td><td>Stretch, squash, snap</td></tr>
+    <tr><td>Around the page</td><td>-</td><td>Clouds, hills, stars at night</td><td>An enchanted pond, fireflies</td><td>Curtains of light that lean to the pointer</td><td>A slime that reaches for things</td></tr>
+    <tr><td>A success</td><td>-</td><td>Pays a coin</td><td>Scatters glitter</td><td>Sends a flare</td><td>Is wrapped, briefly</td></tr>
+    <tr><td>Voice</td><td>Direct and specific</td><td>Short and arcade</td><td>Warm and storied</td><td>Calm and spacious</td><td>Terse and physical</td></tr>
   </tbody>
 </table></div>
+
+<h2>Things to find</h2>
+<p>Each world keeps a few things for anyone who explores. None of them are needed to use the system, all of them work by keyboard where they can be reached, and all of them rest when motion is reduced.</p>
+<ul class="did">
+  <li><b>Pixel</b> - blocks are worth hitting, headings are worth lingering on, and the one walking at the bottom knows a code.</li>
+  <li><b>Fable</b> - an empty spot held still for a moment answers; titles like to be asked three times; winter comes in December.</li>
+  <li><b>Aurora</b> - the sky listens to the pointer, and open sky answers a click. Something crosses it, rarely.</li>
+  <li><b>Symbiote</b> - anything that acts gets reached for. Stillness invites it in; a long press leaves a mark.</li>
+</ul>
 
 <h2>How it works</h2>
 <p>Four layers, each optional past the first. A page that never sets a world is Studio, byte for byte.</p>

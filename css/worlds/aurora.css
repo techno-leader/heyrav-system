@@ -1,42 +1,106 @@
 
-/* ---- Aurora: what tokens cannot say ----
-   A night sky behind frosted glass: light that moves slowly, titles that
-   hold the sky's colours, edges that glow rather than draw. */
+/* =====================================================================
+   AURORA - a polar sky.
+   Frosted glass over light that moves. Titles hold the sky's colours, edges
+   glow where the pointer is, the action colour is gathered light, and every
+   motion is long and smooth. The sky itself is js/worlds/aurora.js.
+   ===================================================================== */
+@property --au-a{syntax:'<angle>';inherits:false;initial-value:0deg;}
 [data-world="aurora"]{--w-reveal-ease:cubic-bezier(.16,1,.3,1);--w-reveal-d:1100ms;
-  --sky-a:#2cf0a0;--sky-b:#3fc8ff;--sky-c:#9b6bff;--sky-o:.5;--title:linear-gradient(100deg,var(--ink) 0%,#a8f7d8 45%,#a9d6ff 72%,#d9c2ff 100%);}
-[data-world="aurora"]:not([data-theme="dark"]){--sky-a:#7ff0c8;--sky-b:#8fd2ff;--sky-c:#c4a9ff;--sky-o:.42;--title:linear-gradient(100deg,var(--ink) 0%,#0b7a5a 50%,#1d5fae 80%,#5a39b5 100%);}
-
-/* titles carry the sky */
-[data-world="aurora"] :is(.h1,.h2,.d-hero h1,.d-head h1,.sec-head h2){background:var(--title);-webkit-background-clip:text;background-clip:text;color:transparent;}
-[data-world="aurora"] :is(.h1,.h2,.h3,.d-hero h1,.d-head h1,.sec-head h2) em{font-weight:300;}
-
-/* glass needs room to show the sky: the docs frame lets it through */
-[data-world="aurora"] body.d{background-color:transparent;}
-[data-world="aurora"] .d-panel{border-color:var(--line);}
-[data-world="aurora"] :is(.d-ex,.d-code){background:color-mix(in srgb,var(--paper) 78%,transparent);}
-[data-world="aurora"] .d-side{background:color-mix(in srgb,var(--surface) 40%,transparent);}
-
-/* edges that glow */
-[data-world="aurora"] :focus-visible{outline-color:var(--focus);box-shadow:0 0 0 6px color-mix(in srgb,var(--focus) 22%,transparent);}
-[data-world="aurora"] .btn-primary,[data-world="aurora"] .case-link{background-size:180% 100%;background-position:0 0;transition:background-position var(--d-slow) var(--ease-out),box-shadow var(--d-base) var(--ease-out),scale var(--d-press) var(--ease-out);}
-@media (hover:hover) and (pointer:fine){[data-world="aurora"] :is(.btn-primary,.case-link):hover{background:var(--accent-fill);background-size:180% 100%;background-position:100% 0;}}
-[data-world="aurora"] .bar i,[data-world="aurora"] .progress{background:var(--accent-fill);}
-[data-world="aurora"] .bar::after{background:var(--sky-a);box-shadow:0 0 8px 2px var(--sky-a);}
-[data-world="aurora"] .tgl input:checked + .sw{background:var(--accent-fill);}
-[data-world="aurora"] .chip[aria-pressed="true"]{box-shadow:0 6px 20px -8px var(--sky-a);}
-
-/* the sky: stars, and three slow curtains of light */
-[data-world="aurora"] .w-sky{background:radial-gradient(120% 80% at 50% -10%,color-mix(in srgb,var(--sky-c) 14%,transparent),transparent 60%),var(--paper);}
-[data-world="aurora"] .w-stars{inset:0;opacity:.7;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320' fill='%23fff'%3E%3Ccircle cx='20' cy='40' r='.8'/%3E%3Ccircle cx='160' cy='22' r='1.1'/%3E%3Ccircle cx='280' cy='90' r='.7'/%3E%3Ccircle cx='90' cy='150' r='.9' opacity='.6'/%3E%3Ccircle cx='230' cy='210' r='1'/%3E%3Ccircle cx='40' cy='270' r='.7' opacity='.7'/%3E%3Ccircle cx='190' cy='300' r='.8'/%3E%3Ccircle cx='300' cy='260' r='.6' opacity='.5'/%3E%3C/svg%3E") 0 0/320px 320px;}
-[data-world="aurora"]:not([data-theme="dark"]) .w-stars{display:none;}
-[data-world="aurora"] .w-band{left:-25%;width:150%;height:60vh;border-radius:50%;filter:blur(48px);opacity:var(--sky-o);will-change:transform;
-  background:linear-gradient(90deg,transparent 4%,var(--sky-a) 24%,var(--sky-b) 48%,var(--sky-c) 72%,transparent 94%);
-  -webkit-mask-image:linear-gradient(transparent,#000 35%,#000 55%,transparent);mask-image:linear-gradient(transparent,#000 35%,#000 55%,transparent);}
-[data-world="aurora"][data-theme="dark"] .w-band{mix-blend-mode:screen;}
-[data-world="aurora"] .w-band-1{top:-18vh;rotate:-9deg;animation:au-sway 26s ease-in-out infinite alternate;}
-[data-world="aurora"] .w-band-2{top:4vh;rotate:-3deg;opacity:calc(var(--sky-o) * .7);animation:au-sway 34s ease-in-out -12s infinite alternate-reverse;
-  background:linear-gradient(90deg,transparent 8%,var(--sky-b) 30%,var(--sky-a) 55%,var(--sky-c) 80%,transparent 96%);}
-[data-world="aurora"] .w-band-3{top:46vh;height:50vh;rotate:6deg;opacity:calc(var(--sky-o) * .45);animation:au-sway 40s ease-in-out -20s infinite alternate;}
-@keyframes au-sway{from{transform:translateX(-7%) scaleY(.75) skewX(-6deg);}to{transform:translateX(7%) scaleY(1.2) skewX(6deg);}}
+  --sky-a:#2cf0a0;--sky-b:#3fc8ff;--sky-c:#9b6bff;--glow:rgba(79,240,176,.16);
+  --title:linear-gradient(100deg,var(--ink) 0%,#a8f7d8 45%,#a9d6ff 72%,#d9c2ff 100%);--edge:rgba(160,220,255,.22);}
+[data-world="aurora"]:not([data-theme="dark"]){--sky-a:#0b9a6c;--sky-b:#1d76c9;--sky-c:#7448d8;--glow:rgba(29,118,201,.12);
+  --title:linear-gradient(100deg,var(--ink) 0%,#0b7a5a 50%,#1d5fae 80%,#5a39b5 100%);--edge:rgba(255,255,255,.7);}
 /* until the sky mounts, the page itself is night, never a white flash */
 html[data-world="aurora"]{background-color:var(--paper);}
+[data-world="aurora"] body.d{background-color:transparent;}
+[data-world="aurora"] ::selection{background:var(--sel);color:var(--ink);}
+
+/* ---------- type ---------- */
+[data-world="aurora"] :is(.h1,.h2,.d-hero h1,.d-head h1,.sec-head h2,.impact b){background:var(--title);-webkit-background-clip:text;background-clip:text;color:transparent;}
+[data-world="aurora"] :is(.h1,.h2,.h3,.d-hero h1,.d-head h1,.sec-head h2) em{font-weight:300;font-style:italic;}
+[data-world="aurora"] :is(.prose,.d-doc > p,.d-doc > ul > li,.d-doc > section > p){line-height:1.75;}
+[data-world="aurora"] .link{color:var(--ink);border-bottom-color:color-mix(in srgb,var(--sky-a) 60%,transparent);}
+@media (hover:hover) and (pointer:fine){[data-world="aurora"] .link:hover{border-bottom-color:var(--sky-a);text-shadow:0 0 12px color-mix(in srgb,var(--sky-a) 50%,transparent);}}
+[data-world="aurora"] :focus-visible{outline:2px solid var(--focus);outline-offset:3px;box-shadow:0 0 0 7px var(--glow);}
+
+/* ---------- glass, lit at the edge where the pointer is ---------- */
+[data-world="aurora"] :is(.card,.case-nav a,.d-wcard,.d-tile,.d-ex,.ia-leaf,.morph-panel){position:relative;isolation:isolate;}
+[data-world="aurora"] :is(.card,.case-nav a,.d-wcard,.d-tile,.ia-leaf)::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;opacity:0;
+  background:radial-gradient(280px circle at var(--gx,50%) var(--gy,50%),var(--glow),transparent 65%);transition:opacity var(--d-slow) var(--ease-out);}
+@media (hover:hover) and (pointer:fine){[data-world="aurora"] :is(.card,.case-nav a,.d-wcard,.d-tile,.ia-leaf):hover::after{opacity:1;}}
+[data-world="aurora"] :is(.card,.case-nav a,.d-wcard,.dlg,.drawer,.menu,.pop,.define-box,.morph-panel,.toast){box-shadow:inset 0 1px 0 var(--edge),var(--lift);}
+[data-world="aurora"] .case-nav a{background:var(--panel);}
+[data-world="aurora"] .d-panel{border-color:var(--line);}
+[data-world="aurora"] :is(.d-ex,.d-code){background:color-mix(in srgb,var(--paper) 78%,transparent);}
+[data-world="aurora"] .d-side{background:color-mix(in srgb,var(--surface) 72%,transparent);backdrop-filter:blur(14px);}
+
+/* ---------- buttons: gathered light that drifts ---------- */
+@keyframes au-flow{to{background-position:100% 0;}}
+[data-world="aurora"] :is(.btn-primary,.case-link,.contact-actions .primary){background-size:200% 100%;background-position:0 0;animation:au-flow 9s ease-in-out infinite alternate;}
+@media (hover:hover) and (pointer:fine){[data-world="aurora"] :is(.btn-primary,.case-link,.contact-actions .primary):hover{background:var(--accent-fill);background-size:200% 100%;box-shadow:0 12px 34px -10px var(--sky-a),0 0 0 1px rgba(255,255,255,.2) inset;}}
+[data-world="aurora"] :is(.btn-ghost,.contact-actions .ghost){background:var(--panel);backdrop-filter:var(--glass);border-color:var(--line-2);}
+@media (hover:hover) and (pointer:fine){[data-world="aurora"] :is(.btn-ghost,.contact-actions .ghost):hover{border-color:color-mix(in srgb,var(--sky-a) 60%,transparent);box-shadow:0 0 18px -4px var(--glow);}}
+[data-world="aurora"] .chip:not([aria-pressed="true"]){background:var(--panel);backdrop-filter:var(--glass);}
+[data-world="aurora"] .chip[aria-pressed="true"]{box-shadow:0 6px 20px -8px var(--sky-a);}
+[data-world="aurora"] .badge:not(.badge-solid):not(.badge-ok):not(.badge-warn):not(.badge-danger){background:color-mix(in srgb,var(--surface-2) 70%,transparent);}
+[data-world="aurora"] .badge{letter-spacing:.12em;}
+[data-world="aurora"] .badge .dot{box-shadow:0 0 8px 1px currentColor;}
+[data-world="aurora"] :is(.kbd,kbd){background:var(--panel);}
+[data-world="aurora"] .avatar{box-shadow:0 0 0 1px var(--line-2),0 0 14px -2px var(--glow);}
+
+/* ---------- fields: a ring of light when focused ---------- */
+[data-world="aurora"] :is(.input,.txt,.sel){background:var(--panel);backdrop-filter:var(--glass);}
+@keyframes au-spin{to{--au-a:360deg;}}
+[data-world="aurora"] :is(.input,.txt,.sel):focus{border-color:transparent;box-shadow:0 0 22px -6px var(--sky-a);
+  background:linear-gradient(var(--paper),var(--paper)) padding-box,conic-gradient(from var(--au-a),var(--sky-a),var(--sky-b),var(--sky-c),var(--sky-a)) border-box;animation:au-spin 5s linear infinite;}
+[data-world="aurora"] .check input:checked{box-shadow:0 0 10px -1px var(--sky-a);}
+[data-world="aurora"] .tgl .sw{background:color-mix(in srgb,var(--surface-3) 80%,transparent);}
+[data-world="aurora"] .tgl .sw::after{background:radial-gradient(circle at 40% 35%,#fff,#dff6ff);box-shadow:0 0 8px 1px rgba(160,220,255,.5);}
+[data-world="aurora"] .tgl input:checked + .sw{background:var(--accent-fill);box-shadow:0 0 14px -2px var(--sky-a);}
+[data-world="aurora"] .rng::-webkit-slider-runnable-track{background:linear-gradient(90deg,var(--sky-a),var(--sky-b) calc(var(--f) * .6),var(--sky-c) var(--f),var(--line-2) var(--f));}
+[data-world="aurora"] .rng::-webkit-slider-thumb{border-color:var(--sky-b);box-shadow:0 0 12px 2px color-mix(in srgb,var(--sky-b) 60%,transparent);}
+[data-world="aurora"] .seg{background:color-mix(in srgb,var(--surface-2) 70%,transparent);}
+[data-world="aurora"] .seg button[aria-pressed="true"]{background:var(--panel);box-shadow:inset 0 1px 0 var(--edge),0 0 16px -6px var(--glow);}
+[data-world="aurora"] .drop{border-color:color-mix(in srgb,var(--sky-a) 50%,transparent);background:color-mix(in srgb,var(--panel) 60%,transparent);}
+
+/* ---------- tabs, accordion ---------- */
+[data-world="aurora"] .tabs [role="tab"][aria-selected="true"]{box-shadow:inset 0 -2px 0 var(--sky-a),0 10px 18px -12px var(--sky-a);}
+[data-world="aurora"] .acc summary .icon{color:var(--sky-a);filter:drop-shadow(0 0 4px var(--sky-a));}
+
+/* ---------- overlays: glass with a line of light along the top ---------- */
+[data-world="aurora"] :is(.dlg,.drawer,.morph-panel,.menu,.pop,.define-box)::before{content:"";position:absolute;left:12%;right:12%;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--sky-a),var(--sky-b),var(--sky-c),transparent);opacity:.8;}
+[data-world="aurora"] :is(.dlg,.drawer)::backdrop{background:color-mix(in srgb,var(--ink-inv) 55%,transparent);backdrop-filter:blur(6px);}
+[data-world="aurora"] .dlg[open]{animation:au-rise var(--d-modal) var(--ease-out);}
+@keyframes au-rise{from{opacity:0;transform:translateY(18px);filter:blur(6px);}}
+[data-world="aurora"] .tip [role="tooltip"]{background:var(--panel);backdrop-filter:var(--glass);color:var(--ink);box-shadow:inset 0 1px 0 var(--edge),0 10px 30px -12px rgba(0,0,0,.6);}
+[data-world="aurora"] .tip [role="tooltip"] .mut{color:var(--mut);}
+[data-world="aurora"] .toast{background:var(--panel);backdrop-filter:var(--glass);color:var(--ink);}
+[data-world="aurora"] .toast-ok .icon{color:var(--ok);filter:drop-shadow(0 0 6px var(--ok));}
+
+/* ---------- loading: a ring of light, a shimmer, a ribbon ---------- */
+[data-world="aurora"] .spinner{border:0;background:conic-gradient(from 0deg,transparent 20%,var(--sky-a),var(--sky-b),var(--sky-c));
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2px));mask:radial-gradient(farthest-side,transparent calc(100% - 2.5px),#000 calc(100% - 2px));animation-duration:1.2s;}
+[data-world="aurora"] .skel{background:color-mix(in srgb,var(--surface-2) 70%,transparent);}
+[data-world="aurora"] .skel::after{background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--sky-a) 25%,transparent),color-mix(in srgb,var(--sky-c) 25%,transparent),transparent);animation-duration:2.4s;}
+[data-world="aurora"] .bar i,[data-world="aurora"] .progress{background:var(--accent-fill);}
+[data-world="aurora"] .bar::after{background:var(--sky-a);box-shadow:0 0 8px 2px var(--sky-a);}
+[data-world="aurora"] .morph-ring .fg{filter:drop-shadow(0 0 3px var(--sky-a));}
+[data-world="aurora"] .morph[data-state="busy"] .morph-btn{background:var(--panel);backdrop-filter:var(--glass);box-shadow:inset 0 1px 0 var(--edge);}
+[data-world="aurora"] .morph[data-state="done"] .morph-btn{box-shadow:0 0 24px -6px var(--ok);}
+
+/* ---------- reading patterns ---------- */
+[data-world="aurora"] .step::before{color:var(--sky-a);text-shadow:0 0 10px color-mix(in srgb,var(--sky-a) 60%,transparent);}
+[data-world="aurora"] .did li::before{content:"✦" / "";color:var(--sky-b);}
+[data-world="aurora"] :is(.table,.cmp) td{transition:background var(--d-base);}
+@media (hover:hover) and (pointer:fine){[data-world="aurora"] .table tbody tr:hover td{background:var(--glow);}}
+[data-world="aurora"] :is(.pin,.keys .k){background:var(--accent-fill);color:var(--on-accent);box-shadow:0 0 0 5px var(--glow),0 0 16px var(--sky-a);}
+[data-world="aurora"] .loop-node .ring{background:var(--panel);backdrop-filter:var(--glass);box-shadow:0 0 18px -6px var(--glow);}
+[data-world="aurora"] .code{background:color-mix(in srgb,var(--surface-2) 75%,transparent);backdrop-filter:var(--glass);}
+[data-world="aurora"] .d-nav a[aria-current="page"]{background:var(--panel);box-shadow:inset 0 1px 0 var(--edge),0 0 18px -8px var(--glow);}
+
+/* ---------- the sky's catchable things (js/worlds/aurora.js) ---------- */
+.au-shoot{position:fixed;z-index:var(--z-sticky);top:0;left:0;width:150px;height:44px;padding:0;border:0;background:none;cursor:pointer;pointer-events:auto;}
+.au-shoot::before{content:"";position:absolute;left:0;top:50%;width:130px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85));box-shadow:0 0 8px rgba(190,240,255,.7);}
+.au-shoot::after{content:"";position:absolute;left:124px;top:calc(50% - 3px);width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 12px 3px rgba(200,250,255,.9);}
+.au-flare{position:fixed;z-index:var(--z-toast);pointer-events:none;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;}

@@ -68,9 +68,11 @@
 
 <page slug="typography" title="Typography" lede="Onest carries display and body alike. Redaction 35 italic is the accent - on single words, never a whole block. Mono is for labels and numbers." keywords="type font onest redaction mono scale heading body label weight" status="shipped" used="Every page|index.html">
 <h2>Families</h2>
-<div class="d-spec"><code>--sans</code><span><span class="h3">Onest - display &amp; body</span><br><span class="small">Variable 400..600 from Google Fonts. A subrange request: 7 @font-face rules instead of 21.</span></span></div>
-<div class="d-spec"><code>--serif</code><span><span class="h3"><em>Redaction 35 - accents</em></span><br><span class="small">Italic 400 only, from jsDelivr (OFL). The number is how destroyed the face is; cleaner is downward, and 35 is settled.</span></span></div>
-<div class="d-spec"><code>--mono</code><span><span class="label">ui-monospace - labels, numbers, code</span><br><span class="small">The system stack. Uppercase, tracked, 12px.</span></span></div>
+<div class="d-spec d-w-only"><code>--head-font</code><span><span class="h3"><span data-font="head-font">Onest</span> - <span data-say="type.head">display</span></span><br><span class="small" data-say="type.head.note"></span></span></div>
+<div class="d-spec"><code>--sans</code><span><span class="h3"><span data-font="sans">Onest</span> - <span data-say="type.sans">display &amp; body</span></span><br><span class="small" data-say="type.sans.note">Variable 400..600 from Google Fonts. A subrange request: 7 @font-face rules instead of 21.</span></span></div>
+<div class="d-spec"><code data-say="type.em.var">--serif</code><span><span class="h3"><em><span data-font="em-font">Redaction 35</span> - <span data-say="type.em">accents</span></em></span><br><span class="small" data-say="type.em.note">Italic 400 only, from jsDelivr (OFL). The number is how destroyed the face is; cleaner is downward, and 35 is settled.</span></span></div>
+<div class="d-spec"><code data-say="type.label.var">--mono</code><span><span class="label"><span data-font="label-font">ui-monospace</span> - <span data-say="type.label">labels, numbers, code</span></span><br><span class="small" data-say="type.label.note">The system stack. Uppercase, tracked, 12px.</span></span></div>
+<div class="d-spec d-w-only"><code>--mono</code><span><span class="mono"><span data-font="mono">ui-monospace</span> - <span data-say="type.mono">code and numbers</span></span><br><span class="small" data-say="type.mono.note"></span></span></div>
 <h2>Scale</h2>
 <p>Seven steps and nothing between them. 18px is the floor for anything meant to be read; the 12px mono label sits outside the scale because it is chrome, not copy.</p>
 <example class="col left">

@@ -17,8 +17,10 @@
     const b = e.target.closest('.d-copy'); if (!b) return;
     e.preventDefault(); e.stopPropagation();
     const code = b.closest('.d-code,.code')?.querySelector('pre')?.innerText || b.dataset.copy || '';
-    try { await navigator.clipboard.writeText(code); window.heyrav?.toast('Copied to clipboard', { tone: 'ok' }); }
-    catch { window.heyrav?.toast('Copy failed - select the code instead', { tone: 'danger' }); }
+    /* the button itself becomes the result for a moment: icon to tick, and back */
+    const done = () => { b.classList.remove('is-done'); void b.offsetWidth; b.classList.add('is-done'); b.setAttribute('aria-label', 'Copied'); clearTimeout(b._t); b._t = setTimeout(() => { b.classList.remove('is-done'); b.setAttribute('aria-label', 'Copy code'); }, 1500); };
+    try { await navigator.clipboard.writeText(code); done(); window.heyrav?.toast(window.heyravWorlds?.say('copied', 'Copied to clipboard') || 'Copied to clipboard', { tone: 'ok' }); }
+    catch { window.heyrav?.toast(window.heyravWorlds?.say('copyfail', 'Copy failed - select the code instead') || 'Copy failed - select the code instead', { tone: 'danger' }); }
   });
   /* click-to-copy on swatches */
   document.addEventListener('click', async e => {
@@ -86,4 +88,30 @@
     box.querySelectorAll('[data-count]').forEach(x => window.heyrav?.countUp(x));
     box.querySelectorAll('.d-motion-track').forEach(x => x.classList.toggle('go'));
   });
+
+  /* live docs: inside a world, token values, font names and swatches show
+     that world, read from the page itself; Studio's own text is restored as
+     it was written */
+  const live = () => {
+    const cs = getComputedStyle(root), studio = !root.dataset.world, w = window.heyravWorlds && window.heyravWorlds.get();
+    document.querySelectorAll('[data-tok]').forEach(el => {
+      if (!('tok0' in el.dataset)) el.dataset.tok0 = el.textContent;
+      const v = cs.getPropertyValue('--' + el.dataset.tok).trim();
+      el.textContent = studio || !v ? el.dataset.tok0 : v;
+    });
+    document.querySelectorAll('[data-font]').forEach(el => {
+      if (!('font0' in el.dataset)) el.dataset.font0 = el.textContent;
+      const v = cs.getPropertyValue('--' + el.dataset.font).split(',')[0].replace(/["']/g, '').trim();
+      el.textContent = studio || !v || v.startsWith('var(') ? el.dataset.font0 : v;
+    });
+    document.querySelectorAll('[data-chip]').forEach(el => {
+      if (!('c0' in el.dataset)) el.dataset.c0 = el.getAttribute('style') || '';
+      const n = el.dataset.chip, l = w && w.col && w.col.l[n], d = w && w.col && w.col.d[n];
+      el.setAttribute('style', el.dataset.c0);
+      if (!studio && (l || d)) { el.style.setProperty('--c', l || d); el.style.setProperty('--dk', d || l); }
+    });
+  };
+  addEventListener('worldchange', live);
+  new MutationObserver(live).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  if (root.dataset.world) addEventListener('load', live);
 })();

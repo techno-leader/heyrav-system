@@ -6,8 +6,11 @@ html.w-switching::view-transition-new(root){animation:w-reveal var(--w-reveal-d,
 html.w-switching *,html.w-switching *::before,html.w-switching *::after{transition:none!important;}
 @keyframes w-reveal{from{clip-path:circle(0 at var(--wx,50%) var(--wy,50%));}to{clip-path:circle(var(--wr,150vmax) at var(--wx,50%) var(--wy,50%));}}
 
-/* ---- the ambient layer: behind everything, never in the way ---- */
-.w-sky{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;contain:strict;}
-.w-sky i{position:absolute;display:block;}
-.w-spark{position:fixed;z-index:var(--z-toast);pointer-events:none;width:12px;height:12px;}
-@media (prefers-reduced-motion:reduce){.w-sky,.w-sky *{animation:none!important;}}
+/* ---- scene layers a world module adds: behind everything unless in front,
+   and never in the way of a pointer except where a piece asks for it ---- */
+.w-layer{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;}
+.w-layer[data-front]{z-index:var(--z-veil);}
+.w-layer canvas{display:block;width:100%;height:100%;}
+.w-layer [data-hit]{pointer-events:auto;}
+@media (prefers-reduced-motion:reduce){.w-layer *{animation:none!important;transition:none!important;}}
+@media print{.w-layer{display:none;}}

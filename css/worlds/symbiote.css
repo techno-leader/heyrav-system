@@ -1,36 +1,116 @@
 
-/* ---- Symbiote: what tokens cannot say ----
-   Condensed heavy caps, outlined accents, surfaces that look wet and shapes
-   that shift under the pointer as if something lives inside them. */
-[data-world="symbiote"]{--w-reveal-ease:cubic-bezier(.7,-0.3,.2,1.3);--w-reveal-d:760ms;}
+/* =====================================================================
+   SYMBIOTE - liquid black.
+   Condensed heavy caps, outlined accents, surfaces that look wet. Shapes
+   breathe and shift under the pointer, presses squash and spring, and a
+   slime (js/worlds/symbiote.js) reaches for whatever the pointer nears.
+   ===================================================================== */
+[data-world="symbiote"]{--w-reveal-ease:cubic-bezier(.7,-0.3,.2,1.3);--w-reveal-d:760ms;
+  --oil:linear-gradient(100deg,transparent 10%,rgba(120,255,220,.35) 30%,rgba(140,120,255,.35) 50%,rgba(255,120,200,.3) 70%,transparent 90%);}
+html[data-world="symbiote"]{background-color:var(--surface);background-image:var(--tex);}
+[data-world="symbiote"] body.d{background-color:transparent;}
+[data-world="symbiote"] ::selection{background:var(--ink);color:var(--paper);}
 
-/* type: tall and tight; the accent word is only an outline */
-[data-world="symbiote"] :is(.h1,.h2,.h3,.h4,.sec-head h2,.d-hero h1,.d-head h1,.d-doc > h2,.d-doc section > h2,.card b,.step b,.case-nav b,.impact b,.dlg h2){font-stretch:75%;}
+/* ---------- type: tall, heavy, and the accent hollowed out ---------- */
+[data-world="symbiote"] :is(.h1,.h2,.h3,.h4,.sec-head h2,.d-hero h1,.d-head h1,.d-doc > h2,.d-doc section > h2,.card b,.step b,.case-nav b,.impact b,.dlg h2,.morph-panel h3,.d-wcard b){font-stretch:75%;}
 [data-world="symbiote"] :is(.h1,.h2,.h3,.sec-head h2,.d-hero h1,.d-head h1) em{font-style:normal;font-weight:800;text-transform:var(--head-case);color:transparent;-webkit-text-stroke:1.5px var(--ink);}
-[data-world="symbiote"] .pull{font-family:var(--head-font);font-style:normal;font-weight:700;font-stretch:75%;text-transform:uppercase;}
+[data-world="symbiote"] .pull{font-family:var(--head-font);font-style:normal;font-weight:700;font-stretch:75%;text-transform:uppercase;line-height:1.05;}
+[data-world="symbiote"] :is(.prose,.d-doc > p,.d-doc > ul > li,.d-doc > section > p){line-height:1.6;}
+[data-world="symbiote"] .link{border-bottom:2px solid currentColor;}
+@media (hover:hover) and (pointer:fine){[data-world="symbiote"] .link:hover{background:var(--ink);color:var(--paper);border-bottom-color:var(--ink);}}
+[data-world="symbiote"] :focus-visible{outline:2px solid var(--focus);outline-offset:4px;animation:sy-breathe 1.6s ease-in-out infinite;}
+@keyframes sy-breathe{50%{outline-offset:7px;}}
 
-/* living shapes: they shift as the pointer arrives */
-[data-world="symbiote"] :is(.card,.case-nav a,.ia-leaf){border-radius:30px 16px 34px 20px/18px 34px 16px 30px;transition:border-radius var(--d-slow) var(--ease-out),border-color var(--d-move),box-shadow var(--d-move);}
+/* ---------- living shapes: no two corners alike, none of them still ---------- */
+[data-world="symbiote"] :is(.card,.case-nav a,.ia-leaf,.d-wcard){border-radius:30px 16px 34px 20px/18px 34px 16px 30px;transition:border-radius var(--d-slow) var(--ease-out),border-color var(--d-move),box-shadow var(--d-move);position:relative;}
 @media (hover:hover) and (pointer:fine){
-  [data-world="symbiote"] :is(a.card,.case-nav a,.card):hover{border-radius:16px 34px 20px 32px/34px 18px 32px 16px;}
+  [data-world="symbiote"] :is(a.card,.case-nav a,.card,.d-wcard):hover{border-radius:16px 34px 20px 32px/34px 18px 32px 16px;}
+}
+[data-world="symbiote"] .case-nav a{background:var(--panel);}
+/* an oil-slick sheen runs along a surface the pointer is on */
+[data-world="symbiote"] :is(.card,.case-nav a,.d-wcard)::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;
+  background:var(--oil) -100% 0/220% 100% no-repeat;mix-blend-mode:screen;transition:opacity var(--d-base);}
+[data-world="symbiote"]:not([data-theme="dark"]) :is(.card,.case-nav a,.d-wcard)::after{mix-blend-mode:multiply;}
+@media (hover:hover) and (pointer:fine){[data-world="symbiote"] :is(.card,.case-nav a,.d-wcard):hover::after{opacity:.55;animation:sy-oil 1.4s var(--ease-io) forwards;}}
+@keyframes sy-oil{to{background-position:200% 0;}}
+[data-world="symbiote"] :is(.dlg,.menu,.pop,.define-box,.d-panel,.morph-panel){box-shadow:var(--lift),var(--shadow-pop);}
+
+/* ---------- buttons: gloss that squashes ---------- */
+[data-world="symbiote"] :is(.btn,.case-link,.contact-actions a,.chip){transition:background var(--d-base) ease,color var(--d-base) ease,scale var(--d-move) var(--ease-snap),box-shadow var(--d-press) var(--ease-out),translate var(--d-press) var(--ease-out),width var(--d-move) var(--ease-snap);}
+@media (hover:hover) and (pointer:fine){
   [data-world="symbiote"] :is(.btn,.case-link):hover{scale:1.04 .97;}
   [data-world="symbiote"] .chip:hover{scale:1.05 .96;}
 }
-[data-world="symbiote"] :is(.btn,.case-link,.chip){transition:background var(--d-base) ease,color var(--d-base) ease,scale var(--d-move) var(--ease-snap),box-shadow var(--d-press) var(--ease-out),translate var(--d-press) var(--ease-out);}
+[data-world="symbiote"] :is(.btn,.case-link,.contact-actions a,.chip):active{scale:1.08 .9;transition-duration:90ms;}
+[data-world="symbiote"] :is(.btn-ghost,.contact-actions .ghost){border-width:2px;border-color:var(--ink);}
+[data-world="symbiote"] .chip[aria-pressed="true"]{box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px -8px rgba(0,0,0,.6);}
+[data-world="symbiote"] .badge{letter-spacing:.1em;}
+[data-world="symbiote"] .badge-solid{background:var(--accent-fill);color:var(--on-accent);}
+[data-world="symbiote"] :is(.kbd,kbd){box-shadow:inset 0 0 0 1px var(--line-2),inset 0 -3px 0 var(--line-2),inset 0 1px 0 rgba(255,255,255,.12);}
+[data-world="symbiote"] .avatar{border-radius:42% 58% 55% 45%/50% 45% 55% 50%;}
+[data-world="symbiote"] .avatar img{filter:grayscale(1) contrast(1.3);}
 
-/* wet surfaces: a highlight along the top edge of anything raised */
-[data-world="symbiote"] :is(.dlg,.menu,.pop,.define-box,.d-panel){box-shadow:var(--lift),var(--shadow-pop);}
-[data-world="symbiote"] .toast,[data-world="symbiote"] .tip [role="tooltip"]{background:var(--accent-fill);color:var(--on-accent);}
-[data-world="symbiote"] .bar{height:3px;}
-[data-world="symbiote"] .bar i,[data-world="symbiote"] .progress{background:linear-gradient(90deg,transparent,var(--ink));}
-[data-world="symbiote"] .tgl .sw::after{background:var(--accent-fill);}
-[data-world="symbiote"] .tgl input:checked + .sw::after{background:var(--on-accent);}
+/* ---------- fields: wet, and breathing when focused ---------- */
+[data-world="symbiote"] :is(.input,.txt,.sel){background:var(--panel);border-width:1.5px;}
+[data-world="symbiote"] :is(.input,.txt,.sel):focus{border-color:var(--ink);animation:sy-wet 2s ease-in-out infinite;}
+@keyframes sy-wet{0%,100%{box-shadow:0 0 0 3px color-mix(in srgb,var(--ink) 12%,transparent);}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--ink) 6%,transparent);}}
+[data-world="symbiote"] .check input{border-radius:6px 9px 6px 8px;border-width:2px;}
+[data-world="symbiote"] .check input:checked{animation:sy-pop var(--d-move) var(--ease-snap);}
+@keyframes sy-pop{0%{scale:.6;}60%{scale:1.18 .9;}}
+/* the switch thumb is a drop that stretches as it travels */
+[data-world="symbiote"] .tgl .sw{width:40px;height:22px;background:var(--surface-3);box-shadow:inset 0 2px 4px rgba(0,0,0,.35);}
+[data-world="symbiote"] .tgl .sw::after{width:18px;height:18px;background:var(--accent-fill);box-shadow:inset 0 1px 0 rgba(255,255,255,.4);animation:sy-stretch-b var(--d-move) var(--ease-snap);}
 [data-world="symbiote"] .tgl input:checked + .sw{background:var(--accent-fill);}
-[data-world="symbiote"] .link{border-bottom-width:2px;}
+[data-world="symbiote"] .tgl input:checked + .sw::after{transform:translateX(18px);background:var(--on-accent);animation:sy-stretch-a var(--d-move) var(--ease-snap);}
+@keyframes sy-stretch-a{40%{width:30px;border-radius:9px;}}
+@keyframes sy-stretch-b{40%{width:30px;border-radius:9px;}}
+[data-world="symbiote"] .rng::-webkit-slider-runnable-track{height:4px;}
+[data-world="symbiote"] .rng::-webkit-slider-thumb{width:18px;height:18px;margin-top:-7px;border:0;background:var(--accent-fill);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 2px 8px rgba(0,0,0,.5);transition:scale var(--d-move) var(--ease-snap);}
+[data-world="symbiote"] .rng:active::-webkit-slider-thumb{scale:1.4 .8;}
+[data-world="symbiote"] .seg button[aria-pressed="true"]{border-radius:14px 10px 14px 9px;}
 
-/* the sheen: a wet highlight that follows the pointer */
-[data-world="symbiote"] .w-sheen{inset:0;background:radial-gradient(640px circle at var(--mx,62%) var(--my,18%),rgba(255,255,255,.075),transparent 62%);transition:background .2s linear;}
-[data-world="symbiote"]:not([data-theme="dark"]) .w-sheen{background:radial-gradient(640px circle at var(--mx,62%) var(--my,18%),rgba(255,255,255,.55),transparent 62%);}
-[data-world="symbiote"] body.d{background-color:transparent;}
-[data-world="symbiote"] .w-sky{background-color:var(--surface);background-image:var(--tex);}
-html[data-world="symbiote"]{background-color:var(--surface);background-image:var(--tex);}
+/* ---------- tabs and accordion ---------- */
+[data-world="symbiote"] .tabs [role="tab"][aria-selected="true"]{box-shadow:inset 0 -4px 0 var(--ink);}
+[data-world="symbiote"] .acc summary .icon{transition:transform var(--d-move) var(--ease-snap);}
+
+/* ---------- overlays: they open like something unfolding ---------- */
+[data-world="symbiote"] .dlg[open],[data-world="symbiote"] .morph-panel:not([hidden]){animation:sy-blob var(--d-modal) var(--ease-snap);}
+@keyframes sy-blob{0%{clip-path:circle(0 at 50% 50%);border-radius:50%;}100%{clip-path:circle(150% at 50% 50%);}}
+[data-world="symbiote"] :is(.dlg,.drawer)::backdrop{background:color-mix(in srgb,#000 70%,transparent);backdrop-filter:blur(4px) grayscale(1);}
+[data-world="symbiote"] .toast,[data-world="symbiote"] .tip [role="tooltip"]{background:var(--accent-fill);color:var(--on-accent);}
+[data-world="symbiote"] .toast .icon{color:var(--on-accent);}
+[data-world="symbiote"] .tip [role="tooltip"] .mut{color:color-mix(in srgb,var(--on-accent) 65%,transparent);}
+/* a tooltip drips */
+[data-world="symbiote"] .tip [role="tooltip"]::after{content:"";position:absolute;left:calc(50% - 4px);top:calc(100% - 2px);width:8px;height:10px;border-radius:0 0 50% 50%/0 0 70% 70%;background:#d9d9e0;}
+[data-world="symbiote"]:not([data-theme="dark"]) .tip [role="tooltip"]::after{background:#16161a;}
+[data-world="symbiote"] .menu [role="menuitem"]:is(:hover,:focus-visible){background:var(--ink);color:var(--paper);}
+
+/* ---------- loading: a blob that cannot hold a shape ---------- */
+[data-world="symbiote"] .spinner{border:0;background:var(--ink);animation:sy-morph 1.6s var(--ease-io) infinite;}
+@keyframes sy-morph{0%{border-radius:40% 60% 55% 45%/55% 45% 55% 45%;rotate:0deg;}33%{border-radius:60% 40% 45% 55%/40% 60% 40% 60%;}66%{border-radius:45% 55% 60% 40%/60% 40% 60% 40%;}100%{border-radius:40% 60% 55% 45%/55% 45% 55% 45%;rotate:360deg;}}
+[data-world="symbiote"] .skel::after{background:linear-gradient(100deg,transparent 30%,color-mix(in srgb,var(--ink) 18%,transparent) 50%,transparent 70%);}
+[data-world="symbiote"] .bar{height:6px;overflow:visible;}
+[data-world="symbiote"] .bar i{border-radius:inherit;background:var(--ink);}
+[data-world="symbiote"] .bar::after{top:-3px;width:12px;height:12px;border-radius:50%;background:var(--ink);translate:-6px 0;}
+[data-world="symbiote"] .progress{height:3px;background:linear-gradient(90deg,transparent,var(--ink));}
+
+/* ---------- morph: the slime rises inside the button ---------- */
+[data-world="symbiote"] .morph-ring{display:none;}
+[data-world="symbiote"] .morph[data-state="busy"] .morph-btn{background:linear-gradient(to top,var(--ink) var(--mp,0%),var(--surface-2) var(--mp,0%));border-radius:22px 18px 24px 16px;}
+[data-world="symbiote"] .morph[data-state="busy"] .morph-busy{color:#fff;mix-blend-mode:difference;}
+[data-world="symbiote"] .morph[data-state="done"] .morph-btn{background:var(--accent-fill);color:var(--on-accent);}
+
+/* ---------- reading patterns ---------- */
+[data-world="symbiote"] .step::before{font-family:var(--head-font);font-weight:800;font-stretch:75%;font-size:var(--t-sub);color:transparent;-webkit-text-stroke:1px var(--ink);padding-top:0;}
+[data-world="symbiote"] .did li::before{content:"●" / "";font-size:10px;top:.45em;color:var(--ink);}
+[data-world="symbiote"] .impact b{color:transparent;-webkit-text-stroke:1.2px var(--ink);}
+[data-world="symbiote"] .impact .lead b{color:var(--ink);-webkit-text-stroke:0;}
+@media (hover:hover) and (pointer:fine){[data-world="symbiote"] .table tbody tr:hover td{box-shadow:inset 0 -2px 0 var(--ink);}}
+[data-world="symbiote"] :is(.pin,.keys .k){border-radius:45% 55% 50% 50%/55% 45% 55% 45%;}
+[data-world="symbiote"] .loop-node .ring{border-radius:42% 58% 55% 45%/50% 45% 55% 50%;border-width:2px;}
+[data-world="symbiote"] .code{background:var(--panel);}
+[data-world="symbiote"] .d-nav a[aria-current="page"]{background:var(--accent-fill);color:var(--on-accent);}
+
+/* the slime layer */
+.sy-slime svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
+@media (prefers-reduced-motion:reduce){[data-world="symbiote"] :focus-visible,[data-world="symbiote"] :is(.input,.txt,.sel):focus{animation:none;}}

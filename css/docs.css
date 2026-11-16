@@ -14,7 +14,7 @@ body.d{background:var(--surface);font-size:var(--t-ui);}
 @media (hover:hover) and (pointer:fine){.d-search:hover{border-color:var(--tint);}}
 .d-search .kbd{margin-left:auto;}
 .d-nav{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:4px 0 16px;margin:0 -4px;padding-inline:4px;}
-.d-nav h3{font-size:var(--t-ui);font-weight:400;color:var(--mut);padding:18px 8px 6px;}
+.d-nav h3{font-size:var(--t-ui);font-weight:400;color:var(--ink-3);padding:18px 8px 6px;}
 .d-nav h3:first-child{padding-top:6px;}
 .d-nav a{display:flex;align-items:center;gap:8px;min-height:32px;padding:0 8px;border-radius:var(--r-sm);color:var(--ink-2);text-decoration:none;}
 @media (hover:hover) and (pointer:fine){.d-nav a:hover{background:var(--surface-2);color:var(--ink);}}
@@ -282,3 +282,18 @@ body.d{background:var(--surface);font-size:var(--t-ui);}
 .d-tour-hero .h2{margin:8px 0 20px;}
 @media (max-width:1180px){.d-worldgrid{grid-template-columns:repeat(3,minmax(0,1fr));}}
 @media (max-width:640px){.d-worldgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
+/* world-only rows and the dark column of token tables, which a world restates live */
+:root:not([data-world]) .d-w-only{display:none;}
+[data-world] .d-tbl .d-dk{display:none;}
+
+/* copy buttons answer in place: the icon gives way to a tick */
+.d-copy{position:relative;}
+.d-copy.is-done svg{opacity:0;transform:scale(.6);}
+.d-copy svg{transition:opacity var(--d-fast) ease,transform var(--d-move) var(--ease-out);}
+.d-copy.is-done::after{content:"";position:absolute;inset:0;margin:auto;width:14px;height:14px;background:var(--ok);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183 215.51 63.51a12 12 0 0 1 17 17z'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M232.49 80.49l-128 128a12 12 0 0 1-17 0l-56-56a12 12 0 1 1 17-17L96 183 215.51 63.51a12 12 0 0 1 17 17z'/%3E%3C/svg%3E") center/contain no-repeat;
+  animation:d-tick var(--d-move) var(--ease-snap);}
+@keyframes d-tick{from{transform:scale(.4);opacity:0;}}
+@media (prefers-reduced-motion:reduce){.d-copy svg{transition:none;}.d-copy.is-done::after{animation:none;}}

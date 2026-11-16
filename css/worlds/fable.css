@@ -1,46 +1,170 @@
 
-/* ---- Fable: what tokens cannot say ----
-   Soft serifs with their wonky axis on, petal shapes that are never quite
-   symmetrical, stitched edges, dotted rules, and a little bounce in everything. */
-[data-world="fable"]{--w-reveal-ease:cubic-bezier(.34,1.3,.64,1);--w-reveal-d:900ms;--stitch:color-mix(in srgb,var(--accent) 26%,transparent);}
+/* =====================================================================
+   FABLE - a storybook.
+   Worn Fell types for titles, a calligraphic book face for reading, small
+   capitals for labels. Parchment and moss by day, a moonlit wood by night;
+   emerald acts, gold shines. Rules are fleurons, steps are chapters, and
+   anything that acts carries a little liquid light under the pointer.
+   ===================================================================== */
+[data-world="fable"]{--w-reveal-ease:cubic-bezier(.34,1.3,.64,1);--w-reveal-d:900ms;
+  --gold:#b8862b;--gold-ink:#7c5a12;--gold-2:#e8c66e;--rose:#b24a72;--moss:#5c7a3a;--leaf:#3f7a52;
+  --fleuron:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 16'%3E%3Cpath fill='%23b8862b' d='M20 2c3 4 9 5 13 3-3 4-9 6-13 3-4 3-10 1-13-3 4 2 10 1 13-3zm0 7c2 2 2 4 0 6-2-2-2-4 0-6z'/%3E%3C/svg%3E");
+  --squiggle:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 6'%3E%3Cpath d='M0 3c5-3 5 3 10 0s5 3 10 0 5 3 10 0 5 3 10 0' fill='none' stroke='%231e5c48' stroke-width='1.6'/%3E%3C/svg%3E");}
+[data-world="fable"][data-theme="dark"]{--gold:#e2bd62;--gold-ink:#e2bd62;--gold-2:#f2d896;--rose:#e88fb0;--leaf:#8fd49d;
+  --fleuron:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 16'%3E%3Cpath fill='%23e2bd62' d='M20 2c3 4 9 5 13 3-3 4-9 6-13 3-4 3-10 1-13-3 4 2 10 1 13-3zm0 7c2 2 2 4 0 6-2-2-2-4 0-6z'/%3E%3C/svg%3E");
+  --squiggle:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 6'%3E%3Cpath d='M0 3c5-3 5 3 10 0s5 3 10 0 5 3 10 0 5 3 10 0' fill='none' stroke='%23e2bd62' stroke-width='1.6'/%3E%3C/svg%3E");}
+[data-world="fable"] ::selection{background:var(--sel);color:var(--ink);}
 
-/* type: the italic accent becomes a petal gradient */
-[data-world="fable"] :is(.h1,.h2,.h3,.sec-head h2,.d-hero h1,.d-head h1){font-optical-sizing:auto;}
-[data-world="fable"] :is(.h1,.h2,.h3,.sec-head h2,.d-hero h1,.d-head h1) em{font-weight:500;background:var(--accent-fill);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.08em;}
-[data-world="fable"] .pull{font-family:var(--head-font);}
+/* ---------- type: a book ---------- */
+[data-world="fable"] :is(.h1,.h2,.h3,.sec-head h2,.d-hero h1,.d-head h1) em{color:var(--accent);font-style:italic;}
+[data-world="fable"] :is(.d-head h1,.d-hero h1){font-size:calc(var(--t-sub-lg) * 1.15);}
+[data-world="fable"] :is(.prose,.d-doc > p,.d-doc > ul > li,.d-doc > section > p,.card p,.step p,.acc .acc-body){line-height:1.75;}
+[data-world="fable"] :is(.d-doc > p,.d-doc > section > p,.d-doc > ul > li){font-size:calc(var(--t-ui) * 1.12);}
+[data-world="fable"] .lede{line-height:1.6;font-style:italic;}
+/* the opening line of every page begins with an illuminated letter */
+[data-world="fable"] :is(.d-head .d-lede,.d-hero p)::first-letter{font-family:"IM Fell English",Georgia,serif;float:left;font-size:3.4em;line-height:.82;padding:.06em .1em 0 0;color:var(--gold);text-shadow:1px 1px 0 color-mix(in srgb,var(--accent) 40%,transparent);}
+[data-world="fable"] .d-hero p::first-letter{float:none;font-size:1.8em;line-height:1;padding:0;}
+[data-world="fable"] .pull{font-family:var(--head-font);font-style:italic;position:relative;padding-left:.6em;}
+[data-world="fable"] .pull::before{content:"\201C" / "";position:absolute;left:-.25em;top:-.35em;font-size:2.6em;color:var(--gold);line-height:1;}
+[data-world="fable"] .quote p{font-style:italic;}
+[data-world="fable"] .link{color:var(--accent);border-bottom:1px solid color-mix(in srgb,var(--gold) 60%,transparent);}
+@media (hover:hover) and (pointer:fine){[data-world="fable"] .link:hover{border-bottom-color:var(--gold);background:linear-gradient(transparent 62%,color-mix(in srgb,var(--gold-2) 45%,transparent) 0);}}
+[data-world="fable"] :focus-visible{outline:2px solid var(--focus);outline-offset:3px;box-shadow:0 0 0 6px color-mix(in srgb,var(--gold-2) 40%,transparent);}
 
-/* petal shapes: each corner a little different */
-[data-world="fable"] :is(.card,.case-nav a,.ia-leaf){border-radius:28px 22px 30px 18px/22px 30px 18px 28px;}
-[data-world="fable"] :is(.fig,.d-ex,.ia-tree,.code){border-radius:34px 28px 36px 26px/28px 36px 26px 34px;}
-/* stitched: a dashed thread just inside the edge */
-[data-world="fable"] :is(.card,.case-nav a,.dlg,.d-note){outline:1.5px dashed var(--stitch);outline-offset:-7px;}
-[data-world="fable"] :is(a.card,.case-nav a){transition:border-color var(--d-move),color var(--d-move),box-shadow var(--d-move) var(--ease-out),translate var(--d-move) var(--ease-out),rotate var(--d-move) var(--ease-out);}
+/* ---------- rules are fleurons ---------- */
+[data-world="fable"] .divider,[data-world="fable"] hr.divider{height:16px;background:var(--fleuron) center/36px 14px no-repeat,linear-gradient(var(--line-2),var(--line-2)) left 50%/calc(50% - 26px) 1px no-repeat,linear-gradient(var(--line-2),var(--line-2)) right 50%/calc(50% - 26px) 1px no-repeat;}
+[data-world="fable"] .sec-label::after{height:14px;background:linear-gradient(var(--line-2),var(--line-2)) 0 50%/calc(100% - 44px) 1px no-repeat,var(--fleuron) 100% 50%/34px 13px no-repeat;}
+[data-world="fable"] .sec-head::before{height:14px;background:linear-gradient(var(--line-2),var(--line-2)) 0 50%/calc(100% - 44px) 1px no-repeat,var(--fleuron) 100% 50%/34px 13px no-repeat;}
+[data-world="fable"] .sec-head::after{height:14px;background:var(--fleuron) 0 50%/34px 13px no-repeat,linear-gradient(var(--line-2),var(--line-2)) 100% 50%/calc(100% - 44px) 1px no-repeat;}
+[data-world="fable"] .d-doc > h2::after,[data-world="fable"] .d-doc section > h2::after{content:"";display:block;width:40px;height:14px;margin-top:10px;background:var(--fleuron) 0 50%/34px 13px no-repeat;}
+
+/* ---------- buttons: emerald with a hair of gold leaf; liquid light inside ---------- */
+[data-world="fable"] :is(.btn,.case-link,.contact-actions a){font-family:"IM Fell English SC",Georgia,serif;font-size:calc(var(--t-body) * 1.06);letter-spacing:.04em;padding:12px 30px 13px;position:relative;isolation:isolate;overflow:hidden;}
+[data-world="fable"] :is(.btn-primary,.case-link,.contact-actions .primary)::before{content:"";position:absolute;inset:-40%;z-index:-1;pointer-events:none;opacity:0;
+  background:radial-gradient(closest-side at var(--lx,50%) var(--ly,50%),rgba(255,236,170,.75),rgba(255,190,220,.35) 45%,transparent 72%);filter:blur(6px);mix-blend-mode:soft-light;transition:opacity var(--d-base) ease;}
 @media (hover:hover) and (pointer:fine){
-  [data-world="fable"] :is(a.card:hover,.case-nav a:hover){translate:0 -4px;rotate:-.4deg;}
-  [data-world="fable"] .btn-primary:hover{translate:0 -2px;}
+  [data-world="fable"] :is(.btn-primary,.case-link,.contact-actions .primary):hover::before{opacity:1;}
+  [data-world="fable"] :is(.btn-primary,.case-link,.contact-actions .primary):hover{translate:0 -1px;}
 }
+[data-world="fable"] :is(.btn-ghost,.contact-actions .ghost){border-color:var(--line-2);background:var(--panel);box-shadow:inset 0 0 0 3px var(--panel),inset 0 0 0 4px color-mix(in srgb,var(--gold) 35%,transparent);}
+@media (hover:hover) and (pointer:fine){[data-world="fable"] :is(.btn-ghost,.contact-actions .ghost):hover{border-color:var(--gold);color:var(--accent);}}
+[data-world="fable"] .btn-quiet{font-family:var(--sans);font-size:var(--t-ui);letter-spacing:0;}
+[data-world="fable"] .btn-sm{font-size:var(--t-ui);padding:8px 18px 9px;}
 
-/* dotted rules instead of hairlines */
-[data-world="fable"] :is(.sec-label::after,.sec-head::before,.sec-head::after,.divider-label::before,.divider-label::after,.divider,hr.divider){height:4px;background:radial-gradient(circle,var(--line-2) 1.3px,transparent 1.8px) 0 50%/9px 4px repeat-x;}
+/* ---------- small things ---------- */
+/* chips are luggage tags: a punched hole, a string of gold */
+[data-world="fable"] .chip{padding:0 16px 0 24px;background:var(--panel) radial-gradient(circle at 12px 50%,var(--surface-2) 0 3px,var(--line-2) 3px 4px,transparent 4.5px) no-repeat;border-color:var(--line-2);font-style:italic;}
+[data-world="fable"] .chip[aria-pressed="true"]{background:var(--accent-fill);box-shadow:inset 0 0 0 1px rgba(255,226,150,.4);font-style:normal;}
+[data-world="fable"] .chip[aria-pressed="true"]::before{content:"✦" / "";margin-left:-12px;margin-right:2px;color:var(--gold-2);}
+[data-world="fable"] .badge{font-family:"IM Fell English SC",Georgia,serif;font-size:13px;letter-spacing:.04em;}
+/* a solid badge is a wax seal */
+[data-world="fable"] .badge-solid{background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--rose) 70%,#fff) 0,var(--rose) 45%,color-mix(in srgb,var(--rose) 70%,#000) 100%);color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);}
+[data-world="fable"] .tag{font-family:"IM Fell English SC",Georgia,serif;letter-spacing:.06em;font-size:14px;background:color-mix(in srgb,var(--gold-2) 30%,transparent);}
+[data-world="fable"] :is(.kbd,kbd){font-family:"IM Fell English SC",Georgia,serif;font-size:13px;box-shadow:inset 0 0 0 1px var(--line-2),inset 0 -2px 0 var(--line-2);}
+[data-world="fable"] .avatar{box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--gold);}
+[data-world="fable"] .avatar img{filter:sepia(.35) saturate(.9);}
 
-/* controls with a softer hand */
-[data-world="fable"] .check input{border-radius:7px;border-color:var(--tint);}
-[data-world="fable"] .tgl .sw{height:22px;width:38px;}
-[data-world="fable"] .tgl .sw::after{width:18px;height:18px;box-shadow:0 2px 6px rgba(120,40,110,.25);}
+/* ---------- surfaces: pages, softly lifted, with gilt corners ---------- */
+[data-world="fable"] :is(.card,.case-nav a,.ia-leaf,.d-wcard){border-radius:22px 16px 24px 14px/16px 24px 14px 22px;}
+[data-world="fable"] :is(.card,.d-wcard,.morph-panel){background-image:
+  radial-gradient(circle at 9px 9px,var(--gold) 0 1.4px,transparent 2px),radial-gradient(circle at calc(100% - 9px) 9px,var(--gold) 0 1.4px,transparent 2px),
+  radial-gradient(circle at 9px calc(100% - 9px),var(--gold) 0 1.4px,transparent 2px),radial-gradient(circle at calc(100% - 9px) calc(100% - 9px),var(--gold) 0 1.4px,transparent 2px);}
+[data-world="fable"] .case-nav a{background:var(--panel);}
+[data-world="fable"] .card i{font-family:"IM Fell English SC",Georgia,serif;letter-spacing:.05em;color:var(--gold-ink);}
+[data-world="fable"] :is(a.card,.case-nav a,.d-wcard){transition:border-color var(--d-move),box-shadow var(--d-move) var(--ease-out),translate var(--d-move) var(--ease-out),rotate var(--d-move) var(--ease-out);}
+@media (hover:hover) and (pointer:fine){[data-world="fable"] :is(a.card:hover,.case-nav a:hover,.d-wcard:hover){translate:0 -4px;rotate:-.5deg;border-color:var(--gold);}}
+[data-world="fable"] :is(.fig,.d-ex,.ia-tree,.code,.d-hero){border-radius:26px 20px 28px 18px/20px 28px 18px 26px;}
+[data-world="fable"] .d-note{border-left:3px solid var(--gold);font-style:italic;}
+
+/* ---------- fields: a quill's line ---------- */
+[data-world="fable"] :is(.input,.txt,.sel){background:var(--panel);border-color:var(--line-2);font-family:var(--sans);font-size:calc(var(--t-ui) * 1.1);caret-color:var(--accent);}
+[data-world="fable"] :is(.input,.txt,.sel):focus{border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--gold-2) 45%,transparent);}
+[data-world="fable"] .field > label,[data-world="fable"] .field-label{font-family:"IM Fell English SC",Georgia,serif;font-size:calc(var(--t-ui) * 1.15);letter-spacing:.03em;}
+[data-world="fable"] .input::placeholder{font-style:italic;}
+/* the tick is drawn with a pen, once, when checked */
+[data-world="fable"] .check input{width:20px;height:20px;border-radius:6px 8px 5px 7px;border-color:var(--tint);}
+[data-world="fable"] .check input:checked:not([type="radio"]){background-color:var(--accent);background-size:15px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 13c2 1 4 3 5 6 3-7 7-11 11-14' fill='none' stroke='%23fff8e6' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='30' stroke-dashoffset='30'%3E%3Canimate attributeName='stroke-dashoffset' to='0' dur='.32s' fill='freeze'/%3E%3C/path%3E%3C/svg%3E");}
+[data-world="fable"][data-theme="dark"] .check input:checked:not([type="radio"]){background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 13c2 1 4 3 5 6 3-7 7-11 11-14' fill='none' stroke='%231c1606' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' stroke-dasharray='30' stroke-dashoffset='30'%3E%3Canimate attributeName='stroke-dashoffset' to='0' dur='.32s' fill='freeze'/%3E%3C/path%3E%3C/svg%3E");}
+[data-world="fable"] .check input[type="radio"]:checked{background:radial-gradient(circle,var(--gold-2) 0 3px,var(--accent) 3.5px);border-color:var(--accent);box-shadow:none;}
+/* the switch's thumb is a firefly */
+[data-world="fable"] .tgl .sw{width:40px;height:22px;background:var(--surface-3);box-shadow:inset 0 1px 3px rgba(60,45,15,.25);}
+[data-world="fable"] .tgl .sw::after{width:18px;height:18px;background:radial-gradient(circle at 40% 35%,#fff 0,var(--panel) 60%);box-shadow:0 1px 3px rgba(60,45,15,.3);transition:transform var(--d-move) var(--ease-snap),background var(--d-base),box-shadow var(--d-base);}
 [data-world="fable"] .tgl input:checked + .sw{background:var(--accent-fill);}
-[data-world="fable"] .bar{height:6px;}
-[data-world="fable"] .bar i{background:var(--accent-fill);}
-[data-world="fable"] .bar::after{width:6px;}
-[data-world="fable"] .progress{height:3px;background:var(--accent-fill);}
-[data-world="fable"] .rng::-webkit-slider-thumb{width:18px;height:18px;margin-top:-8px;border-width:3px;}
-[data-world="fable"] .tabs [role="tab"][aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--accent);}
-[data-world="fable"] .badge{font-family:var(--sans);font-weight:700;letter-spacing:.02em;}
+[data-world="fable"] .tgl input:checked + .sw::after{transform:translateX(18px);background:radial-gradient(circle at 40% 35%,#fffbe6 0,var(--gold-2) 45%,var(--gold) 100%);box-shadow:0 0 10px 3px color-mix(in srgb,var(--gold-2) 70%,transparent);}
+/* the slider's thumb is a gilded acorn of light */
+[data-world="fable"] .rng::-webkit-slider-runnable-track{height:3px;background:linear-gradient(90deg,var(--accent) var(--f),var(--line-2) var(--f));}
+[data-world="fable"] .rng::-webkit-slider-thumb{width:20px;height:20px;margin-top:-8.5px;border:2px solid var(--panel);background:radial-gradient(circle at 35% 30%,#fffbe6,var(--gold-2) 50%,var(--gold));box-shadow:0 0 0 1px var(--gold),0 2px 6px rgba(60,45,15,.35);}
+[data-world="fable"] .seg{background:var(--surface-2);}
+[data-world="fable"] .seg button{font-style:italic;}
+[data-world="fable"] .seg button[aria-pressed="true"]{font-style:normal;box-shadow:inset 0 0 0 3px var(--surface-2),inset 0 0 0 4px color-mix(in srgb,var(--gold) 45%,transparent);}
+[data-world="fable"] .drop{border-style:dashed;border-color:var(--gold);font-style:italic;}
 
-/* the air: motes that drift up and glow, and sparks behind the pointer */
-[data-world="fable"] .w-mote{left:calc(var(--x) * 1%);top:calc(var(--y) * 1%);width:calc(var(--s) * 7px);height:calc(var(--s) * 7px);border-radius:50%;
-  background:radial-gradient(circle,#fff 0 22%,rgba(255,170,215,.85) 40%,transparent 72%);opacity:0;
-  animation:fb-float var(--t) ease-in-out var(--d) infinite;}
-[data-world="fable"] .w-mote:nth-child(3n){background:radial-gradient(circle,#fff 0 22%,rgba(170,230,205,.85) 40%,transparent 72%);}
-[data-world="fable"] .w-mote:nth-child(3n+1){background:radial-gradient(circle,#fff 0 22%,rgba(200,180,255,.85) 40%,transparent 72%);}
-@keyframes fb-float{0%{opacity:0;transform:translate(0,30px) scale(.6);}25%{opacity:.9;}50%{transform:translate(18px,-20px) scale(1);}75%{opacity:.6;}100%{opacity:0;transform:translate(-10px,-80px) scale(.5);}}
-[data-world="fable"] .w-spark{background:var(--accent-fill);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);}
+/* ---------- tabs: the chosen one is underlined by hand ---------- */
+[data-world="fable"] .tabs [role="tab"]{font-family:"IM Fell English SC",Georgia,serif;font-size:calc(var(--t-ui) * 1.15);letter-spacing:.03em;}
+[data-world="fable"] .tabs [role="tab"][aria-selected="true"]{box-shadow:none;background:var(--squiggle) 50% 100%/40px 6px repeat-x;}
+[data-world="fable"] .acc summary{font-family:var(--head-font);font-size:calc(var(--t-body) * 1.1);}
+[data-world="fable"] .acc summary .icon{color:var(--gold);}
+[data-world="fable"] .acc .acc-body{font-style:italic;}
+
+/* ---------- overlays: a page from the book; notes sealed with wax ---------- */
+[data-world="fable"] :is(.dlg,.drawer,.morph-panel){box-shadow:inset 0 0 0 6px var(--panel),inset 0 0 0 7px color-mix(in srgb,var(--gold) 55%,transparent),var(--shadow-pop);}
+[data-world="fable"] :is(.dlg,.drawer)::backdrop{background:radial-gradient(ellipse at center,rgba(20,30,18,.35),rgba(10,16,9,.7));backdrop-filter:blur(3px);}
+[data-world="fable"] .dlg h2{font-size:calc(var(--t-sub) * 1.15);}
+[data-world="fable"] .dlg[open]{animation:fb-open var(--d-modal) var(--ease-out);}
+@keyframes fb-open{from{opacity:0;transform:translateY(14px) rotate(-1.2deg) scale(.96);}}
+[data-world="fable"] :is(.menu,.pop,.define-box){border-color:var(--line-2);}
+[data-world="fable"] .menu [role="menuitem"]{font-style:italic;}
+[data-world="fable"] .menu [role="menuitem"]:is(:hover,:focus-visible){background:color-mix(in srgb,var(--gold-2) 22%,transparent);}
+[data-world="fable"] .tip [role="tooltip"]{background:var(--panel);color:var(--ink);font-family:var(--sans);font-style:italic;font-size:13px;border:1px solid var(--line-2);box-shadow:0 8px 20px -10px rgba(60,45,15,.4);}
+[data-world="fable"] .tip [role="tooltip"] .mut{color:var(--mut);}
+[data-world="fable"] .toast{background:var(--panel);color:var(--ink);border:1px solid var(--line-2);font-style:italic;padding-left:12px;box-shadow:0 14px 30px -14px rgba(60,45,15,.5);}
+[data-world="fable"] .toast .icon{width:26px;height:26px;padding:5px;border-radius:50%;color:#fff;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--rose) 70%,#fff),var(--rose) 50%,color-mix(in srgb,var(--rose) 70%,#000));}
+[data-world="fable"] .toast-ok .icon{background:radial-gradient(circle at 35% 30%,#5fae80,var(--accent) 55%,#0f3a2c);color:#fff8e6;}
+
+/* ---------- loading: a firefly circles, mist drifts, a vine grows ---------- */
+[data-world="fable"] .spinner{border:2px dotted color-mix(in srgb,var(--gold) 50%,transparent);border-top:2px solid var(--gold);box-shadow:0 -2px 8px -2px var(--gold-2);}
+[data-world="fable"] .skel::after{background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--gold-2) 40%,transparent),transparent);}
+[data-world="fable"] .bar{height:6px;background:var(--surface-3);overflow:visible;}
+[data-world="fable"] .bar i{border-radius:inherit;background:linear-gradient(90deg,var(--leaf),var(--accent) 60%,var(--gold));}
+[data-world="fable"] .bar::after{top:-4px;width:12px;height:12px;border-radius:0 70% 0 70%;background:var(--leaf);rotate:-45deg;translate:-4px 0;}
+[data-world="fable"] .progress{height:3px;background:linear-gradient(90deg,transparent,var(--accent) 70%,var(--gold));}
+
+/* ---------- morph: the readout is a little orbit of gold ---------- */
+[data-world="fable"] .morph-ring .fg{stroke:var(--gold);stroke-width:3;}
+[data-world="fable"] .morph-ring .bg{stroke:var(--line-2);stroke-dasharray:2 4;}
+[data-world="fable"] .morph[data-state="busy"] .morph-btn{background:var(--panel);color:var(--ink);font-style:italic;box-shadow:inset 0 0 0 1px var(--line-2);}
+[data-world="fable"] .morph[data-state="done"] .morph-btn{background:var(--ok-bg);color:var(--ok);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--gold) 50%,transparent);}
+
+/* ---------- reading patterns ---------- */
+[data-world="fable"] .step::before{content:counter(st,upper-roman) ".";font-family:var(--head-font);font-size:calc(var(--t-sub) * .9);letter-spacing:0;color:var(--gold);min-width:2.2ch;padding-top:0;}
+[data-world="fable"] .did li::before{content:"❧" / "";color:var(--gold);}
+[data-world="fable"] :is(.table,.cmp) th{font-family:"IM Fell English SC",Georgia,serif;font-size:14px;letter-spacing:.04em;}
+[data-world="fable"] :is(.table,.cmp) td{border-bottom-style:dotted;}
+[data-world="fable"] .impact b{font-family:var(--head-font);color:var(--accent);}
+[data-world="fable"] .impact .lead b{color:var(--gold-ink);}
+[data-world="fable"] :is(.pin,.keys .k){background:var(--accent);color:var(--on-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold-2) 50%,transparent);font-family:var(--head-font);}
+[data-world="fable"] .loop-node .ring{border-color:var(--gold);font-family:var(--head-font);}
+[data-world="fable"] .code{background:var(--panel);}
+[data-world="fable"] .code pre,[data-world="fable"] .d-code pre{font-size:13.5px;}
+
+/* ---------- docs chrome ---------- */
+[data-world="fable"] .d-nav h3{font-family:"IM Fell English SC",Georgia,serif;font-size:15px;letter-spacing:.05em;color:var(--gold-ink);}
+[data-world="fable"] .d-nav a{font-family:var(--sans);font-size:calc(var(--t-ui) * 1.06);}
+[data-world="fable"] .d-nav a[aria-current="page"]{background:none;color:var(--accent);font-style:italic;box-shadow:inset 3px 0 0 var(--gold);border-radius:0 var(--r-sm) var(--r-sm) 0;}
+[data-world="fable"] .d-toc a{font-style:italic;}
+[data-world="fable"] .d-pn a{background:var(--panel);}
+
+/* ---------- the world around the page (js/worlds/fable.js) ---------- */
+.fb-spark{position:fixed;z-index:var(--z-toast);pointer-events:none;width:8px;height:8px;margin:-4px 0 0 -4px;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);}
+.fb-flower{position:fixed;z-index:var(--z-sticky);pointer-events:none;width:64px;height:64px;margin:-32px 0 0 -32px;}
+.fb-snow{position:fixed;top:-10px;z-index:var(--z-sticky);pointer-events:none;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.9);}
+@media (prefers-reduced-motion:reduce){[data-world="fable"] :is(.btn-primary,.case-link)::before{display:none;}}
+
+/* the sidebar reads over the pond: keep it a page, not a window */
+[data-world="fable"] .d-side{background:color-mix(in srgb,var(--surface) 86%,transparent);backdrop-filter:blur(10px);}
+
+/* the page is vellum over the pond: the water's colours bleed softly through */
+[data-world="fable"] .d-panel{background:color-mix(in srgb,var(--paper) 82%,transparent);backdrop-filter:blur(3px);}
+[data-world="fable"][data-theme="dark"] .d-panel{background:color-mix(in srgb,var(--paper) 84%,transparent);}
+[data-world="fable"] .d-side{background:color-mix(in srgb,var(--surface) 78%,transparent);}

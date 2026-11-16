@@ -22,7 +22,7 @@ One system, many worlds: the same markup can become an 8-bit platformer (Pixel),
 <button data-world-set="pixel">Pixel</button>
 ```
 
-A world is `tokens/worlds/<id>.json` (token overrides: `base`, `light`, `dark`) plus an optional `css/worlds/<id>.css` for flourishes. Components read the **world contract** (the `world` group in `tokens/tokens.json`); its defaults are Studio, so pages that never set a world are unchanged. See [system.heyrav.in/worlds](https://system.heyrav.in/worlds/).
+A world is `tokens/worlds/<id>.json` (token overrides: `base`, `light`, `dark`; its `icons` set and `voice`) plus an optional `css/worlds/<id>.css` for flourishes and an optional `js/worlds/<id>.js` module for its scene, hidden interactions and component behaviour (loaded only when the world is visited). Components read the **world contract** (the `world` group in `tokens/tokens.json`); its defaults are Studio, so pages that never set a world are unchanged. See [system.heyrav.in/worlds](https://system.heyrav.in/worlds/).
 
 ## Layout
 
@@ -30,7 +30,9 @@ A world is `tokens/worlds/<id>.json` (token overrides: `base`, `light`, `dark`) 
 |---|---|
 | `tokens/tokens.json` | Source of truth, W3C DTCG format. Dark values in `$extensions.heyrav.dark`. |
 | `tokens/worlds/*.json`, `css/worlds/*.css` | Worlds: token overrides and flourishes. Built into `worlds.css` and `js/worlds-data.js`. |
-| `js/worlds.js` | The world switch: fonts on demand, the reveal, ambient layers. |
+| `js/worlds.js` | The world switch: fonts, icon sets and modules on demand, voice, the reveal, the module life cycle. |
+| `js/worlds/*.js` | World modules: scenes (pixel landscape, the Fable pond and Aurora sky shaders, the Symbiote slime), hidden interactions, `celebrate()` and `nudge()` answers. |
+| `js/icons/*.js` | Icon sets a world can swap in by name: pixelarticons, Phosphor Duotone, Light and Fill (all MIT). |
 | `css/components.css` | Hand-written components (shipped ones ported verbatim from heyrav.in). |
 | `css/docs.css`, `js/docs.js` | Documentation chrome only (`d-` prefix). |
 | `js/heyrav.js` | Behaviour for interactive components. No dependencies. |
