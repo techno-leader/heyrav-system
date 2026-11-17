@@ -14,3 +14,8 @@ html.w-switching *,html.w-switching *::before,html.w-switching *::after{transiti
 .w-layer [data-hit]{pointer-events:auto;}
 @media (prefers-reduced-motion:reduce){.w-layer *{animation:none!important;transition:none!important;}}
 @media print{.w-layer{display:none;}}
+
+/* ---- the Assets page shows a world's props standing still on the page ---- */
+.px-coin.pp-still{position:relative;display:inline-block;margin:0 10px;animation:none;}
+.au-specimen{background:#060a18;border-radius:var(--r-md);min-height:90px;display:grid;place-items:center;}
+.au-shoot.pp-still{position:relative;display:block;pointer-events:none;}

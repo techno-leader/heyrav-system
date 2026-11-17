@@ -1,0 +1,31 @@
+
+/* ---------- Paper Pixel: what tokens cannot say ---------- */
+/* paper grain on the page and on every sheet */
+[data-world="paper"] body{background-image:var(--tex);}
+[data-world="paper"] :is(.card,.d-tile,.d-ex,.dialog,.menu,.popover,.toast){background-image:var(--tex);}
+/* a filled button is a thick card: it presses down into the page */
+[data-world="paper"] :is(.btn-primary,.btn-primary:hover){box-shadow:var(--btn-lift);}
+[data-world="paper"] .btn-primary:active{box-shadow:var(--btn-lift-press);transform:translateY(var(--press-y));}
+
+/* the feather on a string replaces the pointer on a mouse; fields keep a caret */
+html.pp-toy[data-world="paper"],html.pp-toy[data-world="paper"] *{cursor:none!important;}
+html.pp-toy[data-world="paper"] :is(input:not([type=range]):not([type=checkbox]):not([type=radio]),textarea,select,[contenteditable]){cursor:auto!important;}
+
+/* plants and the box stand on the page's lines, in document coordinates */
+.pp-garden{position:absolute;left:0;top:0;width:0;height:0;z-index:4;pointer-events:none;}
+.pp-item{position:absolute;pointer-events:none;filter:drop-shadow(4px 8px 4px rgba(52,38,22,.16)) drop-shadow(1px 2px 1px rgba(52,38,22,.14));}
+[data-world="paper"][data-theme="dark"] .pp-item{filter:drop-shadow(4px 8px 5px rgba(0,0,0,.45)) drop-shadow(1px 2px 1px rgba(0,0,0,.4));}
+.pp-item canvas{display:block;width:100%;height:100%;}
+.pp-box{z-index:5;pointer-events:auto;padding:0;border:0;background:none;border-radius:var(--r-sm);}
+.pp-fixed{position:fixed;}
+.pp-box:focus-visible{outline:2px solid var(--focus);outline-offset:4px;}
+@media print{.pp-garden,.pp-box{display:none;}}
+
+/* ---------- the Assets page ---------- */
+.pp-specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:12px;}
+.pp-specimen{position:relative;margin:0;height:220px;border:var(--bw) var(--bs) var(--line);border-radius:var(--r-md);background:var(--panel);background-image:var(--tex);overflow:hidden;}
+.pp-specimen.wide{grid-column:span 2;}
+.pp-specimen .pp-spec{position:absolute;left:0;top:0;}
+.pp-specimen figcaption{position:absolute;left:12px;right:12px;bottom:10px;display:flex;justify-content:space-between;gap:8px;font-family:var(--label-font);font-size:calc(var(--t-label) * var(--label-scale));letter-spacing:calc(.06em * var(--label-track));text-transform:var(--label-case);color:var(--ink-3);}
+.pp-cat-sheet{margin-top:12px;padding:16px;border:var(--bw) var(--bs) var(--line);border-radius:var(--r-md);background:var(--panel);background-image:var(--tex);}
+.pp-cat-sheet canvas{display:block;image-rendering:pixelated;}
