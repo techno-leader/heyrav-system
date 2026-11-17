@@ -24,19 +24,19 @@ html.w-switching *,html.w-switching *::before,html.w-switching *::after{transiti
 
 /* ---- Pixel ---- */
 [data-world="pixel"]{
-  --sans:"Atkinson Hyperlegible Next",system-ui,sans-serif;
-  --mono:"Atkinson Hyperlegible Mono",ui-monospace,monospace;
-  --head-font:"Silkscreen","Pixelify Sans",monospace;
-  --em-font:"Pixelify Sans",monospace;
-  --label-font:"Silkscreen",monospace;
-  --label-track:0.2;
-  --label-scale:0.95;
+  --sans:"Pixelify Sans",system-ui,sans-serif;
+  --mono:"VT323",ui-monospace,monospace;
+  --head-font:"Jersey 15","Pixelify Sans",monospace;
+  --em-font:"Jersey 15","Pixelify Sans",monospace;
+  --label-font:"Tiny5","Pixelify Sans",monospace;
+  --label-track:0.12;
+  --label-scale:1.08;
   --head-track:0;
-  --head-lh:1.2;
-  --head-case:uppercase;
+  --head-lh:1.05;
+  --head-case:none;
   --w-body:400;
   --w-head:400;
-  --w-strong:700;
+  --w-strong:600;
   --r-xs:0px;
   --r-sm:0px;
   --r-md:0px;
@@ -162,7 +162,7 @@ html.w-switching *,html.w-switching *::before,html.w-switching *::after{transiti
 [data-world="pixel"] .link{border-bottom:2px dotted currentColor;}
 @media (hover:hover) and (pointer:fine){[data-world="pixel"] .link:hover{background:var(--px-gold);color:#14183d;border-bottom-style:solid;}}
 [data-world="pixel"] :focus-visible{outline:3px dashed var(--focus);outline-offset:3px;}
-[data-world="pixel"] :is(code.inline,.prose code,.d-doc code){font-size:.92em;background:var(--px-crt);color:var(--px-crt-ink);}
+[data-world="pixel"] :is(code.inline,.prose code,.d-doc code){font-size:1.12em;background:var(--px-crt);color:var(--px-crt-ink);}
 [data-world="pixel"] :is(code.inline,.prose code,.d-doc code) :is(.badge,span){color:var(--px-crt-ink);}
 
 /* ---------- buttons: blocks that push in ---------- */
@@ -184,7 +184,7 @@ html.w-switching *,html.w-switching *::before,html.w-switching *::after{transiti
 [data-world="pixel"] .chip{border-color:var(--line-2);font-family:"Pixelify Sans",monospace;box-shadow:0 3px 0 var(--line-2);transition:translate 60ms steps(2,end),box-shadow 60ms steps(2,end),background 120ms steps(2,end);}
 [data-world="pixel"] .chip:active{translate:0 3px;box-shadow:0 0 0 var(--line-2);}
 [data-world="pixel"] .chip[aria-pressed="true"]{border-color:var(--line-2);box-shadow:inset 0 3px 0 rgba(0,0,0,.2);translate:0 3px;}
-[data-world="pixel"] .badge{font-family:"Silkscreen",monospace;font-size:11px;letter-spacing:.06em;box-shadow:inset 0 0 0 2px currentColor;}
+[data-world="pixel"] .badge{font-family:"Tiny5",monospace;font-size:11px;letter-spacing:.06em;box-shadow:inset 0 0 0 2px currentColor;}
 [data-world="pixel"] .badge-solid{box-shadow:none;}
 [data-world="pixel"] .badge .dot{width:6px;height:6px;animation:px-blink 1s steps(2,end) infinite;}
 [data-world="pixel"] .tag{background:var(--px-gold);color:#14183d;}
@@ -276,7 +276,7 @@ html.w-switching *,html.w-switching *::before,html.w-switching *::after{transiti
 @media (hover:hover) and (pointer:fine){[data-world="pixel"] .table tbody tr:hover td{background:color-mix(in srgb,var(--px-gold) 30%,transparent);}}
 [data-world="pixel"] :is(.facts b,.impact b){font-family:"Pixelify Sans",monospace;}
 [data-world="pixel"] .impact .lead b{color:var(--accent);}
-[data-world="pixel"] .step::before{content:"LV" counter(st);font-family:"Silkscreen",monospace;color:var(--accent);}
+[data-world="pixel"] .step::before{content:"LV" counter(st);font-family:"Tiny5",monospace;color:var(--accent);}
 [data-world="pixel"] .did li::before{content:"▶" / "";color:var(--accent);}
 [data-world="pixel"] .quote{border-top:2px dotted var(--line);}
 [data-world="pixel"] .pull{position:relative;padding:18px 22px;background:var(--panel);border:2px solid var(--line-2);box-shadow:4px 4px 0 var(--line-2);}
@@ -306,13 +306,6 @@ html.w-switching *,html.w-switching *::before,html.w-switching *::after{transiti
 [data-world="pixel"] .d-pn a{border:2px solid var(--line-2);box-shadow:3px 3px 0 var(--line-2);background:var(--panel);}
 
 /* ---------- the landscape (built by js/worlds/pixel.js) ---------- */
-[data-world="pixel"] .px-cloud{position:absolute;left:0;width:8px;height:8px;opacity:.92;will-change:transform;animation:px-drift linear infinite;}
-@keyframes px-drift{from{transform:translateX(-140px);}to{transform:translateX(calc(100vw + 40px));}}
-[data-world="pixel"][data-theme="dark"] .px-cloud{opacity:.4;}
-[data-world="pixel"] .px-stars{position:absolute;inset:0;opacity:0;}
-[data-world="pixel"][data-theme="dark"] .px-stars{opacity:.8;animation:px-blink 2.6s steps(2,end) infinite;}
-[data-world="pixel"] .px-hills{position:absolute;left:0;right:0;bottom:0;height:96px;opacity:.55;}
-[data-world="pixel"][data-theme="dark"] .px-hills{opacity:.35;}
 @keyframes px-blink{50%{opacity:.35;}}
 
 /* a bonus block sits beside each page title; it gives coins, then goes dull */
@@ -330,27 +323,57 @@ html.w-switching *,html.w-switching *::before,html.w-switching *::after{transiti
 .px-block.spent{background:#b0793e;box-shadow:inset -4px -4px 0 #7a5228,inset 4px 4px 0 #d39a5c;cursor:default;}
 .px-block.spent svg{opacity:0;animation:none;}
 .px-coin{position:fixed;z-index:var(--z-toast);width:16px;height:20px;margin:-10px 0 0 -8px;pointer-events:none;background:#ffd23f;box-shadow:inset -3px -3px 0 #e0a91a,inset 3px 3px 0 #fff3b0,0 0 0 2px #14183d;animation:px-coin .4s steps(4,end) infinite;}
-.px-plus{position:fixed;z-index:var(--z-toast);pointer-events:none;font:700 14px "Silkscreen",monospace;color:#14183d;text-shadow:2px 2px 0 #ffd23f;}
+.px-plus{position:fixed;z-index:var(--z-toast);pointer-events:none;font:700 14px "Tiny5",monospace;color:#14183d;text-shadow:2px 2px 0 #ffd23f;}
 /* the score appears once the first coin is found */
-.px-hud{position:fixed;z-index:var(--z-nav);right:16px;top:12px;display:flex;align-items:center;gap:8px;padding:6px 10px;font:12px "Silkscreen",monospace;color:#14183d;background:#fff7e1;border:2px solid #14183d;box-shadow:3px 3px 0 #14183d;}
+.px-hud{position:fixed;z-index:var(--z-nav);right:16px;top:12px;display:flex;align-items:center;gap:8px;padding:6px 10px;font:12px "Tiny5",monospace;color:#14183d;background:#fff7e1;border:2px solid #14183d;box-shadow:3px 3px 0 #14183d;}
 .px-hud i{display:block;width:10px;height:12px;background:#ffd23f;box-shadow:inset -2px -2px 0 #e0a91a,0 0 0 2px #14183d;}
 .px-hud.ding{animation:px-bump 200ms steps(3,end);}
 /* Bit, who lives along the bottom of the screen */
-.px-bit{position:fixed;z-index:var(--z-sticky);bottom:0;left:0;width:36px;height:36px;padding:0;border:0;background:none;cursor:var(--px-hand,pointer);will-change:transform;}
-.px-bit svg{display:block;width:100%;height:100%;shape-rendering:crispEdges;}
-.px-bit .f2{display:none;}
-.px-bit.walk .f1{animation:px-f1 .32s steps(1,end) infinite;}
-.px-bit.walk .f2{display:block;position:absolute;inset:0;animation:px-f2 .32s steps(1,end) infinite;}
-@keyframes px-f1{50%{opacity:0;}}
-@keyframes px-f2{0%{opacity:0;}50%{opacity:1;}}
-.px-bit.hop{animation:px-hop 360ms steps(6,end);}
-@keyframes px-hop{50%{translate:0 -26px;}}
 .px-say{position:fixed;z-index:var(--z-sticky);bottom:46px;max-width:240px;padding:8px 10px;font:600 13px/1.35 "Pixelify Sans",monospace;color:#14183d;background:#fff7e1;border:2px solid #14183d;box-shadow:3px 3px 0 #14183d;pointer-events:none;}
 .px-say::after{content:"";position:absolute;left:12px;top:100%;width:10px;height:8px;background:#14183d;clip-path:polygon(0 0,100% 0,60% 100%,40% 100%);}
 .px-rain{position:absolute;width:2px;height:8px;background:#7fb6ff;animation:px-fall .6s steps(6,end) forwards;}
 @keyframes px-fall{to{transform:translateY(60vh);opacity:0;}}
 .px-star{position:fixed;z-index:var(--z-toast);width:8px;height:8px;pointer-events:none;background:#ffd23f;box-shadow:8px 0 0 #ffd23f,-8px 0 0 #ffd23f,0 8px 0 #ffd23f,0 -8px 0 #ffd23f;}
-@media (prefers-reduced-motion:reduce){.px-block svg,.px-coin,.px-bit,.px-hud,.badge .dot{animation:none!important;}}
+@media (prefers-reduced-motion:reduce){.px-block svg,.px-coin,.px-hud,.badge .dot{animation:none!important;}}
+
+/* ---------- the wider palette: grass, earth, wood, stone, water, berry ---------- */
+[data-world="pixel"]{--px-grass:#5bbf63;--px-grass-2:#3e9a4b;--px-grass-3:#9be08a;--px-dirt:#c27c45;--px-dirt-2:#9a5b34;--px-wood:#a8693c;--px-stone:#a7b0c4;--px-water:#4aa3ff;--px-berry:#e2557a;--px-sun:#ffd23f;}
+[data-world="pixel"][data-theme="dark"]{--px-grass:#3d6b5a;--px-grass-2:#2c5548;--px-grass-3:#4f8a6f;--px-dirt:#5a3d36;--px-dirt-2:#45302c;}
+[data-world="pixel"] .badge-ok,[data-world="pixel"] .badge.ok{box-shadow:inset 0 0 0 2px var(--px-grass-2);}
+
+/* the page title stands on a ledge of grass over earth */
+[data-world="pixel"] .d-head{position:relative;border-bottom:0;padding-bottom:34px;}
+[data-world="pixel"] .d-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:14px;pointer-events:none;
+  background:linear-gradient(var(--px-grass-3) 0 0) 0 0/100% 2px no-repeat,linear-gradient(var(--px-grass) 0 0) 0 2px/100% 3px no-repeat,linear-gradient(var(--px-grass-2) 0 0) 0 5px/100% 2px no-repeat,
+    repeating-linear-gradient(90deg,var(--px-dirt) 0 10px,var(--px-dirt-2) 10px 12px,var(--px-dirt) 12px 22px,var(--px-dirt-2) 22px 24px) 0 7px/100% 7px no-repeat;
+  box-shadow:0 2px 0 #14183d,0 -2px 0 #14183d;}
+[data-world="pixel"] .d-head::before{content:"";position:absolute;left:0;right:0;bottom:14px;height:4px;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 6px,var(--px-grass) 6px 8px,transparent 8px 13px,var(--px-grass-2) 13px 15px,transparent 15px 22px);}
+
+/* ---------- the land and who lives in it (js/worlds/pixel.js) ---------- */
+.px-sky canvas{image-rendering:pixelated;}
+.px-ground{position:fixed;left:0;right:0;bottom:0;z-index:calc(var(--z-sticky) - 1);pointer-events:none;}
+.px-ground canvas{display:block;width:100%;height:100%;image-rendering:pixelated;}
+/* the last lines of a page scroll clear of the ground */
+[data-world="pixel"] .d-main{padding-bottom:calc(var(--px-strip,0px) + 8px);}
+@media print{.px-ground{display:none;}}
+.px-kid,.px-cat{position:fixed;z-index:var(--z-sticky);left:0;bottom:21px;padding:0;border:0;background:none;cursor:var(--px-hand,pointer);will-change:transform;}
+.px-kid canvas,.px-cat canvas{display:block;image-rendering:pixelated;}
+.px-kid canvas{width:54px;height:72px;}
+.px-cat canvas{width:54px;height:39px;}
+.px-kid:focus-visible,.px-cat:focus-visible{outline:3px dashed var(--focus);outline-offset:2px;}
+.px-heart{position:fixed;z-index:var(--z-toast);width:21px;height:18px;pointer-events:none;background:0 0/100% 100% no-repeat;image-rendering:pixelated;}
+.px-say{bottom:96px;}
+@media (max-width:699px){.px-kid canvas{width:36px;height:48px;}.px-cat canvas{width:36px;height:26px;}}
+@media print{.px-kid,.px-cat{display:none;}}
+[data-world="pixel"] :is(.code pre,.d-code pre){font-size:17px;line-height:1.3;}
+
+/* ---------- the Assets page: every sprite, standing on a tile ---------- */
+.px-specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px;}
+.px-spec{position:relative;margin:0;height:150px;display:grid;place-items:center;background:var(--panel);border:2px solid var(--line-2);box-shadow:4px 4px 0 var(--line-2);}
+.px-spec.wide{grid-column:span 2;}
+.px-spec canvas{image-rendering:pixelated;max-width:90%;}
+.px-spec figcaption{position:absolute;left:8px;bottom:6px;font:12px "Tiny5",monospace;color:var(--ink-3);}
 
 /* ---- Paper Pixel ---- */
 [data-world="paper"]{
