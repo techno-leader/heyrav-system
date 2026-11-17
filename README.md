@@ -12,7 +12,7 @@ The tokens, components and patterns behind [heyrav.in](https://heyrav.in), docum
 
 ## Worlds
 
-One system, many worlds: the same markup can become an 8-bit platformer (Pixel) or a polar night (Aurora), each with a light and a dark side. No attribute is Studio, the system as it ships.
+One system, many worlds: the same markup can become an 8-bit platformer (Pixel), a paper garden (Paper Pixel) or a polar night (Aurora), each with a light and a dark side. No attribute is Studio, the system as it ships.
 
 ```html
 <html data-world="aurora">
@@ -31,7 +31,8 @@ A world is `tokens/worlds/<id>.json` (token overrides: `base`, `light`, `dark`; 
 | `tokens/tokens.json` | Source of truth, W3C DTCG format. Dark values in `$extensions.heyrav.dark`. |
 | `tokens/worlds/*.json`, `css/worlds/*.css` | Worlds: token overrides and flourishes. Built into `worlds.css` and `js/worlds-data.js`. |
 | `js/worlds.js` | The world switch: fonts, icon sets and modules on demand, voice, the reveal, the module life cycle. |
-| `js/worlds/*.js` | World modules: scenes (the Pixel landscape, the Aurora sky shader), hidden interactions, `celebrate()` and `nudge()` answers. |
+| `js/worlds/*.js` | World modules: scenes (the Pixel landscape, the Paper Pixel plants, cat and box, the Aurora sky shader), hidden interactions, `celebrate()` and `nudge()` answers. |
+| `js/worlds-src/<id>/` | A world module in parts, joined by the build into `js/worlds/<id>.js`. Paper Pixel keeps its engine (`1-engine.js`) and asset library (`2-assets.js`) identical to `tools/paper-pixel.js` and `tools/paper-assets.js` in the tools repo, where the bench edits them. |
 | `js/icons/*.js` | Icon sets a world can swap in by name: pixelarticons and Phosphor Light (both MIT). |
 | `css/components.css` | Hand-written components (shipped ones ported verbatim from heyrav.in). |
 | `css/docs.css`, `js/docs.js` | Documentation chrome only (`d-` prefix). |

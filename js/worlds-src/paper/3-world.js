@@ -1,0 +1,580 @@
+/* Paper Pixel world - the page as paper.
+   Pixel plants cut from card stand on the page's own lines and unfold when
+   they come into view; they sway, lean toward the pointer and rustle when it
+   brushes past. A line-drawn cat lives on the page and chases the pointer,
+   which is a feather on a string: it sits, grooms, naps, bats at the feather
+   and pounces when it is flicked. A cardboard box sits on a line too - the
+   cat will climb in and ignore everything until the box is shaken. Plants
+   and the box come from the asset library the Paper Pixel bench edits.
+   Reduced motion: everything stands still, and the cat only turns to look. */
+window.heyravWorlds && heyravWorlds.define('paper', ctx => {
+  const doc = document, root = doc.documentElement;
+  const PP = window.PaperPixel, LIB = window.PaperPixelAssets || {};
+  const DPR = Math.min(2, devicePixelRatio || 1);
+  const now = () => performance.now() / 1000;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  let alive = true; ctx.cleanup(() => { alive = false; });
+
+  /* ------------------------------------------------------------------ *
+   * the pointer
+   * ------------------------------------------------------------------ */
+  const ptr = { x: -999, y: -999, vx: 0, vy: 0, ax: 0, in: false, t: 0, moved: 0, mouse: false };
+  const trail = [];
+  ctx.on(window, 'pointermove', e => {
+    const t = now(), dt = Math.max(0.008, t - ptr.t);
+    const vx = (e.clientX - ptr.x) / dt, vy = (e.clientY - ptr.y) / dt;
+    if (ptr.in) { ptr.ax = (vx - ptr.vx) / dt; ptr.vx = lerp(ptr.vx, vx, 0.5); ptr.vy = lerp(ptr.vy, vy, 0.5); }
+    ptr.x = e.clientX; ptr.y = e.clientY; ptr.t = t; ptr.in = true; ptr.mouse = e.pointerType === 'mouse';
+    if (Math.hypot(vx, vy) > 40) ptr.moved = t;
+    trail.push([t, ptr.x, ptr.y]); while (trail.length && trail[0][0] < t - 1) trail.shift();
+  }, { passive: true });
+  ctx.on(doc, 'pointerleave', () => { ptr.in = false; });
+  ctx.on(window, 'blur', () => { ptr.in = false; });
+  const delayed = s => { const t = now() - s; for (let i = trail.length - 1; i >= 0; i--) if (trail[i][0] <= t) return trail[i]; return trail[0] || [0, ptr.x, ptr.y]; };
+
+  /* the feather replaces the pointer on a mouse; fields keep their caret */
+  const toyOn = () => ctx.fine() && !ctx.reduce();
+  const syncToy = () => root.classList.toggle('pp-toy', toyOn());
+  syncToy(); ctx.cleanup(() => root.classList.remove('pp-toy'));
+
+  /* ------------------------------------------------------------------ *
+   * 1. plants and the box, on the page's lines
+   * ------------------------------------------------------------------ */
+  const garden = doc.createElement('div'); garden.className = 'pp-garden'; garden.setAttribute('aria-hidden', 'true');
+  doc.body.append(garden); ctx.cleanup(() => garden.remove());
+  const items = [];
+  let eng = null;
+  const three = () => window.THREE ? Promise.resolve() : (window.__ppThree = window.__ppThree || new Promise((res, rej) => {
+    const s = doc.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'; s.crossOrigin = 'anonymous';
+    s.onload = res; s.onerror = rej; doc.head.append(s);
+  }));
+
+  /* where things stand. A line must have clear paper beside the text above it. */
+  const textRight = el => { const r = doc.createRange(); r.selectNodeContents(el); const b = r.getBoundingClientRect(); return b.width ? b.right : el.getBoundingClientRect().left; };
+  const PLANTS = ['tulip', 'daisy', 'bells', 'chard', 'seedling', 'puff', 'fern', 'cactus', 'rose', 'poppy'];
+  const slug = (location.pathname.replace(/\/+$/, '').split('/').pop() || 'index');
+  let hsh = 0; for (const c of slug) hsh = (hsh * 31 + c.charCodeAt(0)) >>> 0;
+  const plantFor = i => PLANTS[(hsh + i * 3) % PLANTS.length];
+  function spots() {
+    const out = [], head = doc.querySelector('.d-head'), hero = doc.querySelector('.d-hero'), pn = doc.querySelector('.d-pn');
+    if (head) {
+      // the hairline under the page title, where the text above leaves room
+      const at = () => { const r = head.getBoundingClientRect(), free = Math.max(...[...head.children].map(textRight)); return { r, free }; };
+      out.push({ kind: plantFor(0), U: 3.6, at: () => { const { r, free } = at(); return { x: r.right - 46, y: r.bottom, room: r.right - free }; }, need: 96 });
+      out.push({ kind: 'grass', U: 3, at: () => { const { r, free } = at(); return { x: r.right - 120, y: r.bottom, room: r.right - 70 - free }; }, need: 110 });
+      // a sprout on the first example frame, at its top-right corner
+      const ex = doc.querySelector('.d-doc .d-ex');
+      if (ex) out.push({ kind: 'sprout', U: 3, at: () => { const r = ex.getBoundingClientRect(); return { x: r.right - 34, y: r.top + 1, room: 999 }; } });
+      // the box rests on the bottom of the screen in the margin column, so the cat can always find it
+      const side = doc.querySelector('.d-toc');
+      out.push({ kind: 'box', U: 3.2, box: true, fixed: true, at: () => {
+        const r = side && side.getBoundingClientRect();
+        return r && r.width ? { x: r.left + r.width / 2, y: innerHeight - 4, room: 999 } : { x: innerWidth - 70, y: innerHeight - 4, room: innerWidth >= 1100 ? 999 : 0 };
+      } });
+    }
+    if (hero) {
+      out.push({ kind: 'tulip', U: 4.6, at: () => { const r = hero.getBoundingClientRect(); return { x: r.left + 70, y: r.bottom - 1, room: 999 }; } });
+      out.push({ kind: 'box', U: 3.6, box: true, at: () => { const r = hero.getBoundingClientRect(); return { x: r.left + 170, y: r.bottom - 1, room: 999 }; } });
+      out.push({ kind: 'puff', U: 4.2, at: () => { const r = hero.getBoundingClientRect(); return { x: r.right - 80, y: r.bottom - 1, room: 999 }; } });
+      out.push({ kind: 'grass', U: 3.4, at: () => { const r = hero.getBoundingClientRect(); return { x: r.right - 170, y: r.bottom - 1, room: 999 }; } });
+    }
+    if (pn) out.push({ kind: plantFor(1), U: 3.6, at: () => { const r = pn.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top, room: 999 }; } });
+    return out;
+  }
+
+  const io = new IntersectionObserver(es => es.forEach(e => { const it = e.target.__pp; if (it) it.vis = e.isIntersecting; }), { rootMargin: '160px' });
+  ctx.cleanup(() => io.disconnect());
+  function mount(spot) {
+    const asset = LIB[spot.kind]; if (!asset) return null;
+    const m = eng.model(asset), b = eng.bounds(m, spot.box ? 3 : 4);
+    const it = { spot, m, b, U: spot.U, vis: false, born: 0, prog: ctx.reduce() ? 1 : 0, a: 0, v: 0, yaw0: (PP.hash2(items.length, hsh) - 0.5) * 30, bloom: 0, blow: 0, shake: 0, flap: 1, seed: items.length * 1.7 };
+    const el = doc.createElement(spot.box ? 'button' : 'div');
+    el.className = 'pp-item' + (spot.box ? ' pp-box' : '') + (spot.fixed ? ' pp-fixed' : '');
+    if (spot.box) { el.type = 'button'; el.setAttribute('aria-label', 'A cardboard box'); el.removeAttribute('aria-hidden'); }
+    const cv = doc.createElement('canvas'); el.append(cv);
+    it.el = el; it.cv = cv; it.cx = cv.getContext('2d'); el.__pp = it; cv.__pp = it;
+    (spot.box ? doc.body : garden).append(el);
+    if (spot.box) ctx.cleanup(() => el.remove());
+    io.observe(el);
+    size(it); items.push(it);
+    return it;
+  }
+  function size(it) {
+    const U = it.U * (innerWidth < 900 ? 0.85 : 1); it.u = U;
+    it.w = Math.ceil(it.b.w * U); it.h = Math.ceil(it.b.h * U);
+    it.cv.width = Math.round(it.w * DPR); it.cv.height = Math.round(it.h * DPR);
+    it.el.style.width = it.w + 'px'; it.el.style.height = it.h + 'px';
+    it.dirty = true;
+  }
+  /* reads first, writes after: the docs reveal sections with motion, so
+     visible items follow their lines every frame */
+  function track(all) {
+    const list = all ? items : items.filter(i => i.vis || i.box);
+    const at = list.map(it => { const a = it.spot.at(), f = it.spot.fixed; return { x: a.x + (f ? 0 : scrollX), y: a.y + (f ? 0 : scrollY), ok: a.room >= (it.spot.need || 0) && innerWidth >= 520 }; });
+    list.forEach((it, i) => {
+      const a = at[i];
+      if (a.ok !== it.shown) { it.shown = a.ok; it.el.style.display = a.ok ? '' : 'none'; }
+      if (!a.ok) return;
+      const L = Math.round(a.x - it.w / 2), T = Math.round(a.y - it.h + it.b.base * it.u);
+      if (L !== it.L) { it.el.style.left = L + 'px'; it.L = L; }
+      if (T !== it.T) { it.el.style.top = T + 'px'; it.T = T; }
+    });
+  }
+  function draw(it, t) {
+    const st = { u: it.u * DPR, w: it.cv.width, h: it.cv.height, base: it.b.base, prog: it.prog, t, still: ctx.reduce(),
+      yaw: it.yaw0 + (ctx.reduce() ? 0 : Math.sin(t * 0.32 + it.seed) * 16), lean: -it.a * 0.25, rustle: it.a, bloom: it.bloom, blow: it.blow, flap: it.flap, shake: it.shake };
+    if (!ctx.reduce() && ptr.in) { const r = it.cv.getBoundingClientRect(); st.yaw += clamp((ptr.x - (r.left + r.width / 2)) / 700, -1, 1) * 24; }
+    eng.draw(it.m, it.cx, st); it.dirty = false;
+  }
+  function stepItems(t, dt) {
+    if (!eng) return;
+    track(false);
+    for (const it of items) {
+      if (!it.vis || !it.shown) continue;
+      if (!it.born) it.born = t;
+      const moving = !ctx.reduce();
+      if (moving) {
+        it.prog = clamp((t - it.born) / 1.5, 0, 1);
+        const r = it.cv.getBoundingClientRect(), near = (x, y) => x > r.left && x < r.right && y > r.top && y < r.bottom;
+        if (ptr.in && near(ptr.x, ptr.y)) it.v += clamp(ptr.vx, -2500, 2500) * 0.00035 * dt * 60;
+        if (cat.speed > 120 && near(cat.x, cat.y - 20)) it.v += cat.vx * 0.0004 * dt * 60;
+        it.v += (-38 * it.a - 4.2 * it.v) * dt; it.a = clamp(it.a + it.v * dt, -0.6, 0.6);
+        it.bloom = Math.max(0, it.bloom - dt * 0.5);
+        if (it.blow > 0) { it.blow += dt * 0.45; if (it.blow > 2.6) it.blow = 0; }
+        it.shake = Math.max(0, it.shake - dt * 1.6);
+        if (it.box) it.flap = lerp(it.flap, box.cat ? 0.32 : 1, Math.min(1, dt * 5));
+      } else it.prog = 1;
+      if (moving || it.dirty) draw(it, t);
+    }
+  }
+
+  /* press a plant to make it bloom, or blow a seed head */
+  const isControl = el => !!(el && el.closest && el.closest('a,button,input,textarea,select,label,summary,[role="button"],[tabindex],.d-code,pre'));
+  ctx.on(window, 'pointerdown', e => {
+    if (!eng || isControl(e.target)) return;
+    for (const it of items) {
+      if (it.box || !it.shown || !it.vis) continue;
+      const r = it.cv.getBoundingClientRect();
+      if (e.clientX > r.left + r.width * 0.2 && e.clientX < r.right - r.width * 0.2 && e.clientY > r.top + r.height * 0.15 && e.clientY < r.bottom) {
+        if (it.spot.kind === 'puff' && !it.blow) it.blow = 0.001; else it.bloom = 1;
+        it.v += (Math.random() < 0.5 ? -1 : 1) * 2.5; return;
+      }
+    }
+  });
+
+  /* ------------------------------------------------------------------ *
+   * 2. the box: the cat climbs in and only a shake brings it out
+   * ------------------------------------------------------------------ */
+  const box = { it: null, cat: false, since: 0, cool: 0, peek: 0, nextPeek: 0, rev: [], clicks: [] };
+  const boxRect = () => box.it && box.it.shown && box.it.vis ? box.it.cv.getBoundingClientRect() : null;
+  function label() { if (box.it) box.it.el.setAttribute('aria-label', box.cat ? 'A cardboard box with the cat in it - shake it' : 'A cardboard box'); }
+  function shakeBox() {
+    if (!box.it) return;
+    box.it.shake = 1; box.it.v += 3;
+    if (box.cat) { box.cat = false; box.cool = now() + 18; label(); popOut(); ctx.announce('Out it jumps.'); }
+  }
+  function bindBox(it) {
+    box.it = it; label();
+    const el = it.el;
+    // a shake: three changes of direction while held, or three quick presses
+    let held = false, lastX = 0, dir = 0;
+    ctx.on(el, 'pointerdown', e => { held = true; lastX = e.clientX; dir = 0; box.rev = []; el.setPointerCapture && el.setPointerCapture(e.pointerId); it.shake = Math.max(it.shake, 0.35); });
+    ctx.on(el, 'pointermove', e => {
+      if (!held) return; const d = e.clientX - lastX; if (Math.abs(d) < 6) return;
+      const s = Math.sign(d); if (dir && s !== dir) { box.rev.push(now()); box.rev = box.rev.filter(t => t > now() - 0.8); it.shake = Math.max(it.shake, 0.6); if (box.rev.length >= 3) { box.rev = []; shakeBox(); } }
+      dir = s; lastX = e.clientX;
+    });
+    ctx.on(el, 'pointerup', () => { held = false; });
+    ctx.on(el, 'click', () => {
+      box.clicks.push(now()); box.clicks = box.clicks.filter(t => t > now() - 1.2);
+      it.shake = Math.max(it.shake, 0.5);
+      if (box.clicks.length >= 3 || (box.cat && !ptr.mouse)) { box.clicks = []; shakeBox(); }
+    });
+    ctx.on(el, 'keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); shakeBox(); } });
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 3. the cat and the toy, drawn as lines on one fixed canvas
+   * ------------------------------------------------------------------ */
+  const stage = ctx.layer('pp-stage', true);
+  const cv = doc.createElement('canvas'); stage.append(cv);
+  const sx = cv.getContext('2d');
+  function fit() { cv.width = Math.round(innerWidth * DPR); cv.height = Math.round(innerHeight * DPR); sx.setTransform(DPR, 0, 0, DPR, 0, 0); sx.imageSmoothingEnabled = false; }
+  fit();
+  const S = innerWidth < 700 ? 2 : 3;
+  let INK = [29, 27, 23], PAPER = [255, 254, 251];
+  const hex3 = h => { h = h.trim(); if (/^#[0-9a-f]{6}$/i.test(h)) return [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); return null; };
+  const colours = () => { const cs = getComputedStyle(root); INK = hex3(cs.getPropertyValue('--ink')) || INK; PAPER = hex3(cs.getPropertyValue('--panel')) || PAPER; };
+  colours(); ctx.onTheme(() => { colours(); });
+  const TINT = { c: [255, 120, 92], t: [43, 179, 163], y: [245, 197, 66], q: [250, 240, 214], G: [242, 196, 64], H: [255, 244, 190] };
+
+  /* a sprite drawn in layers: each layer becomes an outline in ink with paper
+     inside, so where a leg crosses the body a line shows */
+  function Sprite(w, h) {
+    const c = doc.createElement('canvas'); c.width = w; c.height = h;
+    const cx = c.getContext('2d'), img = cx.createImageData(w, h);
+    const sil = doc.createElement('canvas'); sil.width = w; sil.height = h; const scx = sil.getContext('2d'), simg = scx.createImageData(w, h);
+    const buf = new Array(w * h).fill(0), comp = new Array(w * h).fill(0);
+    const sp = {
+      w, h, cv: c, sil,
+      clr() { buf.fill(0); comp.fill(0); },
+      px(x, y, k) { x = Math.round(x); y = Math.round(y); if (x < 0 || y < 0 || x >= w || y >= h) return; buf[(h - 1 - y) * w + x] = k; },
+      disc(x0, y0, rx, ry, k) { for (let y = Math.floor(y0 - ry); y <= Math.ceil(y0 + ry); y++) for (let x = Math.floor(x0 - rx); x <= Math.ceil(x0 + rx); x++) { const a = (x - x0) / rx, b = (y - y0) / ry; if (a * a + b * b <= 1.05) sp.px(x, y, k); } },
+      rect(x0, y0, x1, y1, k) { for (let y = Math.round(y0); y <= Math.round(y1); y++) for (let x = Math.round(x0); x <= Math.round(x1); x++) sp.px(x, y, k); },
+      line(x0, y0, x1, y1, k, wd = 1) { const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1) * 1.5; for (let i = 0; i <= n; i++) { const x = x0 + (x1 - x0) * i / n, y = y0 + (y1 - y0) * i / n; sp.px(x, y, k); if (wd > 1) sp.px(x + 1, y, k); } },
+      poly(pts, k, wd = 1) { for (let i = 1; i < pts.length; i++) sp.line(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], k, wd); },
+      layer() {
+        for (let i = 0; i < buf.length; i++) {
+          const k = buf[i]; if (!k) continue;
+          const x = i % w, edge = x === 0 || x === w - 1 || !buf[i - 1] || !buf[i + 1] || !buf[i - w] || !buf[i + w];
+          comp[i] = k === 'K' || edge ? 'K' : k;
+        }
+        buf.fill(0);
+      },
+      flush() {
+        sp.layer();
+        for (let i = 0; i < comp.length; i++) {
+          const k = comp[i], o = i * 4;
+          if (!k) { img.data[o + 3] = 0; simg.data[o + 3] = 0; continue; }
+          const col = k === 'K' ? INK : k === 'O' ? PAPER : TINT[k] || PAPER;
+          img.data[o] = col[0]; img.data[o + 1] = col[1]; img.data[o + 2] = col[2]; img.data[o + 3] = 255;
+          simg.data[o] = 52; simg.data[o + 1] = 38; simg.data[o + 2] = 22; simg.data[o + 3] = 255;
+        }
+        cx.putImageData(img, 0, 0); scx.putImageData(simg, 0, 0);
+      },
+    };
+    return sp;
+  }
+
+  /* the cat faces right; feet centre at sprite x 14, y 0 */
+  const CS = Sprite(30, 24);
+  const ears = (hx, hy, up = 0) => { for (const ex of [hx - 2.6, hx + 0.4]) { CS.rect(ex, hy + 2.2, ex + 2, hy + 2.2, 'O'); CS.px(ex + 1, hy + 3.2 + up, 'O'); if (up) CS.px(ex + 1, hy + 3.2, 'O'); } };
+  const eye = (hx, hy, e) => { if (e === 'shut') CS.rect(hx + 1, hy + 0.4, hx + 2, hy + 0.4, 'K'); else { CS.px(hx + 1.4, hy + 0.8, 'K'); if (e === 'wide') CS.px(hx + 1.4, hy + 1.6, 'K'); } };
+  const head = (hx, hy, e, up) => { CS.disc(hx, hy, 3.5, 3.0, 'O'); ears(hx, hy, up); CS.layer(); eye(hx, hy, e); };
+  const POSE = {
+    run(f) {
+      const s = Math.sin(f * Math.PI * 2), c = Math.cos(f * Math.PI * 2), b = Math.round(Math.abs(c) * 1.2);
+      CS.poly([[6, 9 + b], [4, 11 + b], [3, 13 + b + s * 1.5], [3.5, 15 + b + s * 2]], 'O', 2);
+      CS.line(8, 5 + b, 8 - 3.5 * s, Math.max(0, -c) * 1.5, 'O', 2); CS.line(18, 5 + b, 18 + 3.5 * s, Math.max(0, c) * 1.5, 'O', 2); CS.layer();
+      CS.disc(13, 7 + b, 7.2, 2.9, 'O'); CS.layer();
+      CS.line(9, 5 + b, 9 + 3.5 * s, Math.max(0, c) * 1.5, 'O', 2); CS.line(17, 5 + b, 17 - 3.5 * s, Math.max(0, -c) * 1.5, 'O', 2); CS.layer();
+      head(21.5, 10 + b, 'open', 0);
+    },
+    sit(o) {
+      const lk = o.look || 0;
+      CS.poly([[6, 3], [4, 1], [7, 0], [12, 0], [17, 0 + (o.flick || 0)]], 'O', 2); CS.layer();
+      CS.disc(10, 4.6, 4.6, 4.6, 'O'); CS.disc(13, 8, 3.3, 4.6, 'O'); CS.layer();
+      CS.rect(14, 0, 15, 6, 'O'); if (!o.paw) CS.rect(16, 0, 17, 5, 'O'); CS.layer();
+      head(15.5 + (o.tilt || 0), 13 + lk, o.blink ? 'shut' : (o.wide ? 'wide' : 'open'), o.wide ? 1 : 0);
+      if (o.paw) { const e = o.paw; CS.line(15, 6, 17 + e * 1.5, 8 + e * 7, 'O', 2); CS.layer(); }
+    },
+    crouch(o) {
+      const w = o.wiggle || 0;
+      CS.line(6 + w, 5, 1, 6 + (o.flick || 0), 'O', 2); CS.rect(7 + w, 0, 8 + w, 3, 'O'); CS.rect(17, 0, 18, 2, 'O'); CS.layer();
+      CS.disc(7.5 + w, 5, 3.2, 2.6, 'O'); CS.disc(13, 4, 7.4, 2.5, 'O'); CS.layer();
+      CS.rect(16, 0, 17, 2, 'O'); CS.rect(9 + w, 0, 10 + w, 2, 'O'); CS.layer();
+      head(20.5, 5.6, 'wide', 0);
+    },
+    pounce(o) {
+      CS.poly([[6, 10], [3, 11], [1, 12 + (o.u || 0) * 2]], 'O', 2); CS.line(8, 6, 3, 3, 'O', 2); CS.line(18, 7, 24, 9, 'O', 2); CS.layer();
+      CS.disc(13, 8, 7.6, 2.6, 'O'); CS.layer();
+      CS.line(9, 6, 4, 2, 'O', 2); CS.line(17, 7, 23, 8, 'O', 2); CS.layer();
+      head(22, 11, 'wide', 1);
+    },
+    sleep(o) {
+      CS.disc(12.5, 3.7, 8.6, 3.6 + (o.breath || 0) * 0.35, 'O'); CS.layer();
+      CS.disc(20, 3.4, 3.3, 2.9, 'O'); ears(20, 3.4, 0); CS.layer(); CS.rect(20.5, 3.6, 21.6, 3.6, 'K');
+      CS.poly([[4, 1], [8, 0], [16, 0], [21, 0.4]], 'O', 2); CS.layer();
+    },
+    stretch(o) {
+      const k = o.k || 0;
+      CS.poly([[5, 9], [3, 12], [3, 15]], 'O', 2); CS.rect(9, 0, 10, 6, 'O'); CS.layer();
+      CS.disc(9, 6.5, 3.6, 3, 'O'); CS.disc(13.5, 4.6 - k * 0.3, 6, 2.6, 'O'); CS.layer();
+      CS.rect(7, 0, 8, 6, 'O'); CS.line(16, 2, 22 + k, 0, 'O', 2); CS.layer();
+      head(20, 4, 'shut', 0);
+    },
+    peek(o) { // ears and eyes over the rim of the box
+      CS.disc(15, 1.5 + o.h, 3.5, 3.0, 'O'); ears(15, 1.5 + o.h, 0); CS.layer();
+      CS.px(13.6, 2 + o.h, 'K'); CS.px(16.4, 2 + o.h, 'K');
+    },
+  };
+
+  const cat = { x: 80, y: innerHeight - 10, vx: 0, vy: 0, speed: 0, face: 1, st: 'sleep', t: 0, f: 0, nextBat: 0, look: 0 };
+  let toyAt = { x: 0, y: 0 }, target = null, targetUntil = 0, focusAt = 0;
+  const set = s => { if (cat.st !== s) { cat.st = s; cat.t = 0; } };
+  function popOut() {
+    const r = boxRect(); if (!r) { set('sit'); return; }
+    cat.jx0 = r.left + r.width / 2; cat.jy0 = r.top + r.height * 0.45;
+    cat.jx1 = cat.jx0 + (r.left > innerWidth / 2 ? -1 : 1) * 70; cat.jy1 = Math.min(innerHeight - 8, r.bottom + 6);
+    cat.x = cat.jx0; cat.y = cat.jy0; cat.face = cat.jx1 > cat.jx0 ? 1 : -1; set('pounce');
+  }
+  function stepCat(t, dt) {
+    cat.t += dt;
+    const idle = t - Math.max(ptr.moved, focusAt);
+    let goal = null;
+    if (target) goal = { ...target };
+    else if (ptr.in && ptr.mouse) { const d = delayed(0.22); goal = { x: d[1] + feather.ox, y: d[2] + feather.oy + 40 }; }
+    if (goal) { goal.x = clamp(goal.x, 40, innerWidth - 40); goal.y = clamp(goal.y, 60, innerHeight - 8); }
+    const dx = goal ? goal.x - cat.x : 0, dy = goal ? goal.y - cat.y : 0, d = Math.hypot(dx, dy);
+    const toySpeed = Math.hypot(ptr.vx, ptr.vy) * (t - ptr.t < 0.08 ? 1 : 0);
+
+    if (ctx.reduce()) { set('sit'); if (goal) { cat.face = dx >= 0 ? 1 : -1; cat.look = clamp(-dy / 200, -1, 2); } return; }
+
+    /* in the box: nothing reaches it but a shake. Long out of sight, it leaves on its own */
+    if (box.cat) {
+      const r = boxRect();
+      if (!r) { if (t - box.since > 6) { box.cat = false; label(); cat.x = -30; cat.y = innerHeight - 10; set('run'); } return; }
+      if (t > box.nextPeek) { box.peek = 1.4; box.nextPeek = t + 3 + Math.random() * 4; }
+      box.peek = Math.max(0, box.peek - dt);
+      return;
+    }
+    /* the box, if it can be seen and nothing is going on, is irresistible */
+    const br = boxRect();
+    if (br && t > box.cool && !target && br.top > 40 && br.top < innerHeight - 30 && ((['sit', 'groom'].includes(cat.st) && cat.t > 2.5 && idle > 4) || (cat.st === 'sleep' && cat.t > 25))) set('tobox');
+    if (br && t > box.cool && ptr.in && ptr.x > br.left && ptr.x < br.right && ptr.y > br.top - 20 && ptr.y < br.bottom && ['sit', 'groom', 'bat', 'run', 'alert'].includes(cat.st)) set('tobox');
+
+    switch (cat.st) {
+      case 'tobox': {
+        if (!br) { set('sit'); break; }
+        const gx = br.left + br.width / 2, gy = br.top + br.height * 0.35, ex = gx - cat.x, ey = gy - cat.y, ed = Math.hypot(ex, ey);
+        const sp = Math.min(520, 160 + ed * 3);
+        cat.vx = lerp(cat.vx, ex / (ed || 1) * sp, Math.min(1, dt * 5)); cat.vy = lerp(cat.vy, ey / (ed || 1) * sp, Math.min(1, dt * 5));
+        if (Math.abs(cat.vx) > 20) cat.face = cat.vx > 0 ? 1 : -1;
+        if (ed < 70) { cat.jx0 = cat.x; cat.jy0 = cat.y; cat.jx1 = gx; cat.jy1 = gy; set('hop'); }
+        break;
+      }
+      case 'hop': {
+        const u = clamp(cat.t / 0.4, 0, 1);
+        cat.x = lerp(cat.jx0, cat.jx1, u); cat.y = lerp(cat.jy0, cat.jy1, u) - Math.sin(u * Math.PI) * 40;
+        if (u >= 1) { box.cat = true; box.since = t; box.nextPeek = t + 2.5; box.it.shake = 0.5; label(); cat.vx = cat.vy = 0; ctx.announce('The cat is in the box. Shake it to bring it out.'); }
+        return;
+      }
+      case 'sleep': if (goal && t - ptr.moved < 0.2 && d > 30) set('stretch'); break;
+      case 'stretch': if (cat.t > 0.75) set(d > 26 ? 'run' : 'sit'); break;
+      case 'alert': if (cat.t > 0.28) set('run'); break;
+      case 'sit': case 'groom': case 'bat':
+        if (goal && d > 46) { set('alert'); break; }
+        if (goal && toySpeed > 900 && d < 170 && d > 14) { set('crouch'); break; }
+        if (cat.st === 'bat' && cat.t > 0.42) set('sit');
+        if (cat.st === 'groom' && (idle < 0.3 || cat.t > 3.2)) set('sit');
+        if (cat.st === 'sit') {
+          if (idle > 16) set('sleep');
+          else if (idle > 5.5 && cat.t > 2) set('groom');
+          else if (goal && idle > 0.6 && t > cat.nextBat && Math.abs(toyAt.x - cat.x) < 70 && toyAt.y < cat.y - 40 && toyAt.y > cat.y - 120) { set('bat'); cat.nextBat = t + 1.6 + Math.random() * 1.8; }
+        }
+        if (goal) { cat.face = toyAt.x >= cat.x ? 1 : -1; cat.look = clamp((cat.y - 50 - toyAt.y) / 60, -1, 2); }
+        break;
+      case 'crouch':
+        if (cat.t > 0.55) { set('pounce'); cat.jx0 = cat.x; cat.jy0 = cat.y; cat.jx1 = goal ? goal.x : cat.x; cat.jy1 = goal ? goal.y : cat.y; cat.face = cat.jx1 >= cat.x ? 1 : -1; }
+        else if (goal && d > 260) set('run');
+        break;
+      case 'pounce': {
+        const u = clamp(cat.t / 0.42, 0, 1);
+        cat.x = lerp(cat.jx0, cat.jx1, u); cat.y = lerp(cat.jy0, cat.jy1, u) - Math.sin(u * Math.PI) * 46;
+        if (u >= 1) { set('sit'); cat.vx = cat.vy = 0; }
+        return;
+      }
+      case 'run': {
+        if (!goal) { set('sit'); break; }
+        const sp = Math.min(560, 140 + d * 3.2);
+        cat.vx = lerp(cat.vx, (dx / (d || 1)) * sp, Math.min(1, dt * 5)); cat.vy = lerp(cat.vy, (dy / (d || 1)) * sp, Math.min(1, dt * 5));
+        if (Math.abs(cat.vx) > 20) cat.face = cat.vx > 0 ? 1 : -1;
+        if (d < 12) set(cat.speed > 320 ? 'skid' : 'sit');
+        break;
+      }
+      case 'skid':
+        cat.vx *= Math.pow(0.02, dt); cat.vy *= Math.pow(0.02, dt);
+        if (cat.t > 0.2) { set('sit'); cat.vx = cat.vy = 0; }
+        break;
+    }
+    if (cat.st === 'run' || cat.st === 'skid' || cat.st === 'tobox') { cat.x += cat.vx * dt; cat.y += cat.vy * dt; } else { cat.vx = cat.vy = 0; }
+    cat.speed = Math.hypot(cat.vx, cat.vy);
+    cat.f = (cat.f + cat.speed * dt / 64) % 1;
+    cat.x = clamp(cat.x, 30, innerWidth - 30); cat.y = clamp(cat.y, 50, innerHeight - 6);
+  }
+  function renderCat(t) {
+    if (box.cat) { // only the ears, now and then
+      const r = boxRect(); if (!r || box.peek <= 0) return;
+      const h = Math.round(Math.sin(Math.min(1, (1.4 - box.peek) / 0.3, box.peek / 0.3) * Math.PI / 2) * 4) - 3;
+      CS.clr(); POSE.peek({ h }); CS.flush();
+      const X = Math.round(r.left + r.width / 2 - 15 * S), Y = Math.round(r.top + r.height * 0.36 - (CS.h) * S + 7 * S);
+      sx.save(); sx.beginPath(); sx.rect(X - 10, Y - 40, CS.w * S + 20, CS.h * S + 40 - 1 * S); sx.clip();
+      sx.drawImage(CS.cv, X, Y, CS.w * S, CS.h * S); sx.restore();
+      return;
+    }
+    CS.clr();
+    const st = cat.st;
+    if (st === 'run' || st === 'tobox') POSE.run(cat.f);
+    else if (st === 'skid' || st === 'hop') POSE.pounce({ u: 1 });
+    else if (st === 'crouch') POSE.crouch({ wiggle: Math.round(Math.sin(cat.t * 38)), flick: Math.round(Math.sin(cat.t * 20)) });
+    else if (st === 'pounce') POSE.pounce({ u: cat.t / 0.42 });
+    else if (st === 'sleep') POSE.sleep({ breath: Math.sin(t * 2.2) });
+    else if (st === 'stretch') POSE.stretch({ k: Math.round(Math.sin(Math.min(1, cat.t / 0.6) * Math.PI) * 2) });
+    else {
+      const blink = (t % 3.7) < 0.12 && st !== 'bat';
+      POSE.sit({ look: st === 'groom' ? -1 : Math.round(clamp(cat.look, -1, 2)), blink: blink || st === 'groom', wide: st === 'alert' || st === 'bat',
+        paw: st === 'bat' ? Math.sin(clamp(cat.t / 0.42, 0, 1) * Math.PI) : st === 'groom' ? 0.55 + Math.sin(t * 9) * 0.15 : 0,
+        flick: Math.round(Math.sin(t * 1.7) * 0.8 + 0.4), tilt: st === 'groom' ? 0.6 : 0 });
+    }
+    CS.flush();
+    const X = Math.round(cat.x), Y = Math.round(cat.y);
+    sx.save(); sx.translate(X, Y); if (cat.face < 0) sx.scale(-1, 1);
+    const ox = -14 * S, oy = -CS.h * S;
+    sx.globalAlpha = 0.12; sx.fillStyle = '#342616';
+    sx.beginPath(); sx.ellipse(0, 1, 11 * S * (st === 'pounce' ? 0.6 : 1), 2 * S, 0, 0, Math.PI * 2); sx.fill();
+    sx.globalAlpha = 0.1; sx.drawImage(CS.sil, ox + S, oy + 2 * S, CS.w * S, CS.h * S);
+    sx.globalAlpha = 1; sx.drawImage(CS.cv, ox, oy, CS.w * S, CS.h * S);
+    sx.restore();
+    if (st === 'sleep') {
+      const k = (t * 0.45) % 1; sx.globalAlpha = Math.sin(k * Math.PI) * 0.8; sx.fillStyle = `rgb(${INK})`;
+      const zx = X + 22 * cat.face + k * 14 * cat.face, zy = Y - 34 - k * 26;
+      [[0, 0], [1, 0], [2, 0], [1, 1], [0, 2], [1, 2], [2, 2]].forEach(([a, b]) => sx.fillRect(Math.round(zx + a * 2), Math.round(zy + b * 2), 2, 2));
+      sx.globalAlpha = 1;
+    }
+  }
+
+  /* the toy: a bead at the pointer, a feather below, a string up to a wand */
+  const FS = Sprite(7, 10);
+  ['...q...', '..cqt..', '.ccqyt.', '.ccyytt', 'cccyytt', 'cc.yy.t', 'cc.yy.t', 'c..y..t', 'c..y...', '...y...'].forEach((row, r) => [...row].forEach((ch, c) => { if (ch !== '.') FS.px(c, 9 - r, ch); }));
+  const BS = Sprite(5, 5); ['.GGG.', 'GHGGG', 'GGGGG', 'GGGGG', '.GGG.'].forEach((row, r) => [...row].forEach((ch, c) => { if (ch !== '.') BS.px(c, 4 - r, ch); }));
+  const paintToy = () => { FS.clr(); ['...q...', '..cqt..', '.ccqyt.', '.ccyytt', 'cccyytt', 'cc.yy.t', 'cc.yy.t', 'c..y..t', 'c..y...', '...y...'].forEach((row, r) => [...row].forEach((ch, c) => { if (ch !== '.') FS.px(c, 9 - r, ch); })); FS.flush(); BS.clr(); ['.GGG.', 'GHGGG', 'GGGGG', 'GGGGG', '.GGG.'].forEach((row, r) => [...row].forEach((ch, c) => { if (ch !== '.') BS.px(c, 4 - r, ch); })); BS.flush(); };
+  paintToy(); ctx.onTheme(() => { colours(); paintToy(); });
+  const feather = { th: 0, w: 0, ox: 0, oy: 26, jingle: 0, wand: null, rope: [] };
+  const RN = 10, RL = 19;
+  function stepToy(t, dt) {
+    const P = { x: ptr.x, y: ptr.y };
+    if (!feather.wand) { feather.wand = { x: P.x + 70, y: P.y - 180 }; feather.rope = Array.from({ length: RN + 1 }, (_, i) => { const x = lerp(feather.wand.x, P.x, i / RN), y = lerp(feather.wand.y, P.y, i / RN); return { x, y, px: x, py: y }; }); }
+    const W = feather.wand, k = Math.min(1, dt * 4);
+    W.x = lerp(W.x, P.x + 70, k); W.y = lerp(W.y, P.y - 180, k);
+    const L = 30, g = 1500, ax = clamp(ptr.ax, -40000, 40000) * (t - ptr.t < 0.05 ? 1 : 0);
+    feather.w += (-(g / L) * Math.sin(feather.th) - (ax / L) * 0.02 * Math.cos(feather.th) - 4 * feather.w) * dt;
+    feather.th = clamp(feather.th + feather.w * dt, -1.3, 1.3);
+    const rp = feather.rope;
+    for (let i = 1; i < RN; i++) { const p = rp[i], vx = (p.x - p.px) * 0.97, vy = (p.y - p.py) * 0.97; p.px = p.x; p.py = p.y; p.x += vx; p.y += vy + 900 * dt * dt; }
+    rp[0].x = W.x; rp[0].y = W.y; rp[RN].x = P.x; rp[RN].y = P.y;
+    for (let it = 0; it < 8; it++) for (let i = 0; i < RN; i++) {
+      const a = rp[i], b = rp[i + 1], ddx = b.x - a.x, ddy = b.y - a.y, dd = Math.hypot(ddx, ddy) || 1, diff = (dd - RL) / dd * 0.5;
+      if (i > 0) { a.x += ddx * diff; a.y += ddy * diff; }
+      if (i + 1 < RN) { b.x -= ddx * diff; b.y -= ddy * diff; }
+    }
+    feather.jingle = Math.max(0, feather.jingle - dt * 3);
+    feather.ox = Math.sin(feather.th) * 26; feather.oy = Math.cos(feather.th) * 26;
+    toyAt = { x: P.x + feather.ox, y: P.y + feather.oy };
+  }
+  let overField = false, overCtl = null;
+  ctx.on(window, 'pointerover', e => {
+    const t = e.target; if (!t.closest) return;
+    overField = !!t.closest('input:not([type=range]):not([type=checkbox]):not([type=radio]),textarea,select,[contenteditable]');
+    const c = t.closest('a,button,[role="button"],summary,label');
+    if (c && c !== overCtl) { feather.jingle = 1; feather.w += (Math.random() < 0.5 ? -1 : 1) * 5; }
+    overCtl = c;
+  }, { passive: true });
+  function renderToy(t) {
+    if (!ptr.in || !ptr.mouse || overField || !toyOn()) return;
+    const P = { x: Math.round(ptr.x), y: Math.round(ptr.y) }, rp = feather.rope;
+    sx.fillStyle = `rgb(${INK})`;
+    for (let i = RN - 1; i >= 0; i--) {
+      const a = rp[i], b = rp[i + 1], n = Math.max(1, Math.round(Math.hypot(b.x - a.x, b.y - a.y) / 2));
+      sx.globalAlpha = Math.pow(i / RN, 1.6) * 0.75;
+      for (let j = 0; j < n; j++) sx.fillRect(Math.round(lerp(a.x, b.x, j / n)) - 1, Math.round(lerp(a.y, b.y, j / n)) - 1, 2, 2);
+    }
+    sx.globalAlpha = 1;
+    sx.save(); sx.translate(P.x, P.y + 4); sx.rotate(-feather.th + Math.sin(t * 40) * 0.12 * feather.jingle);
+    sx.globalAlpha = 0.12; sx.drawImage(FS.sil, -3.5 * 3 + 3, 6, 21, 30);
+    sx.globalAlpha = 1; sx.drawImage(FS.cv, -3.5 * 3, 0, 21, 30);
+    sx.restore();
+    const bs = 2 + feather.jingle * 0.8;
+    sx.drawImage(BS.cv, P.x - 2.5 * bs, P.y - 2.5 * bs, 5 * bs, 5 * bs);
+  }
+
+  /* touch: the cat runs to a tap. Keyboard: it walks over to the focus */
+  ctx.on(window, 'pointerdown', e => {
+    if (e.pointerType !== 'mouse') { if (box.cat) return; target = { x: e.clientX, y: e.clientY + 40 }; targetUntil = now() + 4; if (cat.st === 'sleep') set('stretch'); else if (cat.st !== 'run') set('alert'); return; }
+    feather.w += (ptr.vx >= 0 ? 1 : -1) * 6; feather.jingle = 1;
+    if (!box.cat && (cat.st === 'sit' || cat.st === 'bat') && Math.hypot(toyAt.x - cat.x, toyAt.y - cat.y) < 170) set('crouch');
+  }, { passive: true });
+  ctx.on(window, 'focusin', e => {
+    if (box.cat || now() - ptr.moved < 1.5) return;
+    const r = e.target.getBoundingClientRect && e.target.getBoundingClientRect(); if (!r || !r.width) return;
+    focusAt = now(); target = { x: r.left - 24, y: Math.min(innerHeight - 8, r.bottom + 6) }; targetUntil = now() + 6;
+    if (cat.st === 'sleep') set('stretch'); else if (!['run', 'tobox', 'hop'].includes(cat.st)) set('alert');
+  });
+
+  /* ------------------------------------------------------------------ *
+   * specimens on the Assets page: every plant, the box, the cat's poses
+   * ------------------------------------------------------------------ */
+  const specimens = [];
+  function specimensMount() {
+    doc.querySelectorAll('[data-pp-asset]').forEach(host => {
+      const asset = LIB[host.dataset.ppAsset]; if (!asset) return;
+      const c = doc.createElement('canvas'); c.className = 'pp-spec'; host.prepend(c); ctx.cleanup(() => c.remove());
+      specimens.push({ host, c, m: eng.model(asset), seed: specimens.length, born: 0 });
+    });
+    doc.querySelectorAll('[data-pp-cat]').forEach(host => {
+      const c = doc.createElement('canvas'); c.className = 'pp-spec pp-poses'; host.prepend(c); ctx.cleanup(() => c.remove());
+      const poses = [['run', 0.25], ['sit', { look: 1 }], ['sit', { look: 2, wide: true, paw: 1 }], ['crouch', { wiggle: 1 }], ['pounce', { u: 0.5 }], ['sit', { blink: true, paw: 0.6, tilt: 0.6, look: -1 }], ['sleep', {}], ['stretch', { k: 2 }]];
+      const draw = () => {
+        const k = 3, W = 31 * k * 4, H = 25 * k * 2; c.width = W * DPR; c.height = H * DPR; c.style.width = '100%'; c.style.maxWidth = W + 'px';
+        const x = c.getContext('2d'); x.setTransform(DPR, 0, 0, DPR, 0, 0); x.imageSmoothingEnabled = false; x.clearRect(0, 0, W, H);
+        poses.forEach(([n, a], i) => { CS.clr(); POSE[n](a); CS.flush(); x.drawImage(CS.cv, (i % 4) * 31 * k, Math.floor(i / 4) * 25 * k, 30 * k, 24 * k); });
+      };
+      draw(); ctx.onTheme(() => setTimeout(draw, 30));
+    });
+  }
+  function stepSpecimens(t) {
+    for (const s of specimens) {
+      const r = s.host.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight || !r.width) continue;
+      if (!s.born) s.born = t;
+      const b = eng.bounds(s.m, 3), u = Math.min((r.width - 16) / b.w, (r.height - 40) / b.h);
+      const w = Math.round(r.width * DPR), h = Math.round((r.height - 28) * DPR);
+      if (s.c.width !== w || s.c.height !== h) { s.c.width = w; s.c.height = h; s.c.style.width = r.width + 'px'; s.c.style.height = (r.height - 28) + 'px'; }
+      eng.draw(s.m, s.c.getContext('2d'), { u: u * DPR, w, h, base: ((r.height - 28 - b.h * u) / 2 + b.base * u) / u, prog: ctx.reduce() ? 1 : clamp((t - s.born) / 1.5, 0, 1), t, still: ctx.reduce(), yaw: -20 + (ctx.reduce() ? 0 : Math.sin(t * 0.4 + s.seed) * 25) });
+    }
+  }
+
+  /* ------------------------------------------------------------------ *
+   * wiring
+   * ------------------------------------------------------------------ */
+  ctx.on(window, 'resize', () => { fit(); items.forEach(size); track(true); });
+  three().then(() => {
+    if (!alive || !PP) return;
+    try { eng = PP.create(window.THREE); } catch (e) { return; }
+    ctx.cleanup(() => { try { eng.renderer.dispose(); eng.renderer.forceContextLoss(); } catch {} });
+    spots().forEach(s => { const it = mount(s); if (it && s.box && !box.it) { it.box = true; bindBox(it); } else if (it && s.box) { it.el.remove(); items.splice(items.indexOf(it), 1); } });
+    track(true);
+    // the cat starts asleep beside the box
+    const br0 = box.it && box.it.el.getBoundingClientRect();
+    if (br0 && br0.width && box.it.shown) { cat.x = clamp(br0.left - 50, 40, innerWidth - 40); cat.y = innerHeight - 6; cat.face = 1; }
+    specimensMount();
+    if (ctx.reduce()) { items.forEach(it => draw(it, 0)); stepSpecimens(0); }
+  }).catch(() => {});
+
+  let last = 0;
+  ctx.loop(t => {
+    const dt = Math.min(0.05, last ? t - last : 0.016); last = t;
+    if (target && (t > targetUntil || (ptr.mouse && t - ptr.moved < 0.3))) target = null;
+    stepItems(t, dt);
+    if (eng) stepSpecimens(t);
+    sx.clearRect(0, 0, innerWidth, innerHeight);
+    if (ptr.in && ptr.mouse) stepToy(t, dt);
+    stepCat(t, dt);
+    renderCat(t);
+    renderToy(t);
+  });
+
+  /* a success grows a flower beside it; a small choice rustles the plants */
+  return {
+    celebrate(el) {
+      if (!eng || ctx.reduce() || !el || !el.getBoundingClientRect) return;
+      const r = el.getBoundingClientRect(), kind = ['daisy', 'tulip', 'poppy', 'rose'][Math.floor(Math.random() * 4)];
+      const it = mount({ kind, U: 2.6, at: () => ({ x: r.right + 18, y: r.bottom, room: 999 }) }); if (!it) return;
+      const x = r.right + 18 + scrollX, y = r.bottom + scrollY;
+      it.spot.at = () => ({ x: x - scrollX, y: y - scrollY, room: 999 });
+      it.vis = true; track(true);
+      ctx.later(() => { it.el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, fill: 'forwards' }); }, 2600);
+      ctx.later(() => { it.el.remove(); items.splice(items.indexOf(it), 1); }, 3200);
+    },
+    nudge() { items.forEach(it => { if (it.vis && !it.box) it.v += (Math.random() - 0.5) * 3; }); feather.jingle = 1; },
+  };
+});

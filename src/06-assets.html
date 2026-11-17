@@ -1,0 +1,76 @@
+<page slug="assets" title="Assets" nav="Assets" h1="Each world brings *its own things*" lede="The props a world carries with it: characters, plants, blocks, things to find. They come and go with the world, so this page shows the set of the world you are in - switch worlds to see another." keywords="assets props sprites characters plants cat box feather blocks coins shooting star paper pixel aurora world">
+
+<div class="d-worldgrid">
+  <button type="button" class="d-wcard" data-world-set="studio" aria-pressed="false"><i style="--a:#ffffff;--b:#161616;--c:#bbfff0"></i><b>Studio</b><span>No props: the marks and the hairline do the work.</span></button>
+  <button type="button" class="d-wcard" data-world-set="pixel" aria-pressed="false"><i style="--a:#9fd8ff;--b:#d93a1e;--c:#ffd23f"></i><b>Pixel</b><span>Blocks, bricks, coins and Bit.</span></button>
+  <button type="button" class="d-wcard" data-world-set="paper" aria-pressed="false"><i style="--a:#fbf9f4;--b:#1d1b17;--c:#7cc35b"></i><b>Paper Pixel</b><span>Folded plants, a cat, a box, a feather.</span></button>
+  <button type="button" class="d-wcard" data-world-set="aurora" aria-pressed="false"><i style="--a:#060a18;--b:#3be8a8;--c:#a77bff"></i><b>Aurora</b><span>Curtains of light, a shooting star, a flare.</span></button>
+</div>
+
+<div data-for-world="paper">
+<h2>Plants</h2>
+<p>Pixel sprites cut from card and folded round a stem. Each page stands one on the line under its title; they unfold when they come into view, lean toward the pointer, and rustle when it brushes past. Press one to make it bloom - a seed head blows away instead, and grows back.</p>
+<div class="pp-specs">
+  <figure class="pp-specimen" data-pp-asset="tulip"><figcaption><span>Tulip</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="rose"><figcaption><span>Pink tulip</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="poppy"><figcaption><span>Poppy</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="daisy"><figcaption><span>Daisy</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="bells"><figcaption><span>Bell flowers</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="puff"><figcaption><span>Seed head</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="fern"><figcaption><span>Fern</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="chard"><figcaption><span>Chard</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="seedling"><figcaption><span>Seedling</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="cactus"><figcaption><span>Cactus</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="grass"><figcaption><span>Grass</span></figcaption></figure>
+  <figure class="pp-specimen" data-pp-asset="sprout"><figcaption><span>Sprout</span></figcaption></figure>
+</div>
+
+<h2>The cat</h2>
+<p>A line drawing in the page's own ink, drawn in parts so a line shows where a leg crosses the body. It chases the pointer a moment behind it, sits and looks up when it arrives, bats at the feather when it hangs still overhead, and crouches and pounces when it is flicked close by. Left alone it washes, then curls up and sleeps until the feather moves. On touch it runs to a tap; from the keyboard it walks over to whatever has focus. With reduced motion it stays where it is and only turns to look.</p>
+<div class="pp-cat-sheet" data-pp-cat></div>
+
+<h2>The box</h2>
+<div class="pp-specs">
+  <figure class="pp-specimen wide" data-pp-asset="box"><figcaption><span>Cardboard box</span></figcaption></figure>
+</div>
+<p>A box sits on a line near the top of each page. When the cat has nothing better to do - or the feather wanders over the box - it climbs in, the flaps fall half shut, and it ignores the feather completely. Now and then its ears come up over the rim. Only a shake brings it out: wiggle the box with the pointer held down, press it three times quickly, or focus it and press Enter. Out of sight for long, the cat gets bored and leaves on its own.</p>
+
+<h2>The feather</h2>
+<p>On a mouse the pointer becomes a cat toy: a bead at the exact point that clicks, a feather hanging from it that swings with every change of direction, and a string up to a wand nobody sees. Passing over a link or a button rings the bead. Text fields keep their caret.</p>
+
+<h2>Make your own</h2>
+<p>Every plant and the box are plain JSON: a palette and a list of pieces, each a pixel grid with a pivot, a place, a turn and a way of arriving. The <a class="link" href="https://tools.heyrav.in/tools/paper.html">Paper Pixel bench</a> draws them, folds them in 3D with the same engine this world loads, and exports the JSON or a link.</p>
+<div class="code"><div class="code-head"><span>sprout.paper.json</span></div><pre>{ "v": 1, "name": "Sprout", "kind": "plant", "tilt": 24,
+  "palette": ["#4f9a3f", "#7cc35b"],
+  "pieces": [
+    { "name": "stem", "rows": ["1", "1", "1", "1"], "grow": "stem", "dur": 0.35 },
+    { "name": "leaf", "rows": [".22", "222", "22."], "ax": 0, "y": 4, "ry": 29, "grow": "fold", "delay": 0.25, "flex": 1 },
+    { "name": "leaf", "rows": ["22.", "222", ".22"], "ax": 2, "y": 3, "ry": -29, "grow": "fold", "delay": 0.32, "flex": 1 } ] }</pre></div>
+</div>
+
+<div data-for-world="pixel">
+<h2>Blocks and bricks</h2>
+<p>A bonus block sits beside every page title: hit it for coins until it goes dull. Bricks next to it break. Both are buttons, so they work from the keyboard too.</p>
+<div class="d-ex"><span class="px-block" aria-hidden="true"><svg viewBox="0 0 12 12" shape-rendering="crispEdges"><path d="M3 1h6v2h2v2H9v2H7v2H5V7H3V5H1V3h2z"/></svg></span><span class="px-brick" aria-hidden="true"></span><span class="px-block spent" aria-hidden="true"><svg viewBox="0 0 12 12"></svg></span></div>
+<h2>Coins</h2>
+<p>Coins hide under section headings for anyone who lingers on one. The score appears in the corner only once the first is found, and is kept between visits.</p>
+<div class="d-ex"><i class="px-coin pp-still" aria-hidden="true"></i><i class="px-coin pp-still" aria-hidden="true"></i><i class="px-coin pp-still" aria-hidden="true"></i></div>
+<h2>Bit</h2>
+<p>A small friend who walks the bottom of the screen and knows a few hints - and a code. Press Bit to hear one.</p>
+</div>
+
+<div data-for-world="aurora">
+<h2>The sky</h2>
+<p>Curtains of light behind every page, leaning toward the pointer and brightening as it moves. A click on open sky sends a ripple through them.</p>
+<h2>The shooting star</h2>
+<p>Now and then one crosses the screen. Catch it and it is a wish.</p>
+<div class="d-ex au-specimen"><span class="au-shoot pp-still" aria-hidden="true"></span></div>
+<h2>The flare</h2>
+<p>A success sends a burst of light from the button that earned it.</p>
+</div>
+
+<div data-for-world="studio">
+<h2>No props</h2>
+<p>Studio is the system as it ships: ink on paper, hairlines and quiet motion. Its only assets are the marks on the <a class="link" href="../brand/">brand</a> page. Pick a world above to see what it brings.</p>
+</div>
+</page>
