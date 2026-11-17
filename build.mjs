@@ -86,7 +86,7 @@ const icon = (n, cls = 'icon') => `<svg class="${cls}" viewBox="0 0 256 256" ari
 
 /* ---------------- navigation ---------------- */
 const NAV = [
-  ['Overview', ['index', 'worlds', 'assets', 'principles', 'usage', 'audit']],
+  ['Overview', ['index', 'worlds', 'world-assets', 'principles', 'usage', 'audit']],
   ['Foundations', ['brand', 'colour', 'typography', 'spacing', 'layout', 'radius', 'elevation', 'motion', 'icons', 'imagery', 'accessibility', 'voice']],
   ['Components', ['accordion', 'avatar', 'badge', 'breadcrumb', 'button', 'card', 'checkbox', 'chip', 'code', 'dialog', 'divider', 'drawer', 'drop-zone', 'glossary', 'input', 'kbd', 'link', 'menu', 'morph', 'pagination', 'popover', 'progress', 'radio', 'segmented', 'select', 'skeleton', 'slider', 'spinner', 'switch', 'table', 'tabs', 'textarea', 'toast', 'tooltip']],
   ['Media', ['figure', 'device', 'video', 'lightbox']],
@@ -231,6 +231,9 @@ ${CLARITY}
 ` };
 }
 
+/* a page folder is generated and wiped on every build, so a page may never
+   take the name of a real folder (assets, js, css, tokens...) */
+for (const o of all) if (o.slug !== 'index' && existsSync(o.slug) && !existsSync(join(o.slug, '.generated'))) throw new Error(`page "${o.slug}" would overwrite the real folder ./${o.slug} - pick another slug`);
 /* clean previously generated folders */
 for (const d of readdirSync('.', { withFileTypes: true })) if (d.isDirectory() && existsSync(join(d.name, '.generated'))) rmSync(d.name, { recursive: true });
 const index = [];
