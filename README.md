@@ -32,7 +32,7 @@ A world is `tokens/worlds/<id>.json` (token overrides: `base`, `light`, `dark`; 
 | `tokens/worlds/*.json`, `css/worlds/*.css` | Worlds: token overrides and flourishes. Built into `worlds.css` and `js/worlds-data.js`. |
 | `js/worlds.js` | The world switch: fonts, icon sets and modules on demand, voice, the reveal, the module life cycle. |
 | `js/worlds/*.js` | World modules: scenes (the Pixel landscape, the Paper Pixel plants, cat and box, the Aurora sky shader), hidden interactions, `celebrate()` and `nudge()` answers. |
-| `js/worlds-src/<id>/` | A world module in parts, joined by the build into `js/worlds/<id>.js`. Paper Pixel keeps its engine (`1-engine.js`) and asset library (`2-assets.js`) identical to `tools/paper-pixel.js` and `tools/paper-assets.js` in the tools repo, where the bench edits them. |
+| `js/worlds-src/<id>/` | A world module in parts, joined by the build into `js/worlds/<id>.js`. Pixel's sprite library (`pixel/1-sprites.js`) is the same file as `tools/pixel-sprites.js`, which the Sprite Bench edits. Paper Pixel keeps its engine (`1-engine.js`) and asset library (`2-assets.js`) identical to `tools/paper-pixel.js` and `tools/paper-assets.js` in the tools repo, where the bench edits them. |
 | `js/icons/*.js` | Icon sets a world can swap in by name: pixelarticons and Phosphor Light (both MIT). |
 | `css/components.css` | Hand-written components (shipped ones ported verbatim from heyrav.in). |
 | `css/docs.css`, `js/docs.js` | Documentation chrome only (`d-` prefix). |

@@ -506,7 +506,7 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
 
   /* a sprite drawn in layers: each layer becomes an outline in ink with paper
      inside, so where a leg crosses the body a line shows */
-  function Sprite(w, h) {
+  function Sprite(w, h, sticker) {
     const c = doc.createElement('canvas'); c.width = w; c.height = h;
     const cx = c.getContext('2d'), img = cx.createImageData(w, h);
     const sil = doc.createElement('canvas'); sil.width = w; sil.height = h; const scx = sil.getContext('2d'), simg = scx.createImageData(w, h);
@@ -523,7 +523,7 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
         for (let i = 0; i < buf.length; i++) {
           const k = buf[i]; if (!k) continue;
           const x = i % w, edge = x === 0 || x === w - 1 || !buf[i - 1] || !buf[i + 1] || !buf[i - w] || !buf[i + w];
-          comp[i] = k === 'K' || edge ? 'K' : k;
+          comp[i] = (k === 'K' || k === 'E') ? k : edge ? (sticker ? 'Z' : 'K') : k;
         }
         buf.fill(0);
       },
@@ -532,9 +532,14 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
         for (let i = 0; i < comp.length; i++) {
           const k = comp[i], o = i * 4;
           if (!k) { img.data[o + 3] = 0; simg.data[o + 3] = 0; continue; }
-          const col = k === 'K' ? INK : k === 'O' ? PAPER : TINT[k] || PAPER;
+          const col = sticker ? (k === 'O' ? CAT : k === 'Z' ? RIM : k === 'E' ? EYE : k === 'K' ? CAT : TINT[k] || CAT) : (k === 'K' ? INK : k === 'O' ? PAPER : TINT[k] || PAPER);
           img.data[o] = col[0]; img.data[o + 1] = col[1]; img.data[o + 2] = col[2]; img.data[o + 3] = 255;
           simg.data[o] = 52; simg.data[o + 1] = 38; simg.data[o + 2] = 22; simg.data[o + 3] = 255;
+        }
+        if (sticker) for (let i = 0; i < comp.length; i++) { // a white paper edge all round, like a cut-out sticker
+          if (comp[i]) continue; const x = i % w, y = (i / w) | 0; let near = false;
+          for (let dy = -1; dy <= 1 && !near; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if ((dx || dy) && xx >= 0 && yy >= 0 && xx < w && yy < h && comp[yy * w + xx]) { near = true; break; } }
+          if (near) { const o = i * 4; img.data[o] = 255; img.data[o + 1] = 253; img.data[o + 2] = 248; img.data[o + 3] = 255; simg.data[o] = 52; simg.data[o + 1] = 38; simg.data[o + 2] = 22; simg.data[o + 3] = 255; }
         }
         cx.putImageData(img, 0, 0); scx.putImageData(simg, 0, 0);
       },
@@ -543,10 +548,13 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
   }
 
   /* the cat faces right; feet centre at sprite x 14, y 0 */
-  const CS = Sprite(30, 24);
-  const ears = (hx, hy, up = 0) => { for (const ex of [hx - 2.6, hx + 0.4]) { CS.rect(ex, hy + 2.2, ex + 2, hy + 2.2, 'O'); CS.px(ex + 1, hy + 3.2 + up, 'O'); if (up) CS.px(ex + 1, hy + 3.2, 'O'); } };
-  const eye = (hx, hy, e) => { if (e === 'shut') CS.rect(hx + 1, hy + 0.4, hx + 2, hy + 0.4, 'K'); else { CS.px(hx + 1.4, hy + 0.8, 'K'); if (e === 'wide') CS.px(hx + 1.4, hy + 1.6, 'K'); } };
-  const head = (hx, hy, e, up) => { CS.disc(hx, hy, 3.5, 3.0, 'O'); ears(hx, hy, up); CS.layer(); eye(hx, hy, e); };
+  const CAT = [29, 28, 37], RIM = [58, 57, 74], EYE = [255, 176, 46];
+  const CS = Sprite(32, 26, true);
+  /* a chibi black cat: a big round head, tall pointed ears, amber ring eyes */
+  const ears = (hx, hy, up = 0) => { for (const [ex, o] of [[hx - 3.6, 0], [hx + 1.2, 1]]) { CS.rect(ex, hy + 2.8, ex + 2.4, hy + 2.8, 'O'); CS.rect(ex + o * .8, hy + 3.8, ex + 1.6 + o * .8, hy + 3.8, 'O'); CS.px(ex + o * 1.8, hy + 4.8 + up, 'O'); if (up) CS.px(ex + o * 1.8, hy + 4.8, 'O'); } };
+  const ring = (x, y) => { x = Math.round(x); y = Math.round(y); for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) if (i || j) CS.px(x + i, y + j, 'E'); };
+  const eye = (hx, hy, e) => { if (e === 'shut') { CS.rect(hx - 2.2, hy, hx - 0.4, hy, 'E'); CS.rect(hx + 1.6, hy, hx + 3.4, hy, 'E'); } else { ring(hx - 1.2, hy + (e === 'wide' ? 0.6 : 0.2)); ring(hx + 2.6, hy + (e === 'wide' ? 0.6 : 0.2)); } };
+  const head = (hx, hy, e, up) => { CS.disc(hx, hy, 4.7, 3.9, 'O'); ears(hx, hy, up); CS.layer(); eye(hx, hy, e); };
   const POSE = {
     run(f) {
       const s = Math.sin(f * Math.PI * 2), c = Math.cos(f * Math.PI * 2), b = Math.round(Math.abs(c) * 1.2);
@@ -579,7 +587,7 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
     },
     sleep(o) {
       CS.disc(12.5, 3.7, 8.6, 3.6 + (o.breath || 0) * 0.35, 'O'); CS.layer();
-      CS.disc(20, 3.4, 3.3, 2.9, 'O'); ears(20, 3.4, 0); CS.layer(); CS.rect(20.5, 3.6, 21.6, 3.6, 'K');
+      CS.disc(21, 4, 4.4, 3.6, 'O'); ears(21, 4, 0); CS.layer(); eye(21, 4, 'shut');
       CS.poly([[4, 1], [8, 0], [16, 0], [21, 0.4]], 'O', 2); CS.layer();
     },
     stretch(o) {
@@ -590,8 +598,7 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
       head(20, 4, 'shut', 0);
     },
     peek(o) { // ears and eyes over the rim of the box
-      CS.disc(15, 1.5 + o.h, 3.5, 3.0, 'O'); ears(15, 1.5 + o.h, 0); CS.layer();
-      CS.px(13.6, 2 + o.h, 'K'); CS.px(16.4, 2 + o.h, 'K');
+      CS.disc(15, 1.5 + o.h, 4.6, 3.8, 'O'); ears(15, 1.5 + o.h, 0); CS.layer(); eye(15, 1.8 + o.h, 'open');
     },
   };
 
@@ -810,9 +817,9 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
       const c = doc.createElement('canvas'); c.className = 'pp-spec pp-poses'; host.prepend(c); ctx.cleanup(() => c.remove());
       const poses = [['run', 0.25], ['sit', { look: 1 }], ['sit', { look: 2, wide: true, paw: 1 }], ['crouch', { wiggle: 1 }], ['pounce', { u: 0.5 }], ['sit', { blink: true, paw: 0.6, tilt: 0.6, look: -1 }], ['sleep', {}], ['stretch', { k: 2 }]];
       const draw = () => {
-        const k = 3, W = 31 * k * 4, H = 25 * k * 2; c.width = W * DPR; c.height = H * DPR; c.style.width = '100%'; c.style.maxWidth = W + 'px';
+        const k = 3, W = 33 * k * 4, H = 27 * k * 2; c.width = W * DPR; c.height = H * DPR; c.style.width = '100%'; c.style.maxWidth = W + 'px';
         const x = c.getContext('2d'); x.setTransform(DPR, 0, 0, DPR, 0, 0); x.imageSmoothingEnabled = false; x.clearRect(0, 0, W, H);
-        poses.forEach(([n, a], i) => { CS.clr(); POSE[n](a); CS.flush(); x.drawImage(CS.cv, (i % 4) * 31 * k, Math.floor(i / 4) * 25 * k, 30 * k, 24 * k); });
+        poses.forEach(([n, a], i) => { CS.clr(); POSE[n](a); CS.flush(); x.drawImage(CS.cv, (i % 4) * 33 * k, Math.floor(i / 4) * 27 * k, 32 * k, 26 * k); });
       };
       draw(); ctx.onTheme(() => setTimeout(draw, 30));
     });
