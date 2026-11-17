@@ -271,7 +271,7 @@ body.d{background:var(--surface);font-size:var(--t-ui);}
 .d-speed .seg button{min-height:34px;padding:0 12px;font-variant-numeric:tabular-nums;}
 
 /* ---- worlds page ---- */
-.d-worldgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-top:8px;}
+.d-worldgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px;}
 .d-wcard{display:grid;align-content:start;gap:8px;text-align:left;padding:16px;border:var(--bw) var(--bs) var(--line);border-radius:var(--r-md);background:var(--panel);backdrop-filter:var(--glass);color:var(--ink);cursor:pointer;box-shadow:var(--lift);transition:border-color var(--d-fast),translate var(--d-move) var(--ease-out),box-shadow var(--d-move) var(--ease-out);}
 .d-wcard i{width:36px;height:36px;border-radius:50%;background:conic-gradient(from 210deg,var(--a) 0 33.3%,var(--b) 0 66.6%,var(--c) 0);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 16%,transparent);margin-bottom:4px;}
 .d-wcard b{font-family:var(--head-font);text-transform:var(--head-case);font-size:var(--t-body);font-weight:var(--w-head);line-height:1.2;}
@@ -280,8 +280,7 @@ body.d{background:var(--surface);font-size:var(--t-ui);}
 .d-wcard[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent),var(--lift);}
 .d-tour-hero{align-items:flex-start;justify-content:center;text-align:left;padding:28px;}
 .d-tour-hero .h2{margin:8px 0 20px;}
-@media (max-width:1180px){.d-worldgrid{grid-template-columns:repeat(3,minmax(0,1fr));}}
-@media (max-width:640px){.d-worldgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media (max-width:640px){.d-worldgrid{grid-template-columns:minmax(0,1fr);}}
 
 /* world-only rows and the dark column of token tables, which a world restates live */
 :root:not([data-world]) .d-w-only{display:none;}
