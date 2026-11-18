@@ -805,112 +805,85 @@ html[data-world="aurora"]{background-color:var(--paper);}
 
 /* =====================================================================
    SUNKEN - under the water.
-   The UI is a game's stone tablet: a cracked olive slab with light and
-   dark facets, a thick dark edge and hand-cut corners, a darker plaque
-   on top with warm engraved capitals, leafy vines climbing the sides and
-   leaves with small rocks at the foot. Sliders and fields are grooves
-   carved into it with a green fill and a wooden knob; the one action is a
-   jade tile, the second a sandstone tile; small things sit in square
-   sockets. Gold for anything worth keeping. The page between is water,
-   and a few sections are places to dive (js/worlds/sunken.js).
+   Panels are stone tablets with moss along the top and ivy at a corner.
+   The one action is a mossy stone tile with a thick edge; the second is a
+   gold stone. Chips and badges are drops of water. Fields, sliders and
+   switches are wells cut into the stone with gold coins to hold. The page
+   between is water: the light, the reef and the kelp show through it, and
+   a few sections are places to dive (js/worlds/sunken.js).
    ===================================================================== */
 [data-world="sunken"]{--w-reveal-d:900ms;
-  --st:#a8a289;--st-hi:#bab49a;--st-lo:#9a947c;--st-edge:#3f3c2b;--st-light:rgba(255,252,230,.45);
-  --groove:#3d3b30;--groove-2:#2c2a22;--plaque:#5a5748;--plaque-2:#4d4a3d;--plaque-ink:#ffd08c;
-  --jade-1:#8ad662;--jade-2:#63b444;--jade-edge:#2b5a1d;--jade-ink:#0f2f08;
-  --sand-1:#f3e6bd;--sand-2:#dcc78f;--sand-edge:#7a6440;--sand-ink:#3b2a10;
-  --knob:#e2783a;--knob-2:#a94c1c;--knob-edge:#3b1a08;--gd-1:#f8d465;--gd-2:#d99a2a;--gd-edge:#86560f;
-  --sk-wood:repeating-conic-gradient(from 10deg,rgba(80,30,5,.55) 0 8deg,transparent 8deg 60deg),radial-gradient(circle,#ffb27a 0 18%,var(--knob) 22%,var(--knob-2));
-  --sk-glass:rgba(191,240,236,.8);
-  --sk-cracks:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300' preserveAspectRatio='none'%3E%3Cpath d='M0 0H128L100 66L0 92Z' fill='rgba(255,252,230,.18)'/%3E%3Cpath d='M128 0H400V44L304 64L236 34L146 58Z' fill='rgba(40,36,20,.08)'/%3E%3Cpath d='M326 300L356 214L400 196V300Z' fill='rgba(255,252,230,.14)'/%3E%3Cpath d='M0 214L74 256L62 300H0Z' fill='rgba(40,36,20,.1)'/%3E%3Cpath d='M190 300L214 252L292 238L326 300Z' fill='rgba(40,36,20,.07)'/%3E%3Cg fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M128 0L100 66L0 92M146 58L236 34L304 64L400 44M356 214L326 300M400 196L356 214M0 214L74 256L62 300M214 252L292 238L326 300M214 252L190 300' stroke='%233f3c2b' stroke-width='2.4' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M128 3L101 69L2 95M146 61L236 37L304 67L400 47M358 217L329 300M0 217L74 259M214 255L292 241' stroke='rgba(255,252,230,.55)' stroke-width='1.2' vector-effect='non-scaling-stroke'/%3E%3C/g%3E%3C/svg%3E");
-  --sk-vine:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='150' viewBox='0 0 44 150'%3E%3Cpath d='M22 150C10 126 30 104 18 82S28 40 20 18C16 8 24 2 30 6c5 4 0 10-4 8' fill='none' stroke='%232b5a1d' stroke-width='3.2' stroke-linecap='round'/%3E%3Cg stroke='%231f4716' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M19 126c-12-6-18 2-17 12 9 1 16-4 17-12z' fill='%234f9a37'/%3E%3Cpath d='M24 100c12-6 19 2 18 12-9 1-17-4-18-12z' fill='%2366b347'/%3E%3Cpath d='M17 74c-13-4-17 5-15 14 9 0 15-6 15-14z' fill='%234f9a37'/%3E%3Cpath d='M23 46c12-5 18 3 17 12-9 1-16-4-17-12z' fill='%2366b347'/%3E%3Cpath d='M19 24c-11-3-15 4-13 12 8 0 13-5 13-12z' fill='%234f9a37'/%3E%3C/g%3E%3Cg stroke='%23a9dc7c' stroke-width='.9' fill='none' opacity='.75'%3E%3Cpath d='M18 127l-12 8M25 101l13 8M16 75l-11 9M24 47l12 8M18 25l-9 8'/%3E%3C/g%3E%3C/svg%3E");
-  --sk-tuft:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='56' viewBox='0 0 96 56'%3E%3Cg stroke='%232a2820' stroke-width='1.6'%3E%3Cellipse cx='70' cy='48' rx='14' ry='7' fill='%23938d7a'/%3E%3Cellipse cx='84' cy='50' rx='9' ry='5' fill='%23a3685a'/%3E%3C/g%3E%3Cg stroke='%231f4716' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M40 52c-8-14 2-26 16-26-2 14-6 22-16 26z' fill='%234f9a37'/%3E%3Cpath d='M38 52C22 46 16 32 22 20c12 8 18 18 16 32z' fill='%2366b347'/%3E%3Cpath d='M42 52c10-6 22-6 30 2-10 6-20 6-30-2z' fill='%235aa83c'/%3E%3Cpath d='M36 52c-10-4-22-2-30 6 12 2 22 0 30-6z' fill='%234f9a37'/%3E%3Cpath d='M40 50c-2-12 4-22 14-28 2 12-4 22-14 28z' fill='%2378c455'/%3E%3C/g%3E%3Cg stroke='%23b5e58a' stroke-width='.9' fill='none' opacity='.7'%3E%3Cpath d='M42 48l10-16M36 48L24 26M44 52l22 0M34 52L12 56'/%3E%3C/g%3E%3C/svg%3E");}
-[data-world="sunken"][data-theme="dark"]{--st:#5d5a4c;--st-hi:#66634f;--st-lo:#4f4c40;--st-edge:#16150f;--st-light:rgba(255,252,230,.12);--groove:#1f1e18;--groove-2:#14130f;--plaque:#3b392f;--plaque-2:#2d2b23;--sk-glass:rgba(6,39,68,.8);}
+  --st-1:#e2dccb;--st-2:#cdc6b2;--st-edge:#6b624c;--st-well:#5c5544;--st-well-2:#4a4436;
+  --ms-1:#8fd05c;--ms-2:#4f8f2f;--ms-3:#2f5e1c;--btn-1:#47852a;--btn-2:#326419;
+  --gd-1:#f6d36b;--gd-2:#d9a03a;--gd-edge:#8a5a12;
+  --sk-glass:rgba(191,240,236,.8);--sk-ivy:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='76' height='46' viewBox='0 0 76 46'%3E%3Cpath d='M4 8C18 2 34 4 46 14s22 12 28 10' fill='none' stroke='%232f5e1c' stroke-width='2.4' stroke-linecap='round'/%3E%3Cg stroke='%232f5e1c' stroke-width='1.4' stroke-linejoin='round'%3E%3Cpath d='M10 7c-7-1-9 6-6 11 5-1 9-5 6-11z' fill='%236fb244'/%3E%3Cpath d='M22 4c-2-6 4-9 9-6-1 5-4 8-9 6z' fill='%238fd05c'/%3E%3Cpath d='M30 7c-5 4-2 11 4 12 2-5 1-10-4-12z' fill='%235a9e36'/%3E%3Cpath d='M44 13c1-7 8-8 12-4-3 5-7 6-12 4z' fill='%238fd05c'/%3E%3Cpath d='M48 15c-6 3-5 10 0 13 3-4 4-9 0-13z' fill='%236fb244'/%3E%3Cpath d='M64 21c3-6 10-5 11 1-4 3-8 3-11-1z' fill='%235a9e36'/%3E%3C/g%3E%3C/svg%3E");}
+[data-world="sunken"][data-theme="dark"]{--st-1:#56554e;--st-2:#45443e;--st-edge:#1f1f1c;--st-well:#262522;--st-well-2:#1a1a17;--ms-1:#6faa45;--ms-2:#3d7322;--ms-3:#1c3d10;--btn-1:#4d8c2c;--btn-2:#2f5f18;--sk-glass:rgba(6,39,68,.8);}
 
 /* the water */
 [data-world="sunken"] body{background:transparent;}
 [data-world="sunken"] :is(.d-panel,.d-side){background:var(--sk-glass);}
-[data-world="sunken"] .d-ex{background:color-mix(in srgb,var(--paper) 55%,transparent);border-color:rgba(255,255,255,.55);box-shadow:inset 0 18px 30px -24px rgba(255,255,255,.8);}
+[data-world="sunken"] .d-ex{background:color-mix(in srgb,var(--paper) 55%,transparent);border-color:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(13,47,58,.08),inset 0 18px 30px -24px rgba(255,255,255,.8);}
 [data-world="sunken"][data-theme="dark"] .d-ex{border-color:rgba(160,220,240,.18);box-shadow:inset 0 18px 30px -24px rgba(120,200,255,.25);}
 
-/* ---------- the stone tablet ---------- */
-[data-world="sunken"] :is(.card,.d-tile,.d-wcard,.dlg,.drawer,.menu,.pop,.define-box,.toast,.morph-panel,.case-nav a,.acc,.d-tbl,.table){
-  --ink:#1b1a12;--ink-2:#24231a;--ink-body:#24231a;--ink-3:#24231a;--mut:#24231a;--line:rgba(40,36,20,.35);--line-2:rgba(40,36,20,.5);
-  background:var(--sk-cracks) 0 0/100% 100% no-repeat,var(--tex),radial-gradient(120% 90% at 30% 20%,var(--st-hi),var(--st) 55%,var(--st-lo));
-  border:3px solid var(--st-edge);border-radius:14px 8px 16px 10px;color:var(--ink);
-  box-shadow:inset 0 2px 0 var(--st-light),inset 0 -4px 0 rgba(40,36,20,.25),0 12px 24px -14px rgba(6,40,60,.7);}
-[data-world="sunken"][data-theme="dark"] :is(.card,.d-tile,.d-wcard,.dlg,.drawer,.menu,.pop,.define-box,.toast,.morph-panel,.case-nav a,.acc,.d-tbl,.table){
-  --ink:#f3efe0;--ink-2:#e6e1cf;--ink-body:#e0dbc8;--ink-3:#e6e1cf;--mut:#e6e1cf;--line:rgba(255,250,230,.18);--line-2:rgba(255,250,230,.28);}
-[data-world="sunken"] :is(.d-tile,.card,.d-wcard,.dlg,.morph-panel){position:relative;}
-/* a vine up one side, leaves and small rocks at the other foot */
-[data-world="sunken"] :is(.d-tile,.card,.dlg)::before{content:"";position:absolute;left:-16px;top:18%;width:40px;height:min(150px,62%);pointer-events:none;z-index:2;background:var(--sk-vine) 0 0/100% 100% no-repeat;}
-[data-world="sunken"] :is(.d-tile,.card,.dlg)::after{content:"";position:absolute;right:-18px;bottom:-12px;width:96px;height:56px;pointer-events:none;z-index:2;background:var(--sk-tuft) 0 0/100% 100% no-repeat;}
-[data-world="sunken"] :is(.d-tile,.card):nth-of-type(2n)::before{left:auto;right:-16px;transform:scaleX(-1);}
-[data-world="sunken"] :is(.d-tile,.card):nth-of-type(2n)::after{right:auto;left:-18px;transform:scaleX(-1);}
-[data-world="sunken"] :is(.d-tile,.card):nth-of-type(3n)::before{display:none;}
-@media (hover:hover) and (pointer:fine){[data-world="sunken"] :is(a.card,.d-wcard,.case-nav a):hover{translate:0 -3px;box-shadow:inset 0 2px 0 var(--st-light),inset 0 -4px 0 rgba(40,36,20,.25),0 18px 30px -14px rgba(6,40,60,.75);}}
-
-/* the plaque on top, with warm engraved capitals */
-[data-world="sunken"] .d-tile > small{left:50%;top:-15px;transform:translateX(-50%);z-index:3;padding:4px 16px 5px;white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis;
-  background:var(--tex),linear-gradient(180deg,var(--plaque),var(--plaque-2));border:2.5px solid var(--st-edge);border-radius:6px 10px 5px 9px;
-  color:var(--plaque-ink);font-family:var(--head-font);font-weight:700;font-size:12px;letter-spacing:.16em;text-shadow:0 1px 0 #24221a,0 -1px 0 rgba(255,230,190,.2);
-  box-shadow:inset 0 1px 0 rgba(255,250,220,.2),0 3px 0 rgba(40,36,20,.35);}
-[data-world="sunken"] .d-tile > small a{color:inherit;}
-[data-world="sunken"] :is(.code,.d-code){background:var(--tex),linear-gradient(180deg,var(--groove-2),var(--groove));color:#efe6cf;border:3px solid var(--st-edge);border-radius:12px;box-shadow:inset 0 3px 8px rgba(0,0,0,.5);}
+/* ---------- stone tablets with moss and ivy ---------- */
+[data-world="sunken"] :is(.card,.d-tile,.d-wcard,.dlg,.drawer,.menu,.pop,.define-box,.toast,.morph-panel,.code,.d-code,.case-nav a,.acc,.table,.d-tbl){
+  background:var(--tex),linear-gradient(180deg,var(--st-1),var(--st-2));border:2px solid var(--st-edge);box-shadow:var(--lift);}
+[data-world="sunken"] :is(.d-tile,.card,.d-wcard,.dlg,.morph-panel){position:relative;border-radius:var(--r-lg);}
+[data-world="sunken"] :is(.d-tile,.card,.dlg)::before{content:"";position:absolute;left:14px;right:14px;top:-7px;height:14px;pointer-events:none;z-index:1;
+  background:radial-gradient(circle at 8px 9px,var(--ms-1) 0 5px,transparent 6px) 0 0/19px 14px repeat-x,radial-gradient(circle at 4px 11px,var(--ms-2) 0 5px,transparent 6px) 9px 0/23px 14px repeat-x;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 12%,#000 55%,transparent 72%);mask:linear-gradient(90deg,transparent,#000 12%,#000 55%,transparent 72%);}
+[data-world="sunken"] :is(.d-tile,.card,.dlg)::after{content:"";position:absolute;left:-14px;top:-16px;width:76px;height:46px;pointer-events:none;z-index:1;background:var(--sk-ivy) 0 0/100% 100% no-repeat;}
+[data-world="sunken"] :is(.d-tile,.card):nth-of-type(3n+2)::after{left:auto;right:-14px;transform:scaleX(-1);}
+@media (hover:hover) and (pointer:fine){[data-world="sunken"] :is(a.card,.d-wcard,.case-nav a):hover{box-shadow:var(--lift-hover);translate:0 -3px;}}
+[data-world="sunken"] :is(.code,.d-code){background:var(--st-well);color:#efe6cf;border-color:var(--st-edge);}
 
 /* ---------- type ---------- */
 [data-world="sunken"] :is(.d-head h1,.d-hero h1,.h1,.h2){letter-spacing:0;}
 [data-world="sunken"] :is(.d-head h1,.d-hero h1,.h1,.h2,.sec-head h2) em{font-weight:600;color:var(--accent);}
-[data-world="sunken"] .d-head{border-bottom:0;padding-bottom:30px;position:relative;}
-[data-world="sunken"] .d-head::after{content:"";position:absolute;left:0;right:0;bottom:8px;height:12px;border-radius:7px;pointer-events:none;border:2.5px solid var(--st-edge);
-  background:linear-gradient(var(--jade-1),var(--jade-2)) 3px 50%/38% 4px no-repeat,var(--tex),linear-gradient(180deg,var(--groove-2),var(--groove));box-shadow:inset 0 2px 3px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.45);}
+[data-world="sunken"] .d-head{border-bottom:0;padding-bottom:32px;position:relative;}
+[data-world="sunken"] .d-head::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:24px;pointer-events:none;
+  background:var(--sk-ivy) 0 50%/76px 24px repeat-x;opacity:.95;}
 
-/* ---------- buttons: a jade tile, a sandstone tile ---------- */
-[data-world="sunken"] :is(.btn,.case-link,.contact-actions a){font-family:var(--head-font);font-weight:600;border-radius:12px 9px 13px 10px;}
-[data-world="sunken"] :is(.btn-primary,.case-link,.contact-actions .primary){
-  background:radial-gradient(circle at 20% 22%,rgba(220,255,190,.55) 0 7%,transparent 8%),radial-gradient(circle at 70% 70%,rgba(30,90,20,.25) 0 9%,transparent 10%),radial-gradient(circle at 84% 24%,rgba(220,255,190,.4) 0 5%,transparent 6%),var(--tex),linear-gradient(180deg,var(--jade-1),var(--jade-2));
-  color:var(--jade-ink);border:3px solid var(--jade-edge);text-shadow:0 1px 0 rgba(220,255,190,.5);
-  box-shadow:inset 0 2px 0 rgba(230,255,200,.6),inset 0 -5px 0 rgba(30,70,15,.4),0 5px 0 var(--jade-edge),0 9px 14px -6px rgba(10,40,10,.5);}
-[data-world="sunken"] :is(.btn-ghost,.contact-actions .ghost){
-  background:radial-gradient(circle at 76% 30%,rgba(120,90,40,.18) 0 6%,transparent 7%),var(--tex),linear-gradient(180deg,var(--sand-1),var(--sand-2));color:var(--sand-ink);border:3px solid var(--sand-edge);text-shadow:0 1px 0 rgba(255,255,240,.6);
-  box-shadow:inset 0 2px 0 rgba(255,255,240,.7),inset 0 -5px 0 rgba(120,90,40,.3),0 5px 0 var(--sand-edge),0 9px 14px -6px rgba(60,40,10,.5);}
-[data-world="sunken"] :is(.btn-primary,.btn-ghost,.case-link,.contact-actions a):active{translate:0 4px;box-shadow:inset 0 3px 6px rgba(0,0,0,.25),0 1px 0 var(--st-edge);}
-@media (hover:hover) and (pointer:fine){[data-world="sunken"] :is(.btn-primary,.btn-ghost,.case-link):hover{filter:brightness(1.06);}}
-[data-world="sunken"] .btn-icon{border-radius:50%;background:var(--tex),linear-gradient(180deg,var(--plaque),var(--plaque-2));border:2.5px solid var(--st-edge);color:var(--plaque-ink);box-shadow:inset 0 2px 4px rgba(0,0,0,.4);}
+/* ---------- buttons: a mossy stone tile, a gold stone ---------- */
+[data-world="sunken"] :is(.btn,.case-link,.contact-actions a){font-family:var(--head-font);font-weight:600;border-radius:14px;}
+[data-world="sunken"] :is(.btn-primary,.case-link,.contact-actions .primary){background:radial-gradient(circle at 18% 18%,var(--ms-1) 0 14%,transparent 15%),radial-gradient(circle at 82% 12%,var(--ms-1) 0 9%,transparent 10%),linear-gradient(180deg,var(--btn-1),var(--btn-2));
+  color:#f4ffe8;border:2px solid var(--ms-3);box-shadow:var(--btn-lift);text-shadow:0 2px 0 var(--ms-3);}
+[data-world="sunken"] :is(.btn-primary,.case-link,.contact-actions .primary):active{box-shadow:var(--btn-lift-press);translate:0 var(--press-y);}
+[data-world="sunken"] :is(.btn-ghost,.contact-actions .ghost){background:linear-gradient(180deg,var(--gd-1),var(--gd-2));color:#3a2405;border:2px solid var(--gd-edge);
+  box-shadow:inset 0 2px 0 rgba(255,250,210,.7),inset 0 -5px 0 rgba(120,70,10,.4),0 6px 12px -6px rgba(90,60,10,.6);}
+[data-world="sunken"] :is(.btn-ghost,.contact-actions .ghost):active{box-shadow:inset 0 3px 6px rgba(120,70,10,.5);translate:0 var(--press-y);}
+@media (hover:hover) and (pointer:fine){[data-world="sunken"] :is(.btn-primary,.btn-ghost,.case-link):hover{filter:brightness(1.07) saturate(1.05);}}
 
-/* ---------- small things: sandstone chips, square sockets, gold ---------- */
-[data-world="sunken"] .chip{border-radius:9px 7px 10px 8px;border:2.5px solid var(--st-edge);color:var(--sand-ink);
-  background:var(--tex),linear-gradient(180deg,var(--sand-1),var(--sand-2));box-shadow:inset 0 2px 0 rgba(255,255,240,.6),inset 0 -3px 0 rgba(120,90,40,.3),0 3px 0 var(--st-edge);}
-[data-world="sunken"] .chip[aria-pressed="true"]{background:var(--tex),linear-gradient(180deg,var(--jade-1),var(--jade-2));color:var(--jade-ink);border-color:var(--jade-edge);translate:0 2px;box-shadow:inset 0 2px 4px rgba(20,60,10,.35),0 1px 0 var(--jade-edge);}
-[data-world="sunken"] .badge{border-radius:7px;border:2px solid var(--st-edge);background:linear-gradient(180deg,var(--plaque),var(--plaque-2));color:var(--plaque-ink);box-shadow:inset 0 1px 3px rgba(0,0,0,.4);}
-[data-world="sunken"] .badge-solid{background:radial-gradient(circle at 34% 30%,#fff3b8 0 12%,var(--gd-1) 30%,var(--gd-2));color:#3a2405;border-color:var(--gd-edge);}
-[data-world="sunken"] .check input{border-radius:5px;background:var(--tex),linear-gradient(180deg,var(--groove-2),var(--groove));border:2.5px solid var(--st-edge);box-shadow:inset 0 2px 3px rgba(0,0,0,.5);}
-[data-world="sunken"] .check input:checked{background-color:var(--jade-2);background-image:var(--tick),linear-gradient(180deg,var(--jade-1),var(--jade-2));border-color:var(--jade-edge);}
-[data-world="sunken"] .check input[type="radio"]{border-radius:50%;}
+/* ---------- chips and badges are drops of water ---------- */
+[data-world="sunken"] :is(.chip,.badge:not(.badge-solid)){border-radius:999px;border:1.5px solid rgba(255,255,255,.75);color:var(--ink);
+  background:radial-gradient(circle at 28% 24%,rgba(255,255,255,.95) 0 9%,rgba(255,255,255,.3) 26%,transparent 46%),linear-gradient(180deg,rgba(220,250,250,.55),rgba(90,195,210,.45));
+  box-shadow:inset 0 -6px 10px rgba(20,120,140,.22),inset 0 2px 2px rgba(255,255,255,.6),0 6px 14px -8px rgba(10,60,80,.55);}
+[data-world="sunken"][data-theme="dark"] :is(.chip,.badge:not(.badge-solid)){border-color:rgba(170,230,245,.35);background:radial-gradient(circle at 28% 24%,rgba(255,255,255,.5) 0 8%,transparent 30%),linear-gradient(180deg,rgba(70,150,190,.35),rgba(20,80,120,.45));}
+[data-world="sunken"] .chip[aria-pressed="true"]{background:radial-gradient(circle at 28% 24%,rgba(255,255,255,.95) 0 9%,transparent 30%),linear-gradient(180deg,#9df0f2,#45bfd0);color:#0d2f3a;border:2px solid var(--gd-2);}
+[data-world="sunken"] .badge-solid{background:linear-gradient(180deg,var(--gd-1),var(--gd-2));color:#3a2405;border:1.5px solid var(--gd-edge);border-radius:999px;}
 
-/* ---------- grooves carved in the stone, a wooden knob to hold ---------- */
-[data-world="sunken"] :is(.input,.txt,.sel){background:var(--tex),linear-gradient(180deg,var(--groove-2),var(--groove));color:#f3ead6;border:3px solid var(--st-edge);border-radius:12px 8px 12px 9px;box-shadow:inset 0 3px 6px rgba(0,0,0,.55),0 2px 0 rgba(255,252,230,.35);}
+/* ---------- wells cut into the stone, with gold coins to hold ---------- */
+[data-world="sunken"] :is(.input,.txt,.sel){background:linear-gradient(180deg,var(--st-well-2),var(--st-well));color:#f3ead6;border:2px solid var(--st-edge);border-radius:12px;box-shadow:inset 0 3px 6px rgba(0,0,0,.45),0 1px 0 rgba(255,255,255,.4);}
 [data-world="sunken"] :is(.input,.txt)::placeholder{color:#c9bfa6;}
-[data-world="sunken"] :is(.input,.txt,.sel):focus{border-color:var(--knob-2);box-shadow:inset 0 3px 6px rgba(0,0,0,.55),0 0 0 3px rgba(226,120,58,.45);}
-[data-world="sunken"] .rng::-webkit-slider-runnable-track{height:12px;border-radius:8px;border:2.5px solid var(--st-edge);
-  background:linear-gradient(var(--jade-1),var(--jade-2)) 2px 50%/calc(var(--f,50%) - 4px) 6px no-repeat,linear-gradient(180deg,var(--groove-2),var(--groove));box-shadow:inset 0 2px 4px rgba(0,0,0,.55),0 2px 0 rgba(255,252,230,.35);}
-[data-world="sunken"] .rng::-webkit-slider-thumb{width:24px;height:24px;margin-top:-6px;border:2.5px solid var(--knob-edge);background:var(--sk-wood);box-shadow:0 2px 0 var(--knob-edge);}
-[data-world="sunken"] .rng::-moz-range-track{height:12px;border-radius:8px;border:2.5px solid var(--st-edge);background:linear-gradient(180deg,var(--groove-2),var(--groove));}
-[data-world="sunken"] .rng::-moz-range-progress{height:6px;border-radius:4px;background:linear-gradient(var(--jade-1),var(--jade-2));}
-[data-world="sunken"] .rng::-moz-range-thumb{width:20px;height:20px;border:2.5px solid var(--knob-edge);background:var(--sk-wood);}
-[data-world="sunken"] .tgl .sw{width:40px;height:24px;background:var(--tex),linear-gradient(180deg,var(--groove-2),var(--groove));border:2.5px solid var(--st-edge);box-shadow:inset 0 2px 4px rgba(0,0,0,.55);}
-[data-world="sunken"] .tgl .sw::after{top:1.5px;left:1.5px;width:16px;height:16px;background:var(--sk-wood);box-shadow:0 0 0 1.5px var(--knob-edge);}
-[data-world="sunken"] .tgl input:checked + .sw{background:linear-gradient(180deg,var(--jade-1),var(--jade-2));border-color:var(--jade-edge);}
-[data-world="sunken"] :is(.bar,.progress){background:linear-gradient(180deg,var(--groove-2),var(--groove));border:2.5px solid var(--st-edge);box-shadow:inset 0 2px 4px rgba(0,0,0,.55);}
-[data-world="sunken"] .bar i{background:linear-gradient(180deg,var(--jade-1),var(--jade-2));}
+[data-world="sunken"] :is(.input,.txt,.sel):focus{border-color:var(--gd-2);box-shadow:inset 0 3px 6px rgba(0,0,0,.45),0 0 0 3px color-mix(in srgb,var(--gd-1) 45%,transparent);}
+[data-world="sunken"] .tgl .sw{background:linear-gradient(180deg,var(--st-well-2),var(--st-well));border:2px solid var(--st-edge);box-shadow:inset 0 2px 4px rgba(0,0,0,.5);}
+[data-world="sunken"] .tgl .sw::after{background:radial-gradient(circle at 35% 30%,#fff3b8 0 18%,var(--gd-1) 30%,var(--gd-2) 80%);box-shadow:0 0 0 1.5px var(--gd-edge),0 2px 3px rgba(0,0,0,.4);}
+[data-world="sunken"] .tgl input:checked + .sw{background:linear-gradient(180deg,var(--btn-1),var(--btn-2));border-color:var(--ms-3);}
+[data-world="sunken"] .rng::-webkit-slider-runnable-track{background:linear-gradient(90deg,#45bfd0 var(--f,50%),var(--st-well) var(--f,50%));border:2px solid var(--st-edge);border-radius:999px;box-shadow:inset 0 2px 4px rgba(0,0,0,.45);}
+[data-world="sunken"] .rng::-webkit-slider-thumb{background:radial-gradient(circle at 35% 30%,#fff3b8 0 18%,var(--gd-1) 30%,var(--gd-2) 80%);border:2px solid var(--gd-edge);}
+[data-world="sunken"] .rng::-moz-range-thumb{background:radial-gradient(circle at 35% 30%,#fff3b8 0 18%,var(--gd-1) 30%,var(--gd-2) 80%);border:2px solid var(--gd-edge);}
+[data-world="sunken"] .check input{background:linear-gradient(180deg,var(--st-1),var(--st-2));border:2px solid var(--st-edge);border-radius:6px;}
+[data-world="sunken"] .check input:checked{background-color:var(--btn-2);background-image:var(--tick),linear-gradient(180deg,var(--btn-1),var(--btn-2));border-color:var(--ms-3);}
+[data-world="sunken"] :is(.bar,.progress){background:var(--st-well);border:2px solid var(--st-edge);box-shadow:inset 0 2px 4px rgba(0,0,0,.45);}
+[data-world="sunken"] .bar i{background:linear-gradient(180deg,#9df0f2,#2aa7b8);}
 
-/* ---------- tabs, nav, tips, segments ---------- */
-[data-world="sunken"] .seg{background:var(--tex),linear-gradient(180deg,var(--groove-2),var(--groove));border:2.5px solid var(--st-edge);border-radius:12px;box-shadow:inset 0 2px 4px rgba(0,0,0,.55);}
+/* ---------- tabs, nav, tips ---------- */
+[data-world="sunken"] .tabs [role="tab"][aria-selected="true"]{background:linear-gradient(180deg,var(--btn-1),var(--btn-2));color:#f4ffe8;border-radius:12px 12px 0 0;box-shadow:none;}
+[data-world="sunken"] .d-nav a[aria-current="page"]{background:linear-gradient(180deg,var(--btn-1),var(--btn-2));color:#f4ffe8;border-radius:10px;box-shadow:inset 0 -3px 0 rgba(20,50,10,.4);}
+[data-world="sunken"] .tip [role="tooltip"]{background:var(--st-well);color:#f3ead6;border:2px solid var(--st-edge);}
+[data-world="sunken"] .seg{background:var(--st-well);border-radius:14px;box-shadow:inset 0 2px 4px rgba(0,0,0,.45);}
 [data-world="sunken"] .seg button{color:#e8dfc8;}
-[data-world="sunken"] .seg button[aria-pressed="true"]{background:linear-gradient(180deg,var(--sand-1),var(--sand-2));color:var(--sand-ink);border-radius:9px;box-shadow:inset 0 -3px 0 rgba(120,90,40,.35);}
-[data-world="sunken"] .tabs [role="tab"][aria-selected="true"]{background:linear-gradient(180deg,var(--jade-1),var(--jade-2));color:var(--jade-ink);border-radius:10px 10px 0 0;box-shadow:none;}
-[data-world="sunken"] .d-nav a[aria-current="page"]{background:var(--tex),linear-gradient(180deg,var(--jade-1),var(--jade-2));color:var(--jade-ink);border-radius:10px 7px 10px 8px;box-shadow:inset 0 0 0 2px var(--jade-edge),inset 0 -4px 0 rgba(30,70,15,.35);}
-[data-world="sunken"] .tip [role="tooltip"]{background:linear-gradient(180deg,var(--plaque),var(--plaque-2));color:var(--plaque-ink);border:2.5px solid var(--st-edge);border-radius:8px;}
+[data-world="sunken"] .seg button[aria-pressed="true"]{background:linear-gradient(180deg,var(--gd-1),var(--gd-2));color:#3a2405;box-shadow:inset 0 -3px 0 rgba(120,70,10,.4);}
 
 /* ---------- the sea, its life and the places to dive (js/worlds/sunken.js) ---------- */
 .sk-sea{z-index:-2;}
@@ -921,26 +894,21 @@ html[data-world="aurora"]{background-color:var(--paper);}
 [data-world="sunken"] [data-dive] > :is(.sk-dive,.sk-over){position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:inherit;pointer-events:none;}
 [data-world="sunken"] [data-dive] > .sk-dive{z-index:-2;}
 [data-world="sunken"] [data-dive] > .sk-over{z-index:-1;}
-[data-world="sunken"] :is(.d-hero,.d-tour-hero)[data-dive]{border:3px solid var(--st-edge);}
+[data-world="sunken"] .d-hero[data-dive]{border-color:var(--st-edge);}
 [data-world="sunken"] :is(.d-hero,.d-tour-hero)[data-dive] :is(h1,.h2,p,.label){color:#eefcff;text-shadow:0 2px 14px rgba(2,20,40,.75);}
 [data-world="sunken"] :is(.d-hero,.d-tour-hero)[data-dive] :is(h1,.h2) em{color:#ffe08a;}
 [data-world="sunken"] .d-tour-hero[data-dive]::before,[data-world="sunken"] .d-tour-hero[data-dive]::after{display:none;}
-.sk-tank{height:380px;margin-top:14px;border-radius:16px 10px 18px 12px;border:3px solid var(--st-edge);box-shadow:0 12px 24px -14px rgba(6,40,60,.7);display:grid;place-items:end start;padding:16px;color:#eefcff;font-size:13px;}
+.sk-tank{height:380px;margin-top:14px;border-radius:var(--r-lg);border:2px solid var(--st-edge);box-shadow:var(--lift);display:grid;place-items:end start;padding:16px;color:#eefcff;font-size:13px;}
 .sk-tank span{text-shadow:0 1px 8px rgba(2,20,40,.8);}
 
-/* the Assets page: the tablet's own pieces */
-.sk-a-tile,.sk-a-gold,.sk-a-drop,.sk-a-coin,.sk-a-tab,.sk-a-groove,.sk-a-plaque,.sk-a-socket{display:block;}
-.sk-a-tile{width:84px;height:84px;border-radius:14px 10px 15px 11px;border:3px solid var(--jade-edge);background:radial-gradient(circle at 22% 22%,rgba(220,255,190,.55) 0 8%,transparent 9%),radial-gradient(circle at 70% 70%,rgba(30,90,20,.25) 0 10%,transparent 11%),var(--tex),linear-gradient(180deg,var(--jade-1),var(--jade-2));box-shadow:inset 0 2px 0 rgba(230,255,200,.6),inset 0 -6px 0 rgba(30,70,15,.4),0 5px 0 var(--jade-edge);}
-.sk-a-gold{width:84px;height:84px;border-radius:14px 10px 15px 11px;border:3px solid var(--sand-edge);background:radial-gradient(circle at 76% 30%,rgba(120,90,40,.18) 0 6%,transparent 7%),var(--tex),linear-gradient(180deg,var(--sand-1),var(--sand-2));box-shadow:inset 0 2px 0 rgba(255,255,240,.7),inset 0 -6px 0 rgba(120,90,40,.3),0 5px 0 var(--sand-edge);}
-.sk-a-drop{width:64px;height:64px;border-radius:50%;border:3px solid var(--knob-edge);background:var(--sk-wood);box-shadow:0 4px 0 var(--knob-edge);}
-.sk-a-coin{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff3b8 0 14%,var(--gd-1) 28%,var(--gd-2) 76%);box-shadow:0 0 0 3px var(--gd-edge),inset 0 0 0 7px rgba(255,240,170,.45),0 6px 0 var(--gd-edge);}
-.sk-a-socket{width:64px;height:64px;border-radius:9px;border:3px solid var(--st-edge);background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z' fill='%23f8d465' stroke='%2386560f' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E") 50% 50%/62% no-repeat,var(--tex),linear-gradient(180deg,var(--groove-2),var(--groove));box-shadow:inset 0 3px 6px rgba(0,0,0,.55),0 2px 0 rgba(255,252,230,.35);}
-.sk-a-tab{width:76%;height:58%;position:relative;border-radius:14px 8px 16px 10px;border:3px solid var(--st-edge);background:var(--sk-cracks) 0 0/100% 100% no-repeat,var(--tex),radial-gradient(120% 90% at 30% 20%,var(--st-hi),var(--st) 55%,var(--st-lo));box-shadow:inset 0 2px 0 var(--st-light),0 10px 20px -12px rgba(0,0,0,.5);}
-.sk-a-tab::before{content:"";position:absolute;left:-14px;top:12%;width:30px;height:80%;background:var(--sk-vine) 0 0/100% 100% no-repeat;}
-.sk-a-tab::after{content:"";position:absolute;right:-16px;bottom:-10px;width:80px;height:46px;background:var(--sk-tuft) 0 0/100% 100% no-repeat;}
-.sk-a-groove{width:76%;height:16px;position:relative;border-radius:9px;border:2.5px solid var(--st-edge);background:linear-gradient(var(--jade-1),var(--jade-2)) 3px 50%/55% 6px no-repeat,linear-gradient(180deg,var(--groove-2),var(--groove));box-shadow:inset 0 2px 4px rgba(0,0,0,.55);}
-.sk-a-groove::after{content:"";position:absolute;left:55%;top:50%;width:26px;height:26px;translate:-50% -50%;border-radius:50%;border:2.5px solid var(--knob-edge);background:var(--sk-wood);box-shadow:0 2px 0 var(--knob-edge);}
-.sk-a-plaque{padding:6px 18px;border:2.5px solid var(--st-edge);border-radius:6px 10px 5px 9px;background:var(--tex),linear-gradient(180deg,var(--plaque),var(--plaque-2));color:var(--plaque-ink);font:700 14px var(--head-font);letter-spacing:.16em;text-shadow:0 1px 0 #24221a;}
+/* the Assets page: the stone, gold and water as things of their own */
+.sk-a-tile,.sk-a-gold,.sk-a-drop,.sk-a-coin,.sk-a-tab{display:block;}
+.sk-a-tile{width:84px;height:84px;border-radius:18px;border:2px solid var(--ms-3);background:radial-gradient(circle at 22% 20%,var(--ms-1) 0 12%,transparent 13%),radial-gradient(circle at 76% 14%,var(--ms-1) 0 8%,transparent 9%),var(--tex),linear-gradient(180deg,var(--btn-1),var(--btn-2));box-shadow:var(--btn-lift);}
+.sk-a-gold{width:84px;height:84px;border-radius:18px;border:2px solid var(--gd-edge);background:var(--tex),linear-gradient(180deg,var(--gd-1),var(--gd-2));box-shadow:inset 0 3px 0 rgba(255,250,210,.7),inset 0 -6px 0 rgba(120,70,10,.4),0 8px 14px -8px rgba(90,60,10,.6);}
+.sk-a-drop{width:76px;height:76px;border-radius:50% 50% 50% 50%/56% 56% 44% 44%;border:1.5px solid rgba(255,255,255,.8);background:radial-gradient(circle at 30% 26%,rgba(255,255,255,.95) 0 9%,rgba(255,255,255,.3) 24%,transparent 44%),linear-gradient(180deg,rgba(220,250,250,.6),rgba(70,185,205,.55));box-shadow:inset 0 -10px 16px rgba(20,120,140,.3),0 10px 18px -10px rgba(10,60,80,.6);}
+.sk-a-coin{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#fff3b8 0 14%,var(--gd-1) 28%,var(--gd-2) 76%);box-shadow:0 0 0 2px var(--gd-edge),inset 0 0 0 6px rgba(255,240,170,.4),0 6px 10px -4px rgba(0,0,0,.4);}
+.sk-a-tab{width:78%;height:60%;position:relative;border-radius:16px;border:2px solid var(--st-edge);background:var(--tex),linear-gradient(180deg,var(--st-1),var(--st-2));box-shadow:var(--lift);}
+.sk-a-tab::after{content:"";position:absolute;left:-12px;top:-16px;width:76px;height:46px;background:var(--sk-ivy) 0 0/100% 100% no-repeat;}
 
 /* ---- content for one world ---- */
 [data-for-world],.d-toc [data-for-world]{display:none;}
