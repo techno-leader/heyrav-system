@@ -2,7 +2,7 @@
   "$description": "Sunken - a heyrav world. base: any theme; light/dark: per theme; voice: words reworded in this world. Keys are token names without the --.",
   "order": 4,
   "name": "Sunken",
-  "line": "Under the water: mossy stone tiles and gold stones, droplet-glass badges, a coral reef and a kelp forest, a whale passing overhead, and a lily pond you can ripple.",
+  "line": "Under the water: cracked stone tablets with vines, jade and sandstone tiles, wooden knobs, a coral reef and a kelp forest, a whale passing overhead, and a lily pond you can ripple.",
   "chips": [
     "#8fe0dc",
     "#4e8f2e",
@@ -108,11 +108,11 @@
   "voice": {
     "searchph": "Search the ruins: components, tokens, patterns",
     "hero.h1": "The heyrav<br><em>Sunken</em> system",
-    "hero.p": "Every token, component and pattern behind heyrav.in, set in stone and moss at the bottom of a lagoon.",
-    "lede.worlds": "One system, many worlds. This one is underwater: mossy stone tiles and gold stones, glass-droplet badges, a coral reef, a kelp forest, and a whale passing overhead.",
+    "hero.p": "Every token, component and pattern behind heyrav.in, carved in stone at the bottom of a lagoon.",
+    "lede.worlds": "One system, many worlds. This one is underwater: cracked stone tablets, jade and sandstone tiles, a coral reef, a kelp forest, and a whale passing overhead.",
     "lede.typography": "Fredoka sets the titles and labels - round, chunky, like letters cut into game tiles; Nunito carries the reading; the accent is Fraunces italic, like the numbers on a level map.",
-    "lede.card": "A stone tablet with moss along its top edge and ivy at the corner; under the pointer it lifts.",
-    "lede.button": "A mossy stone tile with a thick edge that presses down. A success sends up a stream of bubbles.",
+    "lede.card": "A smooth slab of cut stone with a thick dark edge, kept clear for reading; under the pointer it lifts. The cracked tablets with vines frame the places with little text.",
+    "lede.button": "A jade tile with a thick edge that presses down; the second action is sandstone. A success sends up a stream of bubbles.",
     "morph.idle": "Dive in",
     "morph.busy": "Diving",
     "morph.done": "Found it",
@@ -121,6 +121,6 @@
     "lede.404": "Nothing down here but sand. Search, or swim back to the first page.",
     "copied": "Copied",
     "copyfail": "Lost to the current - select the code instead",
-    "lede.chip": "Chips are drops of water: clear glass with a highlight; chosen, the drop fills with lagoon blue."
+    "lede.chip": "Chips are sandstone tiles with an engraved word; chosen, the tile turns to jade and sinks in."
   }
 }
