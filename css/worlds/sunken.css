@@ -1,0 +1,65 @@
+
+/* =====================================================================
+   SUNKEN - ruins under the sea.
+   Panels are carved stone: sandstone by day, wet slate by night, with a
+   chiselled inner border. The page between them is water, so the light
+   and the caustics behind show through it. Titles are cut like an
+   inscription. A few sections are places to dive (js/worlds/sunken.js).
+   ===================================================================== */
+[data-world="sunken"]{--w-reveal-d:900ms;--sk-glass:rgba(207,238,233,.78);--sk-carve:rgba(255,255,255,.42);--sk-shade:rgba(60,45,25,.16);--sk-coral:#d9573b;--sk-coral-2:#a8361f;}
+[data-world="sunken"][data-theme="dark"]{--sk-glass:rgba(7,28,43,.8);--sk-carve:rgba(255,255,255,.07);--sk-shade:rgba(0,0,0,.35);--sk-coral:#ff9a78;--sk-coral-2:#e2694c;}
+
+/* the water: content sits on it, the light moves behind it */
+[data-world="sunken"] body{background:transparent;}
+[data-world="sunken"] :is(.d-panel,.d-side){background:var(--sk-glass);}
+[data-world="sunken"] .d-ex{background:color-mix(in srgb,var(--paper) 62%,transparent);}
+
+/* ---------- carved stone ---------- */
+[data-world="sunken"] :is(.card,.d-tile,.d-wcard,.dlg,.drawer,.menu,.pop,.define-box,.toast,.morph-panel,.code,.d-code,.case-nav a,.acc,.table,.d-tbl){
+  background-color:var(--panel);background-image:var(--tex);border-color:rgba(60,45,25,.22);box-shadow:var(--lift);}
+[data-world="sunken"] :is(.card,.d-tile,.d-wcard,.dlg,.morph-panel){outline:1px solid var(--sk-carve);outline-offset:-7px;}
+[data-world="sunken"][data-theme="dark"] :is(.card,.d-tile,.d-wcard,.dlg,.drawer,.menu,.pop,.toast,.morph-panel,.code,.d-code,.acc){border-color:rgba(0,0,0,.4);}
+@media (hover:hover) and (pointer:fine){[data-world="sunken"] :is(a.card,.d-wcard,.case-nav a):hover{box-shadow:var(--lift-hover);translate:0 -3px;}}
+
+/* titles cut into the stone */
+[data-world="sunken"] :is(.d-head h1,.d-hero h1,.h1,.h2){text-shadow:0 1px 0 var(--sk-carve),0 -1px 0 var(--sk-shade);}
+[data-world="sunken"] :is(.d-head h1,.d-hero h1,.h1,.h2,.sec-head h2) em{color:var(--accent);}
+[data-world="sunken"] .d-doc h2{letter-spacing:.02em;}
+[data-world="sunken"] .d-head{border-bottom:0;padding-bottom:30px;background:linear-gradient(90deg,transparent,var(--line-2) 12%,var(--line-2) 88%,transparent) 0 100%/100% 1px no-repeat,
+  linear-gradient(90deg,transparent,var(--sk-carve) 12%,var(--sk-carve) 88%,transparent) 0 calc(100% - 1px)/100% 1px no-repeat;}
+
+/* ---------- buttons: coral stone that presses into the sand ---------- */
+[data-world="sunken"] :is(.btn-primary,.case-link,.contact-actions .primary){background:linear-gradient(180deg,var(--sk-coral),var(--sk-coral-2));color:var(--on-accent);border-color:rgba(70,15,5,.5);box-shadow:var(--btn-lift);text-shadow:0 1px 0 rgba(70,15,5,.35);}
+[data-world="sunken"][data-theme="dark"] :is(.btn-primary,.case-link,.contact-actions .primary){text-shadow:none;}
+[data-world="sunken"] :is(.btn-primary,.case-link,.contact-actions .primary):active{box-shadow:var(--btn-lift-press);translate:0 var(--press-y);}
+[data-world="sunken"] :is(.btn-ghost,.contact-actions .ghost){background-color:var(--panel);background-image:var(--tex);border-color:rgba(60,45,25,.28);box-shadow:inset 0 1px 0 var(--sk-carve),inset 0 -2px 0 var(--sk-shade);}
+[data-world="sunken"] .btn-ghost:active{box-shadow:inset 0 2px 4px var(--sk-shade);translate:0 var(--press-y);}
+
+/* ---------- fields are basins cut into the stone ---------- */
+[data-world="sunken"] :is(.input,.txt,.sel){background:color-mix(in srgb,var(--paper) 55%,var(--panel));border-color:rgba(60,45,25,.25);box-shadow:inset 0 2px 5px var(--sk-shade),inset 0 -1px 0 var(--sk-carve);}
+[data-world="sunken"] :is(.input,.txt,.sel):focus{border-color:var(--focus);box-shadow:inset 0 2px 5px var(--sk-shade),0 0 0 3px color-mix(in srgb,var(--focus) 28%,transparent);}
+/* chips and badges are pebbles */
+[data-world="sunken"] .chip{border-radius:999px;background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 92%,#fff),var(--panel));box-shadow:inset 0 -2px 0 var(--sk-shade),0 2px 4px -2px var(--sk-shade);}
+[data-world="sunken"] .chip[aria-pressed="true"]{background:linear-gradient(180deg,#167b86,#0b5c66);color:#eafffb;border-color:#0b4c55;}
+[data-world="sunken"] .badge{border-radius:999px;}
+[data-world="sunken"] .tgl input:checked + .sw{background:#0e6f7a;}
+[data-world="sunken"] .tabs [role="tab"][aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--accent);}
+[data-world="sunken"] .tip [role="tooltip"]{background:#0b3a44;color:#e4f3f0;}
+[data-world="sunken"] .d-nav a[aria-current="page"]{background:var(--panel);background-image:var(--tex);box-shadow:inset 0 1px 0 var(--sk-carve),inset 0 -2px 0 var(--sk-shade);}
+
+/* ---------- the sea and its creatures (js/worlds/sunken.js) ---------- */
+.sk-sea canvas,.sk-life canvas{display:block;width:100%;height:100%;}
+.sk-sea{z-index:-2;}
+.sk-life{z-index:-1;}
+.sk-bubble{position:fixed;z-index:var(--z-toast);border-radius:50%;pointer-events:none;border:1.5px solid rgba(255,255,255,.9);background:radial-gradient(circle at 32% 30%,rgba(255,255,255,.95) 0 18%,rgba(190,240,240,.25) 40%,transparent 70%);box-shadow:0 0 6px rgba(120,220,230,.5);}
+/* a place to dive: the section fills with water that answers the pointer */
+[data-world="sunken"] [data-dive]{position:relative;isolation:isolate;overflow:hidden;}
+[data-world="sunken"] [data-dive] > .sk-dive{position:absolute;inset:0;z-index:-1;width:100%;height:100%;display:block;border-radius:inherit;}
+[data-world="sunken"] .d-hero[data-dive]{color:#eafbf8;border-color:rgba(0,0,0,.3);}
+[data-world="sunken"] .d-hero[data-dive] :is(h1,p,.label,.d-hero-meta){color:#eafbf8;text-shadow:0 2px 12px rgba(2,20,30,.6);}
+[data-world="sunken"] .d-hero[data-dive] h1 em{color:#ffb79c;}
+[data-world="sunken"] .d-tour-hero[data-dive] > :is(.label,.h2,p){color:#eafbf8;text-shadow:0 2px 12px rgba(2,20,30,.6);}
+[data-world="sunken"] .d-tour-hero[data-dive] .h2 em{color:#ffb79c;}
+.sk-tank{height:360px;margin-top:14px;border-radius:var(--r-lg);border:1px solid rgba(60,45,25,.3);box-shadow:var(--lift);display:grid;place-items:end start;padding:16px;color:#eafbf8;font-size:13px;}
+.sk-tank span{text-shadow:0 1px 8px rgba(2,20,30,.7);}
+@media (prefers-reduced-motion:reduce){.sk-tank span::after{content:" (still while motion is reduced)";}}

@@ -695,6 +695,162 @@ html[data-world="aurora"]{background-color:var(--paper);}
 .au-shoot::after{content:"";position:absolute;left:124px;top:calc(50% - 3px);width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 12px 3px rgba(200,250,255,.9);}
 .au-flare{position:fixed;z-index:var(--z-toast);pointer-events:none;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;}
 
+/* ---- Sunken ---- */
+[data-world="sunken"]{
+  --sans:"Alegreya Sans",system-ui,sans-serif;
+  --head-font:"Cinzel",Georgia,serif;
+  --em-font:"Alegreya",Georgia,serif;
+  --label-font:"Alegreya Sans SC","Alegreya Sans",sans-serif;
+  --head-case:none;
+  --head-track:0.2;
+  --head-lh:1.08;
+  --label-case:none;
+  --label-track:0.4;
+  --label-scale:1.12;
+  --w-body:400;
+  --w-head:600;
+  --w-strong:700;
+  --r-xs:3px;
+  --r-sm:6px;
+  --r-md:10px;
+  --r-lg:14px;
+  --r-device:28px;
+  --bw:1px;
+  --press-y:2px;
+  --press-scale:0.98;
+  --space-k:1.05;
+  --ease-out:cubic-bezier(.22,.9,.3,1);
+  --ease-io:cubic-bezier(.6,0,.3,1);
+  --ease-snap:cubic-bezier(.3,1.25,.5,1);
+  --d-move:380ms;
+  --d-modal:460ms;
+  --d-reveal:700ms;
+  --d-slow:720ms;
+  --paper:#cfeee9;
+  --surface:#c0e5df;
+  --surface-2:#afdad4;
+  --surface-3:#9bcec7;
+  --panel:#efe6d4;
+  --ink:#0b2a31;
+  --ink-2:#173e46;
+  --ink-body:#1f444c;
+  --ink-3:#285059;
+  --mut:#2f565e;
+  --ink-hover:#173e46;
+  --line:rgba(11,42,49,.14);
+  --line-2:rgba(11,42,49,.26);
+  --tint:rgba(11,42,49,.45);
+  --ink-inv:#0b2a31;
+  --mut-inv:#b8d6d1;
+  --accent:#b63f29;
+  --accent-hover:#c94c34;
+  --on-accent:#fff8f0;
+  --focus:#0b6e78;
+  --sel:#ffd6c4;
+  --lift:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 0 rgba(60,45,25,.14),0 12px 26px -16px rgba(6,40,48,.55);
+  --lift-hover:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 0 rgba(60,45,25,.14),0 18px 34px -16px rgba(6,40,48,.6);
+  --btn-lift:inset 0 1px 0 rgba(255,220,200,.45),inset 0 -3px 0 rgba(70,15,5,.35),0 6px 14px -8px rgba(80,20,8,.6);
+  --btn-lift-press:inset 0 2px 4px rgba(70,15,5,.45);
+  --shadow-pop:0 26px 50px -24px rgba(6,40,48,.6);
+  --tex:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.27 0 0 0 0 0.16 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color-scheme:light;
+}
+[data-world="sunken"][data-theme="dark"]{
+  --paper:#071c2b;
+  --surface:#05141f;
+  --surface-2:#0b2536;
+  --surface-3:#12324a;
+  --panel:#1d2a31;
+  --ink:#e4f3f0;
+  --ink-2:#c7e3df;
+  --ink-body:#b4d2cd;
+  --ink-3:#a0c2bc;
+  --mut:#97b8b2;
+  --ink-hover:#ffffff;
+  --line:rgba(228,243,240,.11);
+  --line-2:rgba(228,243,240,.2);
+  --tint:rgba(228,243,240,.4);
+  --ink-inv:#04121b;
+  --mut-inv:#97b8b2;
+  --accent:#ff9a78;
+  --accent-hover:#ffb093;
+  --on-accent:#2a0b03;
+  --focus:#62e3d3;
+  --sel:#1e4b58;
+  --lift:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -2px 0 rgba(0,0,0,.3),0 16px 32px -18px rgba(0,0,0,.85);
+  --lift-hover:inset 0 1px 0 rgba(255,255,255,.08),inset 0 -2px 0 rgba(0,0,0,.3),0 22px 40px -18px rgba(0,0,0,.9);
+  --btn-lift:inset 0 1px 0 rgba(255,235,225,.5),inset 0 -3px 0 rgba(90,25,10,.35),0 0 22px -6px rgba(255,154,120,.45);
+  --btn-lift-press:inset 0 2px 4px rgba(90,25,10,.45);
+  --shadow-pop:0 28px 60px -22px rgba(0,0,0,.9);
+  --tex:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.85 0 0 0 0 0.9 0 0 0 0 0.88 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color-scheme:dark;
+}
+
+/* =====================================================================
+   SUNKEN - ruins under the sea.
+   Panels are carved stone: sandstone by day, wet slate by night, with a
+   chiselled inner border. The page between them is water, so the light
+   and the caustics behind show through it. Titles are cut like an
+   inscription. A few sections are places to dive (js/worlds/sunken.js).
+   ===================================================================== */
+[data-world="sunken"]{--w-reveal-d:900ms;--sk-glass:rgba(207,238,233,.78);--sk-carve:rgba(255,255,255,.42);--sk-shade:rgba(60,45,25,.16);--sk-coral:#d9573b;--sk-coral-2:#a8361f;}
+[data-world="sunken"][data-theme="dark"]{--sk-glass:rgba(7,28,43,.8);--sk-carve:rgba(255,255,255,.07);--sk-shade:rgba(0,0,0,.35);--sk-coral:#ff9a78;--sk-coral-2:#e2694c;}
+
+/* the water: content sits on it, the light moves behind it */
+[data-world="sunken"] body{background:transparent;}
+[data-world="sunken"] :is(.d-panel,.d-side){background:var(--sk-glass);}
+[data-world="sunken"] .d-ex{background:color-mix(in srgb,var(--paper) 62%,transparent);}
+
+/* ---------- carved stone ---------- */
+[data-world="sunken"] :is(.card,.d-tile,.d-wcard,.dlg,.drawer,.menu,.pop,.define-box,.toast,.morph-panel,.code,.d-code,.case-nav a,.acc,.table,.d-tbl){
+  background-color:var(--panel);background-image:var(--tex);border-color:rgba(60,45,25,.22);box-shadow:var(--lift);}
+[data-world="sunken"] :is(.card,.d-tile,.d-wcard,.dlg,.morph-panel){outline:1px solid var(--sk-carve);outline-offset:-7px;}
+[data-world="sunken"][data-theme="dark"] :is(.card,.d-tile,.d-wcard,.dlg,.drawer,.menu,.pop,.toast,.morph-panel,.code,.d-code,.acc){border-color:rgba(0,0,0,.4);}
+@media (hover:hover) and (pointer:fine){[data-world="sunken"] :is(a.card,.d-wcard,.case-nav a):hover{box-shadow:var(--lift-hover);translate:0 -3px;}}
+
+/* titles cut into the stone */
+[data-world="sunken"] :is(.d-head h1,.d-hero h1,.h1,.h2){text-shadow:0 1px 0 var(--sk-carve),0 -1px 0 var(--sk-shade);}
+[data-world="sunken"] :is(.d-head h1,.d-hero h1,.h1,.h2,.sec-head h2) em{color:var(--accent);}
+[data-world="sunken"] .d-doc h2{letter-spacing:.02em;}
+[data-world="sunken"] .d-head{border-bottom:0;padding-bottom:30px;background:linear-gradient(90deg,transparent,var(--line-2) 12%,var(--line-2) 88%,transparent) 0 100%/100% 1px no-repeat,
+  linear-gradient(90deg,transparent,var(--sk-carve) 12%,var(--sk-carve) 88%,transparent) 0 calc(100% - 1px)/100% 1px no-repeat;}
+
+/* ---------- buttons: coral stone that presses into the sand ---------- */
+[data-world="sunken"] :is(.btn-primary,.case-link,.contact-actions .primary){background:linear-gradient(180deg,var(--sk-coral),var(--sk-coral-2));color:var(--on-accent);border-color:rgba(70,15,5,.5);box-shadow:var(--btn-lift);text-shadow:0 1px 0 rgba(70,15,5,.35);}
+[data-world="sunken"][data-theme="dark"] :is(.btn-primary,.case-link,.contact-actions .primary){text-shadow:none;}
+[data-world="sunken"] :is(.btn-primary,.case-link,.contact-actions .primary):active{box-shadow:var(--btn-lift-press);translate:0 var(--press-y);}
+[data-world="sunken"] :is(.btn-ghost,.contact-actions .ghost){background-color:var(--panel);background-image:var(--tex);border-color:rgba(60,45,25,.28);box-shadow:inset 0 1px 0 var(--sk-carve),inset 0 -2px 0 var(--sk-shade);}
+[data-world="sunken"] .btn-ghost:active{box-shadow:inset 0 2px 4px var(--sk-shade);translate:0 var(--press-y);}
+
+/* ---------- fields are basins cut into the stone ---------- */
+[data-world="sunken"] :is(.input,.txt,.sel){background:color-mix(in srgb,var(--paper) 55%,var(--panel));border-color:rgba(60,45,25,.25);box-shadow:inset 0 2px 5px var(--sk-shade),inset 0 -1px 0 var(--sk-carve);}
+[data-world="sunken"] :is(.input,.txt,.sel):focus{border-color:var(--focus);box-shadow:inset 0 2px 5px var(--sk-shade),0 0 0 3px color-mix(in srgb,var(--focus) 28%,transparent);}
+/* chips and badges are pebbles */
+[data-world="sunken"] .chip{border-radius:999px;background:linear-gradient(180deg,color-mix(in srgb,var(--panel) 92%,#fff),var(--panel));box-shadow:inset 0 -2px 0 var(--sk-shade),0 2px 4px -2px var(--sk-shade);}
+[data-world="sunken"] .chip[aria-pressed="true"]{background:linear-gradient(180deg,#167b86,#0b5c66);color:#eafffb;border-color:#0b4c55;}
+[data-world="sunken"] .badge{border-radius:999px;}
+[data-world="sunken"] .tgl input:checked + .sw{background:#0e6f7a;}
+[data-world="sunken"] .tabs [role="tab"][aria-selected="true"]{box-shadow:inset 0 -3px 0 var(--accent);}
+[data-world="sunken"] .tip [role="tooltip"]{background:#0b3a44;color:#e4f3f0;}
+[data-world="sunken"] .d-nav a[aria-current="page"]{background:var(--panel);background-image:var(--tex);box-shadow:inset 0 1px 0 var(--sk-carve),inset 0 -2px 0 var(--sk-shade);}
+
+/* ---------- the sea and its creatures (js/worlds/sunken.js) ---------- */
+.sk-sea canvas,.sk-life canvas{display:block;width:100%;height:100%;}
+.sk-sea{z-index:-2;}
+.sk-life{z-index:-1;}
+.sk-bubble{position:fixed;z-index:var(--z-toast);border-radius:50%;pointer-events:none;border:1.5px solid rgba(255,255,255,.9);background:radial-gradient(circle at 32% 30%,rgba(255,255,255,.95) 0 18%,rgba(190,240,240,.25) 40%,transparent 70%);box-shadow:0 0 6px rgba(120,220,230,.5);}
+/* a place to dive: the section fills with water that answers the pointer */
+[data-world="sunken"] [data-dive]{position:relative;isolation:isolate;overflow:hidden;}
+[data-world="sunken"] [data-dive] > .sk-dive{position:absolute;inset:0;z-index:-1;width:100%;height:100%;display:block;border-radius:inherit;}
+[data-world="sunken"] .d-hero[data-dive]{color:#eafbf8;border-color:rgba(0,0,0,.3);}
+[data-world="sunken"] .d-hero[data-dive] :is(h1,p,.label,.d-hero-meta){color:#eafbf8;text-shadow:0 2px 12px rgba(2,20,30,.6);}
+[data-world="sunken"] .d-hero[data-dive] h1 em{color:#ffb79c;}
+[data-world="sunken"] .d-tour-hero[data-dive] > :is(.label,.h2,p){color:#eafbf8;text-shadow:0 2px 12px rgba(2,20,30,.6);}
+[data-world="sunken"] .d-tour-hero[data-dive] .h2 em{color:#ffb79c;}
+.sk-tank{height:360px;margin-top:14px;border-radius:var(--r-lg);border:1px solid rgba(60,45,25,.3);box-shadow:var(--lift);display:grid;place-items:end start;padding:16px;color:#eafbf8;font-size:13px;}
+.sk-tank span{text-shadow:0 1px 8px rgba(2,20,30,.7);}
+@media (prefers-reduced-motion:reduce){.sk-tank span::after{content:" (still while motion is reduced)";}}
+
 /* ---- content for one world ---- */
 [data-for-world],.d-toc [data-for-world]{display:none;}
-html:not([data-world]) [data-for-world~="studio"],[data-world="pixel"] [data-for-world~="pixel"],[data-world="paper"] [data-for-world~="paper"],[data-world="aurora"] [data-for-world~="aurora"]{display:block;}
+html:not([data-world]) [data-for-world~="studio"],[data-world="pixel"] [data-for-world~="pixel"],[data-world="paper"] [data-for-world~="paper"],[data-world="aurora"] [data-for-world~="aurora"],[data-world="sunken"] [data-for-world~="sunken"]{display:block;}
