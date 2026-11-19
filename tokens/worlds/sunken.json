@@ -74,7 +74,9 @@
     "btn-lift": "inset 0 2px 0 rgba(220,255,190,.55),inset 0 -5px 0 rgba(20,50,10,.45),0 6px 12px -6px rgba(10,40,20,.6)",
     "btn-lift-press": "inset 0 3px 6px rgba(20,50,10,.5)",
     "shadow-pop": "0 26px 50px -24px rgba(6,40,48,.6)",
-    "tex": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.27 0 0 0 0 0.16 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
+    "tex": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.27 0 0 0 0 0.16 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+    "ok": "#155f2f",
+    "danger": "#a8221f"
   },
   "dark": {
     "paper": "#062744",
@@ -85,8 +87,8 @@
     "ink": "#e6f6f8",
     "ink-2": "#c9e7ec",
     "ink-body": "#b9dbe1",
-    "ink-3": "#a5ccd3",
-    "mut": "#9cc4cb",
+    "ink-3": "#b8dadf",
+    "mut": "#b3d6dc",
     "ink-hover": "#ffffff",
     "line": "rgba(230,246,248,.12)",
     "line-2": "rgba(230,246,248,.22)",
@@ -103,7 +105,9 @@
     "btn-lift": "inset 0 2px 0 rgba(230,255,200,.45),inset 0 -5px 0 rgba(20,50,10,.5),0 0 20px -6px rgba(140,220,100,.4)",
     "btn-lift-press": "inset 0 3px 6px rgba(20,50,10,.55)",
     "shadow-pop": "0 28px 60px -22px rgba(0,0,0,.9)",
-    "tex": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.85 0 0 0 0 0.9 0 0 0 0 0.88 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
+    "tex": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.85 0 0 0 0 0.9 0 0 0 0 0.88 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
+    "ok": "#8fe3a6",
+    "danger": "#ffb4a9"
   },
   "voice": {
     "searchph": "Search the ruins: components, tokens, patterns",

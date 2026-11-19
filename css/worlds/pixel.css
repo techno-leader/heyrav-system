@@ -33,7 +33,8 @@
 @media (hover:hover) and (pointer:fine){[data-world="pixel"] .link:hover{background:var(--px-gold);color:#14183d;border-bottom-style:solid;}}
 [data-world="pixel"] :focus-visible{outline:3px dashed var(--focus);outline-offset:3px;}
 [data-world="pixel"] :is(code.inline,.prose code,.d-doc code){font-size:1.12em;background:var(--px-crt);color:var(--px-crt-ink);}
-[data-world="pixel"] :is(code.inline,.prose code,.d-doc code) :is(.badge,span){color:var(--px-crt-ink);}
+[data-world="pixel"] :is(code.inline,.prose code,.d-doc code) span:not(.badge){color:var(--px-crt-ink);}
+[data-world="pixel"] :is(code.inline,.prose code,.d-doc code):has(> .badge:only-child){background:none;padding:0;}
 
 /* ---------- buttons: blocks that push in ---------- */
 [data-world="pixel"] :is(.btn,.case-link,.contact-actions a){font-family:"Pixelify Sans",monospace;font-weight:500;letter-spacing:.02em;border-color:var(--line-2);

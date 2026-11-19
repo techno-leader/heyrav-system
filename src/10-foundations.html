@@ -196,13 +196,29 @@
 </div>
 </page>
 
-<page slug="motion" title="Motion" lede="Things settle. One house curve, five durations named by role, every animation behind prefers-reduced-motion." keywords="animation easing duration transition reduced motion" status="shipped">
+<page slug="motion" title="Motion" lede="Things settle. One house curve, seven durations named by role, every animation behind prefers-reduced-motion." keywords="animation easing duration transition reduced motion" status="shipped">
 <h2>Easing</h2>
 <example class="col">
   <div class="d-motion-track ease-out"><span class="d-motion"></span></div>
   <div class="d-motion-track ease-io"><span class="d-motion"></span></div>
   <div class="d-motion-track ease-snap"><span class="d-motion"></span></div>
   <button class="btn btn-ghost btn-sm" data-replay>Play: out · io · snap</button>
+</example>
+<h2>Curves</h2>
+<p>Each curve plots progress against time. The dashed line is linear; the handles are the two control points of the cubic-bezier. A steep start means the movement leaves quickly; a flat end means it settles. Play sends a dot along each curve at the same speed as the tracks above.</p>
+<example class="col">
+  <div class="d-curves">
+    <figure class="d-curve" data-ease="ease-out"><figcaption><b>--ease-out</b><span>Settle. Reveals, nav tuck, icon nudge.</span></figcaption></figure>
+    <figure class="d-curve" data-ease="ease-io"><figcaption><b>--ease-io</b><span>Starts and stops on screen: the loader drum.</span></figcaption></figure>
+    <figure class="d-curve" data-ease="ease-snap"><figcaption><b>--ease-snap</b><span>Physical UI: switches, drawers, chevrons.</span></figcaption></figure>
+  </div>
+  <button class="btn btn-ghost btn-sm" data-replay>Play the curves</button>
+</example>
+<h2>Durations</h2>
+<p>Every duration, named by role and drawn to scale. Play runs a dot across each bar in exactly that time, on the house curve.</p>
+<example class="col">
+  <div class="d-durs" data-durs="d-press d-fast d-move d-base d-modal d-reveal d-slow"></div>
+  <button class="btn btn-ghost btn-sm" data-replay>Play the durations</button>
 </example>
 <tokentable group="motion"/>
 <h2>Slow motion</h2>

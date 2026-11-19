@@ -114,4 +114,53 @@
   addEventListener('worldchange', live);
   new MutationObserver(live).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
   if (root.dataset.world) addEventListener('load', live);
+
+  /* motion: draw each easing token as a curve, and each duration to scale,
+     from the values the page is using (a world may change them) */
+  const NS = 'http://www.w3.org/2000/svg';
+  const tok = n => getComputedStyle(root).getPropertyValue('--' + n).trim();
+  const bez = v => (v.match(/cubic-bezier\(([^)]+)\)/) || [, '.25,.1,.25,1'])[1].split(',').map(Number);
+  const curves = () => {
+    document.querySelectorAll('.d-curve').forEach(f => {
+      const v = tok(f.dataset.ease), [a, b, c, d] = bez(v);
+      const W = 220, P = 26, S = W - 2 * P, lo = Math.min(0, b, d), hi = Math.max(1, b, d);
+      const H = Math.round(S * (hi - lo)) + 2 * P, X = t => P + t * S, Y = t => H - P - (t - lo) * S;
+      let g = '';
+      for (let i = 0; i <= 4; i++) g += `<line class="g" x1="${X(i / 4)}" y1="${Y(lo)}" x2="${X(i / 4)}" y2="${Y(hi)}"/><line class="g" x1="${X(0)}" y1="${Y(i / 4)}" x2="${X(1)}" y2="${Y(i / 4)}"/>`;
+      const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${f.dataset.ease}: ${v}">${g}
+        <line class="ax" x1="${X(0)}" y1="${Y(0)}" x2="${X(1)}" y2="${Y(0)}"/><line class="ax" x1="${X(0)}" y1="${Y(0)}" x2="${X(0)}" y2="${Y(1)}"/>
+        <path class="lin" d="M${X(0)} ${Y(0)}L${X(1)} ${Y(1)}"/>
+        <line class="hdl" x1="${X(0)}" y1="${Y(0)}" x2="${X(a)}" y2="${Y(b)}"/><line class="hdl" x1="${X(1)}" y1="${Y(1)}" x2="${X(c)}" y2="${Y(d)}"/>
+        <path class="crv" d="M${X(0)} ${Y(0)}C${X(a)} ${Y(b)} ${X(c)} ${Y(d)} ${X(1)} ${Y(1)}"/>
+        <circle class="cp" cx="${X(a)}" cy="${Y(b)}" r="4"/><circle class="cp" cx="${X(c)}" cy="${Y(d)}" r="4"/>
+        <text x="${X(1)}" y="${H - 6}" text-anchor="end">time</text><text x="${X(0) - 8}" y="${Y(1) + 3}" text-anchor="end">1</text><text x="${X(0) - 8}" y="${Y(0) + 3}" text-anchor="end">0</text>
+        <g class="mx"><g class="my"><circle class="dot" cx="${X(0)}" cy="${Y(0)}" r="5.5"/></g></g>
+        <g class="my"><rect class="tick" x="${X(0) - 3}" y="${Y(0) - 1.5}" width="6" height="3" rx="1.5"/></g></svg>`;
+      f.querySelector('svg')?.remove(); f.insertAdjacentHTML('afterbegin', svg);
+      let code = f.querySelector('figcaption code'); if (!code) { code = document.createElement('code'); f.querySelector('figcaption').append(code); }
+      code.textContent = v; f._run = { S, ease: v };
+    });
+    document.querySelectorAll('.d-durs').forEach(box => {
+      const names = box.dataset.durs.split(' '), ms = names.map(n => parseFloat(tok(n)) * (/\ds$/.test(tok(n)) && !/ms$/.test(tok(n)) ? 1000 : 1));
+      const max = Math.max(...ms);
+      box.innerHTML = names.map((n, i) => `<div class="d-dur"><b>--${n}</b><div class="d-dur-t"><i style="--w:${(ms[i] / max * 100).toFixed(1)}%"></i><em></em></div><span>${Math.round(ms[i])}ms</span></div>`).join('');
+      box._ms = ms; box._max = max;
+    });
+  };
+  const playCurves = scope => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    scope.querySelectorAll('.d-curve').forEach(f => {
+      const r = f._run; if (!r) return; const T = 900, o = { duration: T, fill: 'both' };
+      f.querySelectorAll('.mx').forEach(m => m.animate([{ transform: 'translateX(0)' }, { transform: `translateX(${r.S}px)` }], { ...o, easing: 'linear' }));
+      f.querySelectorAll('.my').forEach(m => m.animate([{ transform: 'translateY(0)' }, { transform: `translateY(${-r.S}px)` }], { ...o, easing: r.ease }));
+    });
+    scope.querySelectorAll('.d-durs').forEach(box => box.querySelectorAll('.d-dur').forEach((row, i) => {
+      const bar = row.querySelector('.d-dur-t'), em = row.querySelector('em'), w = bar.clientWidth * box._ms[i] / box._max - 12;
+      em.animate([{ transform: 'translateX(0)' }, { transform: `translateX(${Math.max(0, w)}px)` }], { duration: box._ms[i], easing: tok('ease-out'), fill: 'both' });
+    }));
+  };
+  if (document.querySelector('.d-curve,.d-durs')) {
+    curves(); addEventListener('worldchange', () => setTimeout(curves, 60));
+    document.addEventListener('click', e => { const b = e.target.closest('[data-replay]'); if (b) playCurves(b.closest('.d-ex') || document); });
+  }
 })();
