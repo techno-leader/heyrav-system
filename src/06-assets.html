@@ -5,7 +5,7 @@
   <button type="button" class="d-wcard" data-world-set="pixel" aria-pressed="false"><i style="--a:#9fd8ff;--b:#d93a1e;--c:#ffd23f"></i><b>Pixel</b><span>Juni, a black cat, a whole landscape, blocks and coins.</span></button>
   <button type="button" class="d-wcard" data-world-set="paper" aria-pressed="false"><i style="--a:#fbf9f4;--b:#1d1b17;--c:#7cc35b"></i><b>Paper Pixel</b><span>Folded plants, a cat, a box, a feather.</span></button>
   <button type="button" class="d-wcard" data-world-set="aurora" aria-pressed="false"><i style="--a:#060a18;--b:#3be8a8;--c:#a77bff"></i><b>Aurora</b><span>Curtains of light, a shooting star, a flare.</span></button>
-  <button type="button" class="d-wcard" data-world-set="sunken" aria-pressed="false"><i style="--a:#cfeee9;--b:#c2452d;--c:#0e5a66"></i><b>Sunken</b><span>Mossy stone and gold, water drops, a reef, a whale, a lily pond.</span></button>
+  <button type="button" class="d-wcard" data-world-set="sunken" aria-pressed="false"><i style="--a:#bff3ec;--b:#0b5e6e;--c:#031726"></i><b>Sunken</b><span>A dive from the sunlit lagoon to the abyss: water-glass panels, sea-glass buttons, mother-of-pearl, contour charts.</span></button>
 </div>
 
 <section data-for-world="paper">
@@ -98,45 +98,54 @@
 </section>
 
 <section data-for-world="sunken">
-<h2>The sea</h2>
-<p>Behind every page: light from the surface, shafts falling through the water, caustics rippling across everything and specks drifting down. By day lily pads float on the surface overhead; at night the water is deep and, now and then, a whale passes far off.</p>
-<h2>The reef and the kelp forest</h2>
-<p>Along the bottom of the screen, drawn like an illustration with inked edges: sand, rocks with moss on top, branching and fan coral, brain coral, tube sponges and anemones that sway, with kelp forests at either side. Fish cross in small groups, a school swirls past, a jellyfish rises every so often, and the pointer lets out bubbles.</p>
-<h2>The stone tablet</h2>
-<p>Where there is little to read - component tiles, menus, toasts - panels are cracked olive slabs with light and dark facets, a thick dark edge and hand-cut corners, a vine up one side and leaves with small rocks at the foot, and each carries a darker plaque with warm engraved capitals. Where there is reading to do - cards, dialogs, tables, notes - the stone is smooth, light and cut clean, with no cracks or vines across the words. The one action is a jade tile, the second a sandstone tile. Fields, sliders and switches are grooves carved into the stone with a green fill and a wooden knob; small things sit in square sockets, and gold is for what is worth keeping.</p>
-<h2>The things down here</h2>
-<p>Every plant, creature and stone is painted once - layered colour, veins, scales, polyps and a fine grain, lit from the surface - and used wherever it appears. Here each is on its own tile; the ones that move, move.</p>
+<h2>The water</h2>
+<p>The page is a dive. It starts at the surface of a sunlit lagoon and goes down as you scroll: by day to the edge of the midnight zone, by night from the twilight to the abyssal floor. The water takes its colour from the light that is left - a tenth less every 75 metres, red first, blue last. Overhead is the surface window with rays fanning down from it; caustics fall on everything, marine snow drifts, and below the twilight the plankton glow.</p>
 <div class="asg">
-  <figure data-sk-asset="pad"><figcaption>Lily pad</figcaption></figure>
-  <figure data-sk-asset="lotus"><figcaption>Lotus</figcaption></figure>
-  <figure data-sk-asset="koi"><figcaption>Koi</figcaption></figure>
-  <figure data-sk-asset="clown"><figcaption>Clownfish</figcaption></figure>
-  <figure data-sk-asset="tang"><figcaption>Blue tang</figcaption></figure>
-  <figure data-sk-asset="gold"><figcaption>Goldfish</figcaption></figure>
-  <figure class="wide" data-sk-asset="whale"><figcaption>Humpback</figcaption></figure>
-  <figure data-sk-asset="jelly"><figcaption>Jellyfish</figcaption></figure>
-  <figure data-sk-asset="staghorn"><figcaption>Staghorn coral</figcaption></figure>
-  <figure data-sk-asset="fan"><figcaption>Sea fan</figcaption></figure>
-  <figure data-sk-asset="brain"><figcaption>Brain coral</figcaption></figure>
-  <figure data-sk-asset="sponge"><figcaption>Tube sponge</figcaption></figure>
-  <figure data-sk-asset="anemone"><figcaption>Anemone</figcaption></figure>
-  <figure data-sk-asset="kelp"><figcaption>Kelp</figcaption></figure>
-  <figure class="wide" data-sk-asset="rock"><figcaption>Mossy rock</figcaption></figure>
-  <figure data-sk-asset="pebbles"><figcaption>Pebbles</figcaption></figure>
-  <figure data-sk-asset="bubbles"><figcaption>Bubbles</figcaption></figure>
-  <figure class="wide"><span class="sk-a-tab"></span><figcaption>Cracked stone tablet, vine and leaves</figcaption></figure>
-  <figure><span class="sk-a-plaque">PAUSE</span><figcaption>Plaque, engraved capitals</figcaption></figure>
-  <figure><span class="sk-a-tile"></span><figcaption>Jade tile, the one action</figcaption></figure>
-  <figure><span class="sk-a-gold"></span><figcaption>Sandstone tile</figcaption></figure>
-  <figure class="wide"><span class="sk-a-groove"></span><figcaption>Carved groove, wooden knob</figcaption></figure>
-  <figure><span class="sk-a-drop"></span><figcaption>Wooden knob</figcaption></figure>
-  <figure><span class="sk-a-socket"></span><figcaption>Socket with a gold star</figcaption></figure>
-  <figure><span class="sk-a-coin"></span><figcaption>Gold coin</figcaption></figure>
+  <figure><span class="sk-a-zone" style="background:linear-gradient(180deg,#bff3ec,#2aa1b0)">0 m · Sunlight</span><figcaption>Sunlight zone, 0-200 m</figcaption></figure>
+  <figure><span class="sk-a-zone" style="background:linear-gradient(180deg,#5cc2c6,#16506e)">200 m · Twilight</span><figcaption>Twilight zone, 200-1,000 m</figcaption></figure>
+  <figure><span class="sk-a-zone" style="background:linear-gradient(180deg,#0f3d5c,#04162a)">1,000 m · Midnight</span><figcaption>Midnight zone, 1,000-4,000 m</figcaption></figure>
+  <figure><span class="sk-a-zone" style="background:linear-gradient(180deg,#06182a,#01060d)">4,000 m · Abyss</span><figcaption>Abyss, below 4,000 m</figcaption></figure>
 </div>
-
-<h2>Places to dive</h2>
-<p>Three sections have water of their own, a small wave simulation that refracts the scene under it: a whale passing overhead on the home page, a reef wall on the Worlds tour, and this lily pond. Move over the water to stir it; press to drop a stone.</p>
-<div class="sk-tank" data-dive><span>Move over the pond to stir it. Press to drop a stone.</span></div>
+<h2>The scene, in planes</h2>
+<p>Distance is fog. Reef walls run down both edges in three planes - far, middle, near - each taking more of the water's colour the further away it is and moving slower as the camera travels, so the middle of the page stays clear for reading. Kelp grows from the walls near the surface; stacked rock columns rise in the distance.</p>
+<div class="asg">
+  <figure data-sk-spec="life:wall"><figcaption>Reef wall, with ledges</figcaption></figure>
+  <figure data-sk-spec="life:pillar"><figcaption>Rock column</figcaption></figure>
+  <figure data-sk-spec="life:kelp"><figcaption>Kelp</figcaption></figure>
+  <figure class="wide" data-sk-spec="contour:seamount"><figcaption>Sea floor chart: a seamount, 250 m contours</figcaption></figure>
+</div>
+<h2>Who lives where</h2>
+<p>Each creature appears at the depth it really lives at, so a long page meets them in order. Bodies are soft: tentacles and arms are chains that drag through the water, and the school parts around the pointer.</p>
+<div class="asg">
+  <figure class="wide" data-sk-spec="life:school"><figcaption>Bait ball · 0-200 m</figcaption></figure>
+  <figure data-sk-spec="life:turtle"><figcaption>Sea turtle · 0-200 m</figcaption></figure>
+  <figure data-sk-spec="life:manta"><figcaption>Manta ray · 0-200 m</figcaption></figure>
+  <figure data-sk-spec="life:lantern"><figcaption>Lanternfish · 200-1,000 m</figcaption></figure>
+  <figure data-sk-spec="life:jelly"><figcaption>Jellyfish · 200-1,600 m</figcaption></figure>
+  <figure data-sk-spec="life:squid"><figcaption>Squid · 400-1,300 m</figcaption></figure>
+  <figure data-sk-spec="life:siphon"><figcaption>Siphonophore · 1,500 m</figcaption></figure>
+  <figure data-sk-spec="life:angler"><figcaption>Anglerfish · 2,000-3,500 m</figcaption></figure>
+  <figure data-sk-spec="life:tripod"><figcaption>Tripod fish · the floor</figcaption></figure>
+  <figure data-sk-spec="life:seapig"><figcaption>Sea pig · the floor</figcaption></figure>
+  <figure data-sk-spec="life:sponge"><figcaption>Glass sponge · the floor</figcaption></figure>
+</div>
+<h2>Mother-of-pearl</h2>
+<p>The one iridescence in the system, and it is real: a thin film a few hundred nanometres thick reflects some wavelengths and cancels others, and the thickness wanders across the surface. Focus, selection and success use it; so do the pearls, shells and gems. Made in the Nacre Lab.</p>
+<div class="asg">
+  <figure data-sk-spec="nacre:pearl"><figcaption>Pearl</figcaption></figure>
+  <figure data-sk-spec="nacre:shell"><figcaption>Abalone, from inside</figcaption></figure>
+  <figure data-sk-spec="nacre:bubble"><figcaption>Bubble, water film</figcaption></figure>
+  <figure data-sk-spec="nacre:gem"><figcaption>Cabochon, oil on water</figcaption></figure>
+</div>
+<h2>The glass</h2>
+<p>Panels are panes of thick water: the sea bends at their edges and a thin rim catches the light. The one action is sea glass with a sheen that moves with the light. Two other materials were tried and kept here for reference: Lalique-style opalescent glass reads as milk on a bright page, and abalone is too dark for the sunlit zone.</p>
+<div class="asg">
+  <figure><span class="sk-a-btn glass">Dive in</span><figcaption>Sea glass · the one action</figcaption></figure>
+  <figure><span class="sk-a-btn opal">Dive in</span><figcaption>Opalescent · tried, not used</figcaption></figure>
+  <figure><span class="sk-a-btn abalone">Dive in</span><figcaption>Abalone · tried, not used</figcaption></figure>
+  <figure><span class="sk-a-ring">Focused field</span><figcaption>Focus, mother-of-pearl</figcaption></figure>
+  <figure><span class="sk-a-row"><span class="sk-a-chip">Reef</span><span class="sk-a-chip on">Kelp</span><span class="sk-a-chip">Trench</span></span><figcaption>Sea-glass chips, one chosen</figcaption></figure>
+</div>
 </section>
 
 <section data-for-world="aurora">
