@@ -385,14 +385,14 @@
    - Schools are flocks (separation, alignment, cohesion): every fish steers by
      its neighbours, wags its own tail, glints, and parts around the pointer.
    - Creatures are lofted from cross-sections after their anatomy and placed at
-     the depth they live: turtle and manta, humpbacks that pass when they sing,
+     the depth they live: turtle and manta, humpbacks in the sunlit water and a sperm whale hunting in the deep, passing as they call,
      lanternfish, jellyfish and squid with soft tentacles, a siphonophore, anglerfish
      with a lure that lights their face, tripod fish, sea pigs, glass sponges.
 
    Sea3D.load()                       -> Promise (three.js from cdnjs)
    const s = Sea3D.create(canvas, o)  o: { quality: 0-1 }
    s.frame(t, cam)  cam: { depth 0-1, range [a, b], w, h, pointer, fog [r,g,b], top [r,g,b], whales }
-   s.whales()       sends a pod across
+   s.whales(kind)   sends a pod across ('humpback' near the top, 'sperm' in the deep)
    Sea3D.specimens(o) -> { add(type, canvas2d), frame(t) }  one creature per tile
    Sea3D.metres(d), Sea3D.frac(m)                                                           */
 (function () {
@@ -591,6 +591,25 @@
       fin(k, [[-3.2, 1.05, 0], [-4.1, 1.5, 0], [-4.4, .95, 0]], back);
       g.add(new T.Mesh(k.geo(), swimMat({ amp: .5, k: .32, w: 1.1, len: L, axis: 1, shine: 26 })));
       const eye = new T.Mesh(new T.SphereGeometry(.09, 6, 4), new T.MeshBasicMaterial({ color: 0x05090d })); eye.position.set(5.2, -.15, .95); g.add(eye);
+      return g;
+    },
+    sperm() {        // a sperm whale: a third of it is the blunt square head, narrow underslung jaw with white lips, wrinkled skin, a low hump and knuckles, small paddle flippers, broad flukes
+      const g = new T.Group(), back = hex('#3b3a3f'), belly = hex('#55565d'), L = 16;
+      const U = [0, .06, .2, .35, .5, .62, .7, .8, .9, .97, 1], tb = arr => u => { let i = 0; while (i < U.length - 2 && u > U[i + 1]) i++; const f = (u - U[i]) / (U[i + 1] - U[i]), e = f * f * (3 - 2 * f); return arr[i] + (arr[i + 1] - arr[i]) * e; };
+      const topF = tb([.06, .3, .55, .9, 1.22, 1.36, 1.45, 1.58, 1.64, 1.58, .95]), k = loft({ len: L, seg: 32, rad: 14, tailTip: .1,
+        top: topF, bot: tb([.06, .32, .6, 1.0, 1.3, 1.36, 1.32, 1.22, 1.12, 1.02, .7]), w: tb([.05, .14, .36, .74, 1.12, 1.26, 1.28, 1.25, 1.2, 1.1, .7]),
+        back, belly, grain: .1, seed: 13,
+        pattern: (u, a, b) => { const s = Math.sin(a);
+          if (u > .72 && s < -.5 && Math.abs(Math.cos(a)) < .5) return hex('#d8d6cf');                        // the white of the lips and lower jaw
+          if (u > .72 && s < -.3 && s > -.5) return hex('#141418');                                             // the mouth line, set well back under the head
+          if (u < .72 && hash(Math.floor(u * 70), Math.floor(a * 6), 3) > .6) return mix(b, hex('#24242a'), .5); // prune-like wrinkles behind the head
+          return b; } });
+      for (const s of [1, -1]) { const p = [[-7.9, 0, 0], [-8.5, .05, 1.4 * s], [-9.4, .08, 2.9 * s], [-9.2, .06, 2.4 * s], [-8.9, 0, .9 * s], [-9.05, 0, .1 * s]]; fin(k, p, back); fin(k, p.slice().reverse().map(q => [q[0], q[1] - .03, q[2]]), belly); }
+      for (const s of [1, -1]) { const p = [[2.2, -.95, 1.1 * s], [1.2, -1.55, 1.95 * s], [.8, -1.5, 1.85 * s], [1.6, -.9, 1.05 * s]]; fin(k, s > 0 ? p : p.slice().reverse(), mix(back, belly, .5)); fin(k, s > 0 ? p.slice().reverse() : p, back); }
+      fin(k, [[-1.4, topF(.41) - .05, 0], [-2.3, topF(.36) + .42, 0], [-3.1, topF(.31) - .05, 0]], back);                                               // the hump
+      for (let i = 0; i < 5; i++) { const x = -3.6 - i * .75, y = topF((x + 8.3) / 16) - .04; fin(k, [[x, y, 0], [x - .3, y + .2 - i * .025, 0], [x - .6, y - .05, 0]], back); }   // knuckles toward the tail
+      g.add(new T.Mesh(k.geo(), swimMat({ amp: .45, k: .3, w: .9, len: L, axis: 1, shine: 34 })));
+      for (const s of [1, -1]) { const eye = new T.Mesh(new T.SphereGeometry(.08, 6, 4), new T.MeshBasicMaterial({ color: 0x050507 })); eye.position.set(3.0, -.75, 1.24 * s); g.add(eye); }
       return g;
     },
     jelly(col = '#cfeeff', glowCol = null) {
@@ -816,9 +835,14 @@
       const snow = new T.Points(sg, new T.PointsMaterial({ size: .22, map: glow(), color: 0xdff6f2, transparent: true, opacity: .55, depthWrite: false })); snow.frustumCulled = false; scene.add(snow); live.push(snow);
       built = { a, b, aspect, snow, sp, rockMat };
     }
-    function sendWhales() {
-      const cy = camera.position.y;
-      for (let i = 0; i < 3; i++) { const w = C.whale(); w.position.set(-70 - i * 18, cy - 4 + i * 5, -30 - i * 9); w.rotation.set(0, -.15, .22); w.scale.setScalar(1 + i * .1); scene.add(w); live.push(w); whales.push({ w, born: lastT, v: .32 - i * .02 }); }
+    // humpbacks pass in the sunlit water (0-200 m), a sperm whale hunts squid in the deep (500-2000 m)
+    function sendWhales(kind) {
+      const m = metres(clamp(-camera.position.y / DEPTH, 0, 1));
+      if (kind !== 'sperm' && m < 260) { const y = yOf(clamp(m, 12, 190));
+        for (let i = 0; i < 3; i++) { const w = C.whale(); w.position.set(-70 - i * 18, y - 4 + i * 5, -30 - i * 9); w.rotation.set(0, -.15, .22); w.scale.setScalar(1 + i * .1); scene.add(w); live.push(w); whales.push({ w, born: lastT, v: .32 - i * .02, rise: .015 }); } return 'humpback'; }
+      if (kind !== 'humpback' && m > 420 && m < 2300) { const y = yOf(clamp(m, 500, 2000)), w = C.sperm();
+        w.position.set(-75, y - 6, -26); w.rotation.set(0, -.1, -.28); scene.add(w); live.push(w); whales.push({ w, born: lastT, v: .26, rise: -.006 }); return 'sperm'; }
+      return null;
     }
     const ray = new T.Raycaster(), plane = new T.Plane(new T.Vector3(0, 0, 1), 12), hit = new T.Vector3(), ndc = new T.Vector2();
     function frame(t, cam) {
@@ -839,12 +863,12 @@
         o.traverse && o.children.length && o.children.forEach(c => { if (c.material && c.material.userData && c.material.userData.u) c.material.userData.u.uTime.value = t; });
         const sw = o.userData.swim; if (sw) { if (sw.vx) { o.position.x += sw.vx * dt; if (Math.abs(o.position.x) > sw.range) { sw.vx *= -1; o.rotation.y += Math.PI; } } if (sw.bob) o.position.y += Math.sin(t * .8 + o.id) * .004; }
         if (o.userData.shaft) { o.material.opacity = (.12 + .06 * Math.sin(t * .3 + o.id)) * lit; o.position.x += Math.sin(t * .05 + o.id) * .01; } });
-      whales.forEach(wh => { wh.w.position.x += wh.v * 60 * dt * .1; wh.w.position.y += .015; wh.w.children[0].material.userData.u.uTime.value = t; });
+      whales.forEach(wh => { wh.w.position.x += wh.v * 60 * dt * .1; wh.w.position.y += wh.rise; wh.w.children[0].material.userData.u.uTime.value = t; });
       for (let i = whales.length - 1; i >= 0; i--) if (whales[i].w.position.x > 90) { scene.remove(whales[i].w); live.splice(live.indexOf(whales[i].w), 1); whales.splice(i, 1); }
       // marine snow follows the camera, drifting down
       if (built) { const sp = built.sp; for (let i = 0; i < sp.length; i += 3) { sp[i + 1] -= .01; const rel = sp[i + 1] - (cy - 30); if (rel < 0) sp[i + 1] += 60; else if (rel > 60) sp[i + 1] -= 60; }
         built.snow.geometry.attributes.position.needsUpdate = true; built.snow.material.color.setRGB(.86 - dark * .2, .97, .95); }
-      if (cam.whales) sendWhales();
+      if (cam.whales) sendWhales(cam.whales);
       renderer.render(scene, camera);
     }
     return { frame, whales: sendWhales, renderer, dispose() { clear(); renderer.dispose(); } };
@@ -856,7 +880,7 @@
     const cv = document.createElement('canvas'), renderer = new T.WebGLRenderer({ canvas: cv, alpha: true, antialias: true, preserveDrawingBuffer: true });
     renderer.setClearColor(0, 0); const dpr = Math.min(2, window.devicePixelRatio || 1); renderer.setPixelRatio(1);
     const list = [];
-    const FRAME = { school: [0, 0, 16], turtle: [.4, .2, 6.5], manta: [0, .6, 9], whale: [0, 0, 26], lantern: [0, 0, 3.6], jelly: [0, -1.4, 9], squid: [-1, 0, 7], siphon: [0, -5, 17], angler: [.4, .4, 7], tripod: [.4, 1.2, 8], seapig: [0, .5, 4.6], sponge: [0, 1.6, 7.5], kelp: [0, 15, 34], rock: [0, 0, 5], basalt: [0, 3, 14], glowfish: [0, 0, 3.6] };
+    const FRAME = { school: [0, 0, 16], turtle: [.4, .2, 6.5], manta: [0, .6, 9], whale: [0, 0, 26], sperm: [0, 0, 28], lantern: [0, 0, 3.6], jelly: [0, -1.4, 9], squid: [-1, 0, 7], siphon: [0, -5, 17], angler: [.4, .4, 7], tripod: [.4, 1.2, 8], seapig: [0, .5, 4.6], sponge: [0, 1.6, 7.5], kelp: [0, 15, 34], rock: [0, 0, 5], basalt: [0, 3, 14], glowfish: [0, 0, 3.6] };
     function add(type, canvas, o = {}) {
       const scene = new T.Scene(), cam = new T.PerspectiveCamera(36, 1, .1, 200), top = o.top || [.75, .95, .93], deep = o.deep || 0;
       scene.add(new T.HemisphereLight(new T.Color(...top), 0x0a1c26, .75 + (1 - deep) * .35)); const sun = new T.DirectionalLight(0xffffff, 1.1 * (1 - deep * .45)); sun.position.set(.4, 1, .6); scene.add(sun); scene.add(new T.AmbientLight(0x274250, .4 + deep * .3));
@@ -866,7 +890,7 @@
       else if (type === 'rock') { obj = new T.Mesh(B.rock(7, .8), new T.MeshPhongMaterial({ vertexColors: true, flatShading: true, shininess: 6 })); obj.scale.set(1.8, 1.4, 1.6); }
       else if (type === 'basalt') { obj = new T.Group(); const bm = new T.MeshPhongMaterial({ vertexColors: true, flatShading: true }), r = rng(9); for (let i = 0; i < 9; i++) { const c = new T.Mesh(B.basalt(), bm), h = 2 + r() * 8; c.position.set((i % 3 - 1) * 2.1 + (r() - .5) * .4, h / 2 - 3, (Math.floor(i / 3) - 1) * 2); c.scale.set(1, h, 1); obj.add(c); } }
       else obj = C[type]();
-      if (type === 'whale') obj.rotation.set(.1, .5, .12); else if (type === 'turtle') obj.rotation.set(.1, -.35, 0); else if (type === 'manta') { obj.rotation.order = 'ZYX'; obj.rotation.set(1.0, .25, Math.PI / 2 + .12); } else if (/lantern|glowfish|angler|tripod|seapig|squid/.test(type)) obj.rotation.y = -.45;
+      if (type === 'whale' || type === 'sperm') obj.rotation.set(.1, .5, .12); else if (type === 'turtle') obj.rotation.set(.1, -.35, 0); else if (type === 'manta') { obj.rotation.order = 'ZYX'; obj.rotation.set(1.0, .25, Math.PI / 2 + .12); } else if (/lantern|glowfish|angler|tripod|seapig|squid/.test(type)) obj.rotation.y = -.45;
       scene.add(obj);
       for (let i = 0; i < 40; i++) obj.traverse(o => o.userData.update && o.userData.update(i * .05, .05));
       obj.updateMatrixWorld(true);
@@ -1019,32 +1043,70 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   const gZ = gauge.querySelector('.sk-z'), gM = gauge.querySelector('b'), gB = gauge.querySelector('button');
 
   /* ---------- the sound of the sea: on unless turned off, and it carries on from page to page ----------
-     A 68 s loop (deep water, bubbles, humpback-style calls). Browsers only allow sound after a click or key,
-     so if it cannot start straight away it starts on the first one. Position is kept across pages. */
+     A quiet bed of deep water loops under everything; the reef crackles with snapping shrimp near the top
+     and the deep hums and creaks below, mixed by depth. Over it, calls come now and then, with long
+     silences between: humpbacks and dolphins in the sunlit water (phrases now and then run together, as
+     song does), a fish chorus on the reef, sperm whales clicking where they hunt squid (500-2000 m), and
+     near the floor a far-off earthquake or ice grinding. No call comes twice in a row, and each is played a
+     little higher or lower and moves across as it passes. Browsers allow sound only after a click or key,
+     so if it cannot start straight away it starts on the first one. */
   const st = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
   const ss = { get: k => { try { return sessionStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { sessionStorage.setItem(k, v); } catch {} } };
-  const me = doc.querySelector('script[src*="js/worlds/sunken.js"]'), track = new Audio(new URL('../../assets/audio/sunken-sea.m4a', me ? me.src : location.href).href);
-  track.loop = true; track.preload = 'auto'; track.volume = 0;
-  let want = st.get('sk-sound') !== 'off', fadeI = 0, armed = false;
-  const CALLS = [9.5, 31, 51.5];
-  gB.setAttribute('aria-pressed', String(want));
-  ctx.on(track, 'loadedmetadata', () => { try { const p = JSON.parse(ss.get('sk-pos') || 'null'); if (p && track.duration) track.currentTime = (p.t + (Date.now() - p.at) / 1000) % track.duration; } catch {} });
-  function fade(to, ms, after) { clearInterval(fadeI); const from = track.volume, t0 = performance.now();
-    fadeI = setInterval(() => { const u = Math.min(1, (performance.now() - t0) / ms); track.volume = from + (to - from) * u * u * (3 - 2 * u); if (u >= 1) { clearInterval(fadeI); after && after(); } }, 40); }
-  const gesture = () => { disarm(); if (want) start(); };
-  function arm() { if (armed) return; armed = true; ['pointerdown', 'keydown', 'touchstart'].forEach(e => window.addEventListener(e, gesture, { once: true, capture: true })); }
-  function disarm() { armed = false; ['pointerdown', 'keydown', 'touchstart'].forEach(e => window.removeEventListener(e, gesture, { capture: true })); }
-  function start() { track.play().then(() => fade(.6, 1800)).catch(arm); }
-  function stop() { fade(0, 500, () => track.pause()); }
-  const savePos = () => { if (!track.paused) ss.set('sk-pos', JSON.stringify({ t: track.currentTime, at: Date.now() })); };
-  ctx.on(window, 'pagehide', savePos); ctx.on(doc, 'visibilitychange', savePos);
-  const saveI = setInterval(savePos, 2000);
-  ctx.on(gB, 'click', e => { e.stopPropagation(); want = !want; st.set('sk-sound', want ? 'on' : 'off'); gB.setAttribute('aria-pressed', String(want)); want ? (disarm(), start()) : stop(); ctx.announce(want ? 'Sound of the sea on' : 'Sound of the sea off'); });
-  if (want) start();
-  ctx.cleanup(() => { savePos(); clearInterval(saveI); clearInterval(fadeI); disarm(); track.pause(); track.removeAttribute('src'); });
-  // the calls in the track, so the scene can send whales past as they sing
-  let lastCall = -1;
-  const singing = () => { if (track.paused) return -1; const c = CALLS.findIndex(x => track.currentTime > x - .6 && track.currentTime < x + .4); if (c >= 0 && c !== lastCall) { lastCall = c; return c; } if (c < 0 && track.currentTime > CALLS[CALLS.length - 1] + 2) lastCall = -1; return -1; };
+  const sound = (() => {
+    const me = doc.querySelector('script[src*="js/worlds/sunken.js"]'), base = new URL('../../assets/audio/', me ? me.src : location.href).href, AC = window.AudioContext || window.webkitAudioContext;
+    const LOOPS = { bed: 48, reef: 24, deep: 32 }, SPRITE = {"hb1": [0.0, 8.5], "hb2": [9.0, 8.35], "hb3": [17.85, 7.9], "hb4": [26.25, 8.3], "hb5": [35.05, 8.25], "dolphins": [43.8, 8.0], "fish": [52.3, 8.0], "coda1": [60.8, 8.93], "coda2": [70.23, 8.5], "creak": [79.23, 8.606], "quake": [88.336, 11.0], "ice": [99.836, 9.0]};
+    let want = st.get('sk-sound') !== 'off', armed = false, ac = null, master = null, t0 = null, nextAt = 0, last = '', whale = null, mNow = 0, fetching = false;
+    const bufs = {}, gains = {}, srcs = {};
+    try { const n = +ss.get('sk-next'); nextAt = n > Date.now() ? n : Date.now() + 6000 + Math.random() * 8000; } catch { nextAt = Date.now() + 8000; }
+    const clock = () => { if (t0 === null) { let p = null; try { p = JSON.parse(ss.get('sk-pos') || 'null'); } catch {} t0 = ac.currentTime - (p ? p.t + (Date.now() - p.at) / 1000 : 0); } return ac.currentTime - t0; };
+    function setup() {
+      if (ac || !AC) return; ac = new AC(); master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
+      Object.keys(LOOPS).forEach(k => { gains[k] = ac.createGain(); gains[k].gain.value = k === 'bed' ? .85 : 0; gains[k].connect(master); });
+      fetching = true; ['bed', 'reef', 'deep', 'calls'].forEach(k => fetch(base + 'sk-' + k + '.m4a').then(r => r.arrayBuffer()).then(b => new Promise((res, rej) => ac.decodeAudioData(b, res, rej)))
+        .then(buf => { bufs[k] = buf; loop(k); }).catch(() => {}));
+    }
+    function loop(k) { if (!(k in LOOPS) || srcs[k] || !bufs[k] || !ac || ac.state !== 'running') return; const s = ac.createBufferSource(); s.buffer = bufs[k]; s.loop = true; s.loopStart = 0; s.loopEnd = Math.min(LOOPS[k], bufs[k].duration);
+      s.connect(gains[k]); s.start(0, clock() % s.loopEnd); srcs[k] = s; }
+    const ramp = (g, v, tc) => { g.gain.cancelScheduledValues(ac.currentTime); g.gain.setTargetAtTime(v, ac.currentTime, tc); };
+    function running() { if (!ac || ac.state !== 'running') return false; clock(); Object.keys(LOOPS).forEach(loop); ramp(master, .9, .6); return true; }
+    const gesture = () => { disarm(); if (want) start(); };
+    function arm() { if (armed) return; armed = true; ['pointerdown', 'keydown', 'touchstart'].forEach(e => window.addEventListener(e, gesture, { once: true, capture: true })); }
+    function disarm() { armed = false; ['pointerdown', 'keydown', 'touchstart'].forEach(e => window.removeEventListener(e, gesture, { capture: true })); }
+    function start() { setup(); if (!ac) return; const p = ac.resume(); p && p.then(running).catch(() => {}); setTimeout(() => { if (want && !running()) arm(); }, 400); }
+    function stop() { if (!ac) return; ramp(master, 0, .15); setTimeout(() => { if (!want && ac) ac.suspend(); }, 700); }
+    const save = () => { if (ac && ac.state === 'running' && t0 !== null) ss.set('sk-pos', JSON.stringify({ t: clock(), at: Date.now() })); ss.set('sk-next', String(nextAt)); };
+    // which calls belong at this depth, and how near they sound
+    function pool(m) { const p = [];
+      if (m < 260) ['hb1', 'hb2', 'hb3', 'hb4', 'hb5'].forEach(k => p.push([k, 3, 1])); else if (m < 800) ['hb1', 'hb3', 'hb5'].forEach(k => p.push([k, 1, .3]));
+      if (m < 130) p.push(['dolphins', 4, .8]); if (m < 60) p.push(['fish', 5, .9]);
+      if (m > 450 && m < 2400) p.push(['coda1', 4, 1], ['coda2', 4, 1], ['creak', 3, .9]); else if (m >= 2400) p.push(['coda1', 1, .3]);
+      if (m > 1800) p.push(['quake', 2, 1], ['ice', 2, .8]); return p.filter(x => x[0] !== last); }
+    function call(k, near) { const [off, dur] = SPRITE[k], s = ac.createBufferSource(), g = ac.createGain(), now = ac.currentTime; s.buffer = bufs.calls; s.playbackRate.value = .93 + Math.random() * .14;
+      let node = s; if (near < .5) { const f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 900; s.connect(f); node = f; }
+      g.gain.value = .75 * near; if (ac.createStereoPanner) { const pn = ac.createStereoPanner(), a = Math.random() < .5 ? -1 : 1; pn.pan.setValueAtTime(-.6 * a, now); pn.pan.linearRampToValueAtTime(.6 * a, now + dur); node.connect(pn); pn.connect(g); } else node.connect(g);
+      g.connect(master); s.start(now, off, dur); last = k; return dur / s.playbackRate.value; }
+    function tick(m) {
+      mNow = m; if (!ac || ac.state !== 'running' || !want) return null;
+      gains.reef && ramp(gains.reef, .9 * (1 - sstep(25, 110, m)), .8); gains.deep && ramp(gains.deep, .9 * sstep(900, 2600, m), .8); gains.bed && ramp(gains.bed, .85 - .25 * sstep(1500, 3500, m), .8);
+      if (!bufs.calls || Date.now() < nextAt) { const w = whale; whale = null; return w; }
+      const p = pool(m), tot = p.reduce((a, x) => a + x[1], 0); if (!tot) { nextAt = Date.now() + 15000; return null; }
+      let r = Math.random() * tot, pick = p[0]; for (const x of p) { if ((r -= x[1]) <= 0) { pick = x; break; } }
+      const dur = call(pick[0], pick[2]), hump = /^hb/.test(pick[0]);
+      if (hump && pick[2] > .5 && m < 260) whale = 'humpback'; if (/coda|creak/.test(pick[0]) && m > 420 && m < 2300) whale = 'sperm';
+      // a humpback phrase is now and then followed by another, as in a song; then the sea goes quiet for a while
+      const gap = hump && Math.random() < .4 ? 1.5 + Math.random() * 3 : Math.random() < .3 ? 60 + Math.random() * 50 : 18 + Math.random() * 40;
+      nextAt = Date.now() + (dur + gap) * 1000; ss.set('sk-next', String(nextAt)); const w = whale; whale = null; return w;
+    }
+    return { want: () => want, on: () => !!(ac && ac.state === 'running' && want), start, stop, save, tick, disarm,
+      toggle() { want = !want; st.set('sk-sound', want ? 'on' : 'off'); want ? (disarm(), start()) : stop(); return want; },
+      close() { save(); disarm(); if (ac) { Object.values(srcs).forEach(s => { try { s.stop(); } catch {} }); ac.close(); ac = null; } } };
+  })();
+  gB.setAttribute('aria-pressed', String(sound.want()));
+  ctx.on(window, 'pagehide', sound.save); ctx.on(doc, 'visibilitychange', sound.save);
+  const saveI = setInterval(sound.save, 2000);
+  ctx.on(gB, 'click', e => { e.stopPropagation(); const on = sound.toggle(); gB.setAttribute('aria-pressed', String(on)); ctx.announce(on ? 'Sound of the sea on' : 'Sound of the sea off'); });
+  if (sound.want()) sound.start();
+  ctx.cleanup(() => { clearInterval(saveI); sound.close(); });
 
   /* ---------- words surfacing ---------- */
   const split = [];
@@ -1094,7 +1156,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   const sio = new IntersectionObserver(es => es.forEach(e => { const s = specR && specR.list.find(q => q.fig === e.target); if (s) s.vis = e.isIntersecting; }));
   ctx.cleanup(() => specR && specR.dispose());
   ctx.cleanup(() => sio.disconnect());
-  const LIVES = { school: 20, turtle: 18, manta: 55, whale: 120, kelp: 15, rock: 150, lantern: 500, glowfish: 300, jelly: 700, squid: 800, siphon: 1500, angler: 2300, basalt: 3600, tripod: 4000, seapig: 4000, sponge: 4000 };
+  const LIVES = { school: 20, turtle: 18, manta: 55, whale: 120, sperm: 1000, kelp: 15, rock: 150, lantern: 500, glowfish: 300, jelly: 700, squid: 800, siphon: 1500, angler: 2300, basalt: 3600, tripod: 4000, seapig: 4000, sponge: 4000 };
 
   /* ---------- build, then run ---------- */
   function build() { lifeSet(); collectGlass(); markDepths(); nacre(); contour(); surface(); buildSpecs(); }
@@ -1103,7 +1165,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   ctx.onTheme(() => { ctx.later(build, 30); });
   ctx.cleanup(() => doc.querySelectorAll('.sk-wet').forEach(f => { f.style.background = ''; f.classList.remove('sk-wet'); }));
   // pages that change their own content (tabs, world sections) get their glass list refreshed now and then
-  let tick = 0, lastWhale = -60;
+  let tick = 0, lastWhale = -60, heard = null;
   function frame(t) {
     const d = depthNow(), vw = innerWidth, vh = innerHeight;
     if (sea) {
@@ -1111,10 +1173,11 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
       const P = Object.assign({}, WATER, { depth: d, radius: WATER.radius * res, bevel: WATER.bevel * res, refract: WATER.refract * res });
       sea.draw(P, t, w, h, ptr && d > .45 ? [ptr[0] * res, ptr[1] * res] : null, rects(res));
     }
+    heard = sound.tick(Sea3D.metres(d)) || heard;
     if (life) {
       const z = WaterSea.zone(Object.assign({}, WaterSea.DEFAULTS, WATER), d), fog = z.top.map((c, i) => (c + z.bot[i]) / 2), mm = Sea3D.metres(d);
-      // humpbacks pass when they sing in the track; with the sound off, now and then
-      let whales = false; const sing = singing(); if (sing >= 0 && mm > 20 && mm < 700) whales = true; else if (track.paused && mm > 40 && mm < 600 && t - lastWhale > 75) whales = true;
+      // whales pass when they call: humpbacks near the top, a sperm whale in the deep; with the sound off, now and then
+      let whales = heard; heard = null; if (!whales && !sound.on() && t - lastWhale > 90 && ((mm > 15 && mm < 250) || (mm > 450 && mm < 2200))) whales = true;
       if (whales) lastWhale = t;
       life.frame(t, { depth: d, range: range(), w: vw, h: vh, pointer: ptr, fog, top: z.top, whales });
     }

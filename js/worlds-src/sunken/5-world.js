@@ -123,32 +123,70 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   const gZ = gauge.querySelector('.sk-z'), gM = gauge.querySelector('b'), gB = gauge.querySelector('button');
 
   /* ---------- the sound of the sea: on unless turned off, and it carries on from page to page ----------
-     A 68 s loop (deep water, bubbles, humpback-style calls). Browsers only allow sound after a click or key,
-     so if it cannot start straight away it starts on the first one. Position is kept across pages. */
+     A quiet bed of deep water loops under everything; the reef crackles with snapping shrimp near the top
+     and the deep hums and creaks below, mixed by depth. Over it, calls come now and then, with long
+     silences between: humpbacks and dolphins in the sunlit water (phrases now and then run together, as
+     song does), a fish chorus on the reef, sperm whales clicking where they hunt squid (500-2000 m), and
+     near the floor a far-off earthquake or ice grinding. No call comes twice in a row, and each is played a
+     little higher or lower and moves across as it passes. Browsers allow sound only after a click or key,
+     so if it cannot start straight away it starts on the first one. */
   const st = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
   const ss = { get: k => { try { return sessionStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { sessionStorage.setItem(k, v); } catch {} } };
-  const me = doc.querySelector('script[src*="js/worlds/sunken.js"]'), track = new Audio(new URL('../../assets/audio/sunken-sea.m4a', me ? me.src : location.href).href);
-  track.loop = true; track.preload = 'auto'; track.volume = 0;
-  let want = st.get('sk-sound') !== 'off', fadeI = 0, armed = false;
-  const CALLS = [9.5, 31, 51.5];
-  gB.setAttribute('aria-pressed', String(want));
-  ctx.on(track, 'loadedmetadata', () => { try { const p = JSON.parse(ss.get('sk-pos') || 'null'); if (p && track.duration) track.currentTime = (p.t + (Date.now() - p.at) / 1000) % track.duration; } catch {} });
-  function fade(to, ms, after) { clearInterval(fadeI); const from = track.volume, t0 = performance.now();
-    fadeI = setInterval(() => { const u = Math.min(1, (performance.now() - t0) / ms); track.volume = from + (to - from) * u * u * (3 - 2 * u); if (u >= 1) { clearInterval(fadeI); after && after(); } }, 40); }
-  const gesture = () => { disarm(); if (want) start(); };
-  function arm() { if (armed) return; armed = true; ['pointerdown', 'keydown', 'touchstart'].forEach(e => window.addEventListener(e, gesture, { once: true, capture: true })); }
-  function disarm() { armed = false; ['pointerdown', 'keydown', 'touchstart'].forEach(e => window.removeEventListener(e, gesture, { capture: true })); }
-  function start() { track.play().then(() => fade(.6, 1800)).catch(arm); }
-  function stop() { fade(0, 500, () => track.pause()); }
-  const savePos = () => { if (!track.paused) ss.set('sk-pos', JSON.stringify({ t: track.currentTime, at: Date.now() })); };
-  ctx.on(window, 'pagehide', savePos); ctx.on(doc, 'visibilitychange', savePos);
-  const saveI = setInterval(savePos, 2000);
-  ctx.on(gB, 'click', e => { e.stopPropagation(); want = !want; st.set('sk-sound', want ? 'on' : 'off'); gB.setAttribute('aria-pressed', String(want)); want ? (disarm(), start()) : stop(); ctx.announce(want ? 'Sound of the sea on' : 'Sound of the sea off'); });
-  if (want) start();
-  ctx.cleanup(() => { savePos(); clearInterval(saveI); clearInterval(fadeI); disarm(); track.pause(); track.removeAttribute('src'); });
-  // the calls in the track, so the scene can send whales past as they sing
-  let lastCall = -1;
-  const singing = () => { if (track.paused) return -1; const c = CALLS.findIndex(x => track.currentTime > x - .6 && track.currentTime < x + .4); if (c >= 0 && c !== lastCall) { lastCall = c; return c; } if (c < 0 && track.currentTime > CALLS[CALLS.length - 1] + 2) lastCall = -1; return -1; };
+  const sound = (() => {
+    const me = doc.querySelector('script[src*="js/worlds/sunken.js"]'), base = new URL('../../assets/audio/', me ? me.src : location.href).href, AC = window.AudioContext || window.webkitAudioContext;
+    const LOOPS = { bed: 48, reef: 24, deep: 32 }, SPRITE = {"hb1": [0.0, 8.5], "hb2": [9.0, 8.35], "hb3": [17.85, 7.9], "hb4": [26.25, 8.3], "hb5": [35.05, 8.25], "dolphins": [43.8, 8.0], "fish": [52.3, 8.0], "coda1": [60.8, 8.93], "coda2": [70.23, 8.5], "creak": [79.23, 8.606], "quake": [88.336, 11.0], "ice": [99.836, 9.0]};
+    let want = st.get('sk-sound') !== 'off', armed = false, ac = null, master = null, t0 = null, nextAt = 0, last = '', whale = null, mNow = 0, fetching = false;
+    const bufs = {}, gains = {}, srcs = {};
+    try { const n = +ss.get('sk-next'); nextAt = n > Date.now() ? n : Date.now() + 6000 + Math.random() * 8000; } catch { nextAt = Date.now() + 8000; }
+    const clock = () => { if (t0 === null) { let p = null; try { p = JSON.parse(ss.get('sk-pos') || 'null'); } catch {} t0 = ac.currentTime - (p ? p.t + (Date.now() - p.at) / 1000 : 0); } return ac.currentTime - t0; };
+    function setup() {
+      if (ac || !AC) return; ac = new AC(); master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
+      Object.keys(LOOPS).forEach(k => { gains[k] = ac.createGain(); gains[k].gain.value = k === 'bed' ? .85 : 0; gains[k].connect(master); });
+      fetching = true; ['bed', 'reef', 'deep', 'calls'].forEach(k => fetch(base + 'sk-' + k + '.m4a').then(r => r.arrayBuffer()).then(b => new Promise((res, rej) => ac.decodeAudioData(b, res, rej)))
+        .then(buf => { bufs[k] = buf; loop(k); }).catch(() => {}));
+    }
+    function loop(k) { if (!(k in LOOPS) || srcs[k] || !bufs[k] || !ac || ac.state !== 'running') return; const s = ac.createBufferSource(); s.buffer = bufs[k]; s.loop = true; s.loopStart = 0; s.loopEnd = Math.min(LOOPS[k], bufs[k].duration);
+      s.connect(gains[k]); s.start(0, clock() % s.loopEnd); srcs[k] = s; }
+    const ramp = (g, v, tc) => { g.gain.cancelScheduledValues(ac.currentTime); g.gain.setTargetAtTime(v, ac.currentTime, tc); };
+    function running() { if (!ac || ac.state !== 'running') return false; clock(); Object.keys(LOOPS).forEach(loop); ramp(master, .9, .6); return true; }
+    const gesture = () => { disarm(); if (want) start(); };
+    function arm() { if (armed) return; armed = true; ['pointerdown', 'keydown', 'touchstart'].forEach(e => window.addEventListener(e, gesture, { once: true, capture: true })); }
+    function disarm() { armed = false; ['pointerdown', 'keydown', 'touchstart'].forEach(e => window.removeEventListener(e, gesture, { capture: true })); }
+    function start() { setup(); if (!ac) return; const p = ac.resume(); p && p.then(running).catch(() => {}); setTimeout(() => { if (want && !running()) arm(); }, 400); }
+    function stop() { if (!ac) return; ramp(master, 0, .15); setTimeout(() => { if (!want && ac) ac.suspend(); }, 700); }
+    const save = () => { if (ac && ac.state === 'running' && t0 !== null) ss.set('sk-pos', JSON.stringify({ t: clock(), at: Date.now() })); ss.set('sk-next', String(nextAt)); };
+    // which calls belong at this depth, and how near they sound
+    function pool(m) { const p = [];
+      if (m < 260) ['hb1', 'hb2', 'hb3', 'hb4', 'hb5'].forEach(k => p.push([k, 3, 1])); else if (m < 800) ['hb1', 'hb3', 'hb5'].forEach(k => p.push([k, 1, .3]));
+      if (m < 130) p.push(['dolphins', 4, .8]); if (m < 60) p.push(['fish', 5, .9]);
+      if (m > 450 && m < 2400) p.push(['coda1', 4, 1], ['coda2', 4, 1], ['creak', 3, .9]); else if (m >= 2400) p.push(['coda1', 1, .3]);
+      if (m > 1800) p.push(['quake', 2, 1], ['ice', 2, .8]); return p.filter(x => x[0] !== last); }
+    function call(k, near) { const [off, dur] = SPRITE[k], s = ac.createBufferSource(), g = ac.createGain(), now = ac.currentTime; s.buffer = bufs.calls; s.playbackRate.value = .93 + Math.random() * .14;
+      let node = s; if (near < .5) { const f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 900; s.connect(f); node = f; }
+      g.gain.value = .75 * near; if (ac.createStereoPanner) { const pn = ac.createStereoPanner(), a = Math.random() < .5 ? -1 : 1; pn.pan.setValueAtTime(-.6 * a, now); pn.pan.linearRampToValueAtTime(.6 * a, now + dur); node.connect(pn); pn.connect(g); } else node.connect(g);
+      g.connect(master); s.start(now, off, dur); last = k; return dur / s.playbackRate.value; }
+    function tick(m) {
+      mNow = m; if (!ac || ac.state !== 'running' || !want) return null;
+      gains.reef && ramp(gains.reef, .9 * (1 - sstep(25, 110, m)), .8); gains.deep && ramp(gains.deep, .9 * sstep(900, 2600, m), .8); gains.bed && ramp(gains.bed, .85 - .25 * sstep(1500, 3500, m), .8);
+      if (!bufs.calls || Date.now() < nextAt) { const w = whale; whale = null; return w; }
+      const p = pool(m), tot = p.reduce((a, x) => a + x[1], 0); if (!tot) { nextAt = Date.now() + 15000; return null; }
+      let r = Math.random() * tot, pick = p[0]; for (const x of p) { if ((r -= x[1]) <= 0) { pick = x; break; } }
+      const dur = call(pick[0], pick[2]), hump = /^hb/.test(pick[0]);
+      if (hump && pick[2] > .5 && m < 260) whale = 'humpback'; if (/coda|creak/.test(pick[0]) && m > 420 && m < 2300) whale = 'sperm';
+      // a humpback phrase is now and then followed by another, as in a song; then the sea goes quiet for a while
+      const gap = hump && Math.random() < .4 ? 1.5 + Math.random() * 3 : Math.random() < .3 ? 60 + Math.random() * 50 : 18 + Math.random() * 40;
+      nextAt = Date.now() + (dur + gap) * 1000; ss.set('sk-next', String(nextAt)); const w = whale; whale = null; return w;
+    }
+    return { want: () => want, on: () => !!(ac && ac.state === 'running' && want), start, stop, save, tick, disarm,
+      toggle() { want = !want; st.set('sk-sound', want ? 'on' : 'off'); want ? (disarm(), start()) : stop(); return want; },
+      close() { save(); disarm(); if (ac) { Object.values(srcs).forEach(s => { try { s.stop(); } catch {} }); ac.close(); ac = null; } } };
+  })();
+  gB.setAttribute('aria-pressed', String(sound.want()));
+  ctx.on(window, 'pagehide', sound.save); ctx.on(doc, 'visibilitychange', sound.save);
+  const saveI = setInterval(sound.save, 2000);
+  ctx.on(gB, 'click', e => { e.stopPropagation(); const on = sound.toggle(); gB.setAttribute('aria-pressed', String(on)); ctx.announce(on ? 'Sound of the sea on' : 'Sound of the sea off'); });
+  if (sound.want()) sound.start();
+  ctx.cleanup(() => { clearInterval(saveI); sound.close(); });
 
   /* ---------- words surfacing ---------- */
   const split = [];
@@ -198,7 +236,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   const sio = new IntersectionObserver(es => es.forEach(e => { const s = specR && specR.list.find(q => q.fig === e.target); if (s) s.vis = e.isIntersecting; }));
   ctx.cleanup(() => specR && specR.dispose());
   ctx.cleanup(() => sio.disconnect());
-  const LIVES = { school: 20, turtle: 18, manta: 55, whale: 120, kelp: 15, rock: 150, lantern: 500, glowfish: 300, jelly: 700, squid: 800, siphon: 1500, angler: 2300, basalt: 3600, tripod: 4000, seapig: 4000, sponge: 4000 };
+  const LIVES = { school: 20, turtle: 18, manta: 55, whale: 120, sperm: 1000, kelp: 15, rock: 150, lantern: 500, glowfish: 300, jelly: 700, squid: 800, siphon: 1500, angler: 2300, basalt: 3600, tripod: 4000, seapig: 4000, sponge: 4000 };
 
   /* ---------- build, then run ---------- */
   function build() { lifeSet(); collectGlass(); markDepths(); nacre(); contour(); surface(); buildSpecs(); }
@@ -207,7 +245,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   ctx.onTheme(() => { ctx.later(build, 30); });
   ctx.cleanup(() => doc.querySelectorAll('.sk-wet').forEach(f => { f.style.background = ''; f.classList.remove('sk-wet'); }));
   // pages that change their own content (tabs, world sections) get their glass list refreshed now and then
-  let tick = 0, lastWhale = -60;
+  let tick = 0, lastWhale = -60, heard = null;
   function frame(t) {
     const d = depthNow(), vw = innerWidth, vh = innerHeight;
     if (sea) {
@@ -215,10 +253,11 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
       const P = Object.assign({}, WATER, { depth: d, radius: WATER.radius * res, bevel: WATER.bevel * res, refract: WATER.refract * res });
       sea.draw(P, t, w, h, ptr && d > .45 ? [ptr[0] * res, ptr[1] * res] : null, rects(res));
     }
+    heard = sound.tick(Sea3D.metres(d)) || heard;
     if (life) {
       const z = WaterSea.zone(Object.assign({}, WaterSea.DEFAULTS, WATER), d), fog = z.top.map((c, i) => (c + z.bot[i]) / 2), mm = Sea3D.metres(d);
-      // humpbacks pass when they sing in the track; with the sound off, now and then
-      let whales = false; const sing = singing(); if (sing >= 0 && mm > 20 && mm < 700) whales = true; else if (track.paused && mm > 40 && mm < 600 && t - lastWhale > 75) whales = true;
+      // whales pass when they call: humpbacks near the top, a sperm whale in the deep; with the sound off, now and then
+      let whales = heard; heard = null; if (!whales && !sound.on() && t - lastWhale > 90 && ((mm > 15 && mm < 250) || (mm > 450 && mm < 2200))) whales = true;
       if (whales) lastWhale = t;
       life.frame(t, { depth: d, range: range(), w: vw, h: vh, pointer: ptr, fog, top: z.top, whales });
     }
