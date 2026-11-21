@@ -13,7 +13,7 @@ html.pp-toy[data-world="paper"] :is(input:not([type=range]):not([type=checkbox])
 
 /* plants and the box stand on the page's lines, in document coordinates */
 .pp-garden{position:absolute;left:0;top:0;width:0;height:0;z-index:4;pointer-events:none;}
-.pp-item{position:absolute;pointer-events:none;filter:drop-shadow(4px 8px 4px rgba(52,38,22,.16)) drop-shadow(1px 2px 1px rgba(52,38,22,.14));}
+.pp-item{position:absolute;pointer-events:none;filter:drop-shadow(4px 8px 4px rgba(0,0,0,.16)) drop-shadow(1px 2px 1px rgba(0,0,0,.14));}
 [data-world="paper"][data-theme="dark"] .pp-item{filter:drop-shadow(4px 8px 5px rgba(0,0,0,.45)) drop-shadow(1px 2px 1px rgba(0,0,0,.4));}
 .pp-item canvas{display:block;width:100%;height:100%;}
 .pp-box{z-index:5;pointer-events:auto;padding:0;border:0;background:none;border-radius:var(--r-sm);}
