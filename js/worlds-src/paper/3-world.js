@@ -221,18 +221,22 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
     const buf = new Array(w * h).fill(0), comp = new Array(w * h).fill(0);
     const sp = {
       w, h, cv: c, sil,
-      clr() { buf.fill(0); comp.fill(0); },
+      L: [],
+      clr() { buf.fill(0); comp.fill(0); sp.L = []; },
       px(x, y, k) { x = Math.round(x); y = Math.round(y); if (x < 0 || y < 0 || x >= w || y >= h) return; buf[(h - 1 - y) * w + x] = k; },
       disc(x0, y0, rx, ry, k) { for (let y = Math.floor(y0 - ry); y <= Math.ceil(y0 + ry); y++) for (let x = Math.floor(x0 - rx); x <= Math.ceil(x0 + rx); x++) { const a = (x - x0) / rx, b = (y - y0) / ry; if (a * a + b * b <= 1.05) sp.px(x, y, k); } },
       rect(x0, y0, x1, y1, k) { for (let y = Math.round(y0); y <= Math.round(y1); y++) for (let x = Math.round(x0); x <= Math.round(x1); x++) sp.px(x, y, k); },
       line(x0, y0, x1, y1, k, wd = 1) { const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1) * 1.5; for (let i = 0; i <= n; i++) { const x = x0 + (x1 - x0) * i / n, y = y0 + (y1 - y0) * i / n; sp.px(x, y, k); if (wd > 1) sp.px(x + 1, y, k); } },
       poly(pts, k, wd = 1) { for (let i = 1; i < pts.length; i++) sp.line(pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1], k, wd); },
       layer() {
+        const cl = [];
         for (let i = 0; i < buf.length; i++) {
           const k = buf[i]; if (!k) continue;
           const x = i % w, edge = x === 0 || x === w - 1 || !buf[i - 1] || !buf[i + 1] || !buf[i - w] || !buf[i + w];
           comp[i] = (k === 'K' || k === 'E') ? k : edge ? (sticker ? 'Z' : 'K') : k;
+          cl.push([x, h - 1 - ((i / w) | 0), k]);
         }
+        if (cl.length) sp.L.push(cl);
         buf.fill(0);
       },
       flush() {
@@ -255,6 +259,37 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
     return sp;
   }
 
+  /* the same sprites cut from card by the Paper Pixel engine, like the plants
+     and the box: each layer of a sprite is a sheet a little in front of the
+     last, lit from the same side, with the same grain and shadow. Every pose
+     is cut once and kept. */
+  const PCOL = { O: '#34333c', E: '#ffb02e', K: '#1f1e24' };
+  const hexOf = c => '#' + c.map(v => v.toString(16).padStart(2, '0')).join('');
+  const pCache = new Map(), CHS = '123456789abcdefghijklmnopqrstuvwxyz';
+  function paperize(sp, o = {}) {
+    if (!eng) return null;
+    const ax = o.ax ?? 14, yaw = o.yaw || 0;
+    const key = (o.id || '') + yaw + ':' + sp.L.map(L => L.map(c => c[0] + ',' + c[1] + c[2]).join(' ')).join('|');
+    let r = pCache.get(key); if (r) { pCache.delete(key); pCache.set(key, r); return r; }
+    // the cat's black card is shaded a step lighter for each sheet nearer the eye, so legs read against the body
+    const n = sp.L.length, pal = [], idx = {}, shade = (hx, f) => '#' + [1, 3, 5].map(i => Math.min(255, Math.round(parseInt(hx.slice(i, i + 2), 16) * f)).toString(16).padStart(2, '0')).join('');
+    const chr = (k, li) => { const id = k === 'O' ? 'O' + li : k; if (!(id in idx)) { idx[id] = pal.length; pal.push(k === 'O' ? shade(PCOL.O, 0.82 + 0.5 * (n > 1 ? li / (n - 1) : 0.5)) : (PCOL[k] || hexOf(TINT[k] || CAT))); } return CHS[idx[id]]; };
+    const pieces = sp.L.map((L, li) => {
+      const rows = Array.from({ length: sp.h }, () => Array(sp.w).fill('.')); L.forEach(([x, y, k]) => { rows[sp.h - 1 - y][x] = chr(k, li); });
+      return { rows: rows.map(q => q.join('')), ax, ay: 0, z: (li - (n - 1) / 2) * (o.gap ?? 1.1), depth: o.depth ?? 0.9, extrude: o.extrude ?? 1, grow: 'none' };
+    });
+    const P = 5, half = Math.max(ax, sp.w - ax) + P, Hc = sp.h + P * 2, u = (o.cell || S) * DPR;
+    const g = doc.createElement('canvas'); g.width = Math.round(half * 2 * u); g.height = Math.round(Hc * u);
+    try { const m = eng.model({ v: 1, palette: pal, tilt: o.tilt ?? 14, pieces }); eng.draw(m, g.getContext('2d'), { u, base: P, t: 0, still: true, yaw, prog: 1, tilt: o.tilt ?? 14 }); eng.dispose(m); } catch (e) { return null; }
+    const f = doc.createElement('canvas'); f.width = g.width; f.height = g.height; const fx2 = f.getContext('2d');
+    fx2.filter = `drop-shadow(${3 * DPR}px ${6 * DPR}px ${3 * DPR}px rgba(0,0,0,.18)) drop-shadow(${DPR}px ${2 * DPR}px ${DPR}px rgba(0,0,0,.14))`; fx2.drawImage(g, 0, 0);
+    r = { cv: f, half, Hc, P }; pCache.set(key, r);
+    if (pCache.size > 80) pCache.delete(pCache.keys().next().value);
+    return r;
+  }
+  // place a cut sprite with its pivot (feet, or bottom centre) at x, y; c is CSS pixels per sprite cell
+  const drawPaper = (g2, r, x, y, c) => g2.drawImage(r.cv, x - r.half * c, y - (r.Hc - r.P) * c, r.half * 2 * c, r.Hc * c);
+
   /* the cat faces right; feet centre at sprite x 14, y 0 */
   const CAT = [29, 28, 37], RIM = [58, 57, 74], EYE = [255, 176, 46];
   const CS = Sprite(32, 26, true);
@@ -263,7 +298,7 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
   const ring = (x, y) => { x = Math.round(x); y = Math.round(y); for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) if (i || j) CS.px(x + i, y + j, 'E'); };
   const eye = (hx, hy, e) => { if (e === 'shut') { CS.rect(hx - 2.2, hy, hx - 0.4, hy, 'E'); CS.rect(hx + 1.6, hy, hx + 3.4, hy, 'E'); } else { ring(hx - 1.2, hy + (e === 'wide' ? 0.6 : 0.2)); ring(hx + 2.6, hy + (e === 'wide' ? 0.6 : 0.2)); } };
   /* fur: single-pixel tufts just outside an ellipse, so the outline comes out ragged and soft */
-  const fur = (x0, y0, rx, ry, a0, a1, step = 0.42, k = 'O') => { for (let a = a0; a <= a1; a += step) { const j = (Math.sin(a * 7.3) > 0 ? 1.1 : 0.6); CS.px(x0 + Math.cos(a) * (rx + j), y0 + Math.sin(a) * (ry + j), k); } };
+  const fur = (x0, y0, rx, ry, a0, a1, step = 0.42, k = 'O') => { for (let a = a0; a <= a1; a += step) { const j = (Math.sin(a * 7.3) > 0 ? 0.75 : 0.35); CS.px(x0 + Math.cos(a) * (rx + j), y0 + Math.sin(a) * (ry + j), k); } };
   const head = (hx, hy, e, up, puff) => { CS.disc(hx, hy, 5.3, 4.3, 'O');
     for (const sd of [-1, 1]) { CS.px(hx + sd * 5.9, hy - 1.2, 'O'); CS.px(hx + sd * 5.6, hy - 2.4, 'O'); CS.px(hx + sd * 5.2, hy - 3.4, 'O'); }   // cheek fluff
     if (puff) fur(hx, hy, 5.3, 4.3, -3.1, 0.1, 0.35);
@@ -335,31 +370,63 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
   let fed = 0, fedAt = 0, pet = 0, boops = [], boopCool = 0;
   const catHit = (x, y) => !box.cat && Math.abs(x - cat.x) < 13 * S && y < cat.y + 4 && y > cat.y - CS.h * S;
   function throwTreat(x, y) {
+    audio();
     treats.push({ x, y, vx: (Math.random() - 0.5) * 80, vy: -280, land: Math.min(innerHeight - 8, y + 36), on: false, born: now() });
     if (treats.length > 4) treats.shift();
     ctx.announce(fed >= 3 ? 'A treat. The cat is too full for it just now.' : 'A treat for the cat.');
   }
   const say = (txt, dur = 1.1) => fx.push({ k: 'say', txt, t: now(), dur });
+  /* sounds: meows and purrs are CC0 recordings (OpenGameArt "Cat Purr & Meow" and "Meow");
+     the hiss, the crunch and the paper tap are made for this. One small file,
+     fetched on the first interaction; only ever in answer to something done to the cat. */
+  const SND = { meow: [0, 0.436], mew: [0.686, 1.794], mewpurr: [2.73, 1.296], mewfood: [4.276, 0.918], hiss: [5.444, 0.75], crunch: [6.444, 1.5], tap: [8.194, 0.12], purr: [8.564, 8.313], purrsleep: [17.126, 5.654] };
+  const meSrc = doc.querySelector('script[src*="js/worlds/paper.js"]'), sndURL = new URL('../../assets/audio/pp-cat.m4a', meSrc ? meSrc.src : location.href).href;
+  let ac = null, sbuf = null, sload = null, purrNode = null;
+  const soundOn = () => { try { return localStorage.getItem('pp-sound') !== 'off'; } catch { return true; } };
+  function audio() {
+    if (!ac) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; ac = new AC(); }
+    if (ac.state === 'suspended') ac.resume();
+    if (!sload) sload = fetch(sndURL).then(r => r.arrayBuffer()).then(b => new Promise((res, rej) => ac.decodeAudioData(b, res, rej))).then(b => (sbuf = b)).catch(() => null);
+    return ac;
+  }
+  function snd(name, vol = 0.6, rate = 0.94 + Math.random() * 0.12) {
+    if (!soundOn() || !audio()) return;
+    const go = () => { if (!sbuf) return; const [o, d] = SND[name], s = ac.createBufferSource(), g = ac.createGain(); s.buffer = sbuf; s.playbackRate.value = rate; g.gain.value = vol; s.connect(g); g.connect(ac.destination); s.start(0, o, d); };
+    sbuf ? go() : sload.then(go);
+  }
+  function purr(on, name = 'purr', vol = 0.45) {
+    if (on && (purrNode || !soundOn() || !audio())) return;
+    if (!on) { if (purrNode) { const p = purrNode; purrNode = null; p.g.gain.setTargetAtTime(0, ac.currentTime, 0.2); setTimeout(() => { try { p.s.stop(); } catch {} }, 900); } return; }
+    const go = () => { if (!sbuf || purrNode) return; const [o, d] = SND[name], s = ac.createBufferSource(), g = ac.createGain(); s.buffer = sbuf; s.loop = true; s.loopStart = o; s.loopEnd = o + d;
+      g.gain.value = 0; g.gain.setTargetAtTime(vol, ac.currentTime, 0.25); s.connect(g); g.connect(ac.destination); s.start(0, o); purrNode = { s, g }; };
+    sbuf ? go() : sload.then(go);
+  }
+  // browsers start sound only from a click or key, and stroking is not one: wake the audio (without fetching) on the first
+  const unlock = () => { if (!soundOn()) return; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; if (!ac) ac = new AC(); if (ac.state === 'suspended') ac.resume(); };
+  ctx.on(window, 'pointerdown', unlock, { passive: true }); ctx.on(window, 'keydown', unlock);
+  ctx.cleanup(() => { purr(false); if (ac) setTimeout(() => ac && ac.close(), 1000); });
   const hearts = n => { for (let i = 0; i < n; i++) fx.push({ k: 'heart', dx: (Math.random() - 0.5) * 8 * S, t: now() + i * 0.22, dur: 1.3 }); };
   function boop() {
     const t = now(); boops = boops.filter(b => t - b < 2.2); boops.push(t);
     if (t < boopCool) return;
-    if (boops.length >= 3) { boops = []; boopCool = t + 8; set('huff'); say('hmph', 1.2); ctx.announce('The cat has had enough and walks off.'); }
-    else { if (['sleep', 'full'].includes(cat.st)) { set('stretch'); return; } set('mrrp'); say(['mrrp', 'mew', 'prrt'][Math.floor(Math.random() * 3)], 0.9); }
+    if (boops.length >= 3) { boops = []; boopCool = t + 8; set('huff'); say('hmph', 1.2); snd('hiss', 0.5); ctx.announce('The cat has had enough and walks off.'); }
+    else { if (['sleep', 'full'].includes(cat.st)) { set('stretch'); return; } const w = Math.floor(Math.random() * 3); set('mrrp'); say(['mrrp', 'mew', 'prrt'][w], 0.9); snd(['mewpurr', 'mew', 'meow'][w], 0.55); }
   }
   function stepTreats(t, dt) {
     for (let i = treats.length - 1; i >= 0; i--) { const q = treats[i];
-      if (!q.on) { q.vy += 1100 * dt; q.x += q.vx * dt; q.y += q.vy * dt; if (q.y >= q.land) { q.y = q.land; if (q.vy > 140) { q.vy *= -0.32; q.vx *= 0.5; } else { q.on = true; q.vy = 0; } } }
+      if (!q.on) { q.vy += 1100 * dt; q.x += q.vx * dt; q.y += q.vy * dt; if (q.y >= q.land) { q.y = q.land; if (q.vy > 140) { if (q.vy > 300) snd('tap', 0.5, 0.9 + Math.random() * 0.3); q.vy *= -0.32; q.vx *= 0.5; } else { q.on = true; q.vy = 0; } } }
       if (t - q.born > 45 || (ctx.reduce() && t - q.born > 1.4)) treats.splice(i, 1);
     }
     for (let i = fx.length - 1; i >= 0; i--) if (t - fx[i].t > fx[i].dur) fx.splice(i, 1);
   }
-  function renderTreats() { treats.forEach(q => { sx.globalAlpha = 0.12; sx.drawImage(TS.sil, Math.round(q.x - 4 * S) + S, Math.round(q.y - 5 * S) + S, 8 * S, 5 * S); sx.globalAlpha = 1; sx.drawImage(TS.cv, Math.round(q.x - 4 * S), Math.round(q.y - 5 * S), 8 * S, 5 * S); }); }
+  const HS = Sprite(5, 5), paintHeart = () => { HS.clr(); ['.p.p.', 'ppppp', 'ppppp', '.ppp.', '..p..'].forEach((row, r) => [...row].forEach((ch, c) => { if (ch !== '.') HS.px(c, 4 - r, ch); })); HS.flush(); }; paintHeart();
+  function renderTreats() { const pt = paperize(TS, { id: 'treat', ax: 4, extrude: 2, depth: 1, tilt: 22, gap: 0 }); if (pt) { treats.forEach(q => drawPaper(sx, pt, Math.round(q.x), Math.round(q.y), S)); return; } treats.forEach(q => { sx.globalAlpha = 0.12; sx.drawImage(TS.sil, Math.round(q.x - 4 * S) + S, Math.round(q.y - 5 * S) + S, 8 * S, 5 * S); sx.globalAlpha = 1; sx.drawImage(TS.cv, Math.round(q.x - 4 * S), Math.round(q.y - 5 * S), 8 * S, 5 * S); }); }
   const HEART = ['.x.x.', 'xxxxx', 'xxxxx', '.xxx.', '..x..'];
   function renderFx(t) {
     const hx = cat.x + 6 * S * cat.face, hy = cat.y - CS.h * S;
     for (const f of fx) { const u = (t - f.t) / f.dur; if (u < 0) continue;
       if (f.k === 'heart') { const px = 2, x = Math.round(hx + f.dx), y = Math.round(hy - u * 30); sx.globalAlpha = Math.sin(Math.min(1, u) * Math.PI);
+        const ph = paperize(HS, { id: 'heart', ax: 2, cell: px, tilt: 10 }); if (ph) { drawPaper(sx, ph, x + 5, y + 10, px); sx.globalAlpha = 1; continue; }
         HEART.forEach((row, r) => [...row].forEach((ch, c) => { if (ch === 'x') { sx.fillStyle = `rgb(${TINT.p})`; sx.fillRect(x + c * px, y + r * px, px, px); } })); sx.globalAlpha = 1; }
       if (f.k === 'crumb') { sx.fillStyle = `rgb(${TINT.d})`; sx.fillRect(Math.round(f.x + f.vx * u), Math.round(f.y + 30 * u * u), 2, 2); }
       if (f.k === 'say') { sx.globalAlpha = Math.min(1, (1 - u) * 4, u * 8);
@@ -401,7 +468,8 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
     /* stroking: the pointer moving gently over the cat */
     const pspd = Math.hypot(ptr.vx, ptr.vy) * (t - ptr.t < 0.1 ? 1 : 0);
     if (catHit(ptr.x, ptr.y) && ptr.in && ptr.mouse && pspd > 20 && pspd < 900 && ['sit', 'groom', 'purr', 'happy', 'sleep'].includes(cat.st)) pet = Math.min(2, pet + dt); else pet = Math.max(0, pet - dt * 0.8);
-    if (pet > 0.9 && cat.st !== 'purr') { set('purr'); ctx.announce('Purr.'); }
+    if (pet > 0.9 && cat.st !== 'purr') { set('purr'); purr(true); ctx.announce('Purr.'); }
+    if (cat.st !== 'purr' && purrNode) purr(false);
     if (cat.st === 'purr' && Math.random() < dt * 1.5) hearts(1);
     /* the box, if it can be seen and nothing is going on, is irresistible */
     const br = boxRect();
@@ -462,13 +530,13 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
         const fc = q.x >= cat.x ? 1 : -1, tx = q.x - fc * 7 * S, ty = q.y, ex = tx - cat.x, ey = ty - cat.y, ed = Math.hypot(ex, ey), sp = Math.min(520, 150 + ed * 3);
         cat.vx = lerp(cat.vx, ex / (ed || 1) * sp, Math.min(1, dt * 5)); cat.vy = lerp(cat.vy, ey / (ed || 1) * sp, Math.min(1, dt * 5));
         if (Math.abs(cat.vx) > 20) cat.face = cat.vx > 0 ? 1 : -1;
-        if (ed < 10) { cat.x = tx; cat.y = ty; cat.face = fc; cat.food = q; set('eat'); ctx.announce('Nom.'); }
+        if (ed < 10) { cat.x = tx; cat.y = ty; cat.face = fc; cat.food = q; set('eat'); snd('crunch', 0.55); ctx.announce('Nom.'); }
         break;
       }
       case 'eat':
         if (Math.random() < dt * 7) fx.push({ k: 'crumb', x: cat.x + 7 * S * cat.face, y: cat.y - 4 * S, vx: (Math.random() - 0.5) * 24, t, dur: 0.5 });
         if (cat.t > 1.8) { const i = treats.indexOf(cat.food); if (i >= 0) treats.splice(i, 1); fed++; fedAt = t;
-          if (fed >= 3) { set('full'); say('so full', 1.6); ctx.announce('The cat is full and lies down for a nap.'); } else { set('happy'); hearts(2); } }
+          if (fed >= 3) { set('full'); say('so full', 1.6); snd('purrsleep', 0.35, 1); ctx.announce('The cat is full and lies down for a nap.'); } else { set('happy'); hearts(2); snd('mewfood', 0.5); } }
         break;
       case 'happy': if (cat.t > 1.6) set('sit'); break;
       case 'full': if (cat.t > 14) set('sleep'); break;
@@ -492,7 +560,7 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
       CS.clr(); POSE.peek({ h }); CS.flush();
       const X = Math.round(r.left + r.width / 2 - 15 * S), Y = Math.round(r.top + r.height * 0.36 - (CS.h) * S + 7 * S);
       sx.save(); sx.beginPath(); sx.rect(X - 10, Y - 40, CS.w * S + 20, CS.h * S + 40 - 1 * S); sx.clip();
-      sx.drawImage(CS.cv, X, Y, CS.w * S, CS.h * S); sx.restore();
+      const pr = paperize(CS, { id: 'peek' }); if (pr) drawPaper(sx, pr, X + 14 * S, Y + CS.h * S, S); else sx.drawImage(CS.cv, X, Y, CS.w * S, CS.h * S); sx.restore();
       return;
     }
     CS.clr();
@@ -516,14 +584,17 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
         flick: Math.round(Math.sin(t * 1.7) * 0.8 + 0.4), tilt: st === 'groom' ? 0.6 : 0 });
     }
     CS.flush();
-    const X = Math.round(cat.x), Y = Math.round(cat.y - lift);
-    sx.save(); sx.translate(X, Y); if (cat.face < 0) sx.scale(-1, 1);
-    const ox = -14 * S, oy = -CS.h * S;
-    sx.globalAlpha = 0.12; sx.fillStyle = '#000';
-    sx.beginPath(); sx.ellipse(0, 1, 11 * S * (st === 'pounce' ? 0.6 : 1), 2 * S, 0, 0, Math.PI * 2); sx.fill();
-    sx.globalAlpha = 0.1; sx.drawImage(CS.sil, ox + S, oy + 2 * S, CS.w * S, CS.h * S);
-    sx.globalAlpha = 1; sx.drawImage(CS.cv, ox, oy, CS.w * S, CS.h * S);
-    sx.restore();
+    const X = Math.round(cat.x), Y = Math.round(cat.y - lift), pr = paperize(CS, { yaw: cat.face < 0 ? 180 : 0 });
+    sx.globalAlpha = 0.1; sx.fillStyle = '#000';
+    sx.beginPath(); sx.ellipse(X, Math.round(cat.y) + 1, 11 * S * (st === 'pounce' ? 0.6 : 1), 2 * S, 0, 0, Math.PI * 2); sx.fill(); sx.globalAlpha = 1;
+    if (pr) drawPaper(sx, pr, X, Y, S);
+    else {
+      sx.save(); sx.translate(X, Y); if (cat.face < 0) sx.scale(-1, 1);
+      const ox = -14 * S, oy = -CS.h * S;
+      sx.globalAlpha = 0.1; sx.drawImage(CS.sil, ox + S, oy + 2 * S, CS.w * S, CS.h * S);
+      sx.globalAlpha = 1; sx.drawImage(CS.cv, ox, oy, CS.w * S, CS.h * S);
+      sx.restore();
+    }
     if (st === 'sleep' || st === 'full') {
       const k = (t * 0.45) % 1; sx.globalAlpha = Math.sin(k * Math.PI) * 0.8; sx.fillStyle = `rgb(${INK})`;
       const zx = X + 22 * cat.face + k * 14 * cat.face, zy = Y - 34 - k * 26;
@@ -579,11 +650,12 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
     }
     sx.globalAlpha = 1;
     sx.save(); sx.translate(P.x, P.y + 4); sx.rotate(-feather.th + Math.sin(t * 40) * 0.12 * feather.jingle);
-    sx.globalAlpha = 0.12; sx.drawImage(FS.sil, -3.5 * 3 + 3, 6, 21, 30);
-    sx.globalAlpha = 1; sx.drawImage(FS.cv, -3.5 * 3, 0, 21, 30);
+    const pf = paperize(FS, { id: 'feather', ax: 3, cell: 3, tilt: 10, depth: 0.7 });
+    if (pf) drawPaper(sx, pf, 0, 30, 3);
+    else { sx.globalAlpha = 0.12; sx.drawImage(FS.sil, -3.5 * 3 + 3, 6, 21, 30); sx.globalAlpha = 1; sx.drawImage(FS.cv, -3.5 * 3, 0, 21, 30); }
     sx.restore();
-    const bs = 2 + feather.jingle * 0.8;
-    sx.drawImage(BS.cv, P.x - 2.5 * bs, P.y - 2.5 * bs, 5 * bs, 5 * bs);
+    const bs = 2 + feather.jingle * 0.8, pb = paperize(BS, { id: 'bead', ax: 2, cell: 3, extrude: 2, depth: 1, tilt: 18 });
+    if (pb) drawPaper(sx, pb, P.x, P.y + 2.5 * bs, bs); else sx.drawImage(BS.cv, P.x - 2.5 * bs, P.y - 2.5 * bs, 5 * bs, 5 * bs);
   }
 
   /* touch: the cat runs to a tap. Keyboard: it walks over to the focus */
@@ -625,7 +697,8 @@ window.heyravWorlds && heyravWorlds.define('paper', ctx => {
       const draw = () => {
         const k = 3, W = 33 * k * 4, H = 27 * k * 2; c.width = W * DPR; c.height = H * DPR; c.style.width = '100%'; c.style.maxWidth = W + 'px';
         const x = c.getContext('2d'); x.setTransform(DPR, 0, 0, DPR, 0, 0); x.imageSmoothingEnabled = false; x.clearRect(0, 0, W, H);
-        poses.forEach(([n, a], i) => { CS.clr(); POSE[n](a); CS.flush(); x.drawImage(CS.cv, (i % 4) * 33 * k, Math.floor(i / 4) * 27 * k, 32 * k, 26 * k); });
+        poses.forEach(([n, a], i) => { CS.clr(); POSE[n](a); CS.flush(); const pr = paperize(CS, { id: 'spec', cell: k }), cx0 = (i % 4) * 33 * k, cy0 = Math.floor(i / 4) * 27 * k;
+          if (pr) drawPaper(x, pr, cx0 + 14 * k, cy0 + 25 * k, k); else x.drawImage(CS.cv, cx0, cy0, 32 * k, 26 * k); });
       };
       draw(); ctx.onTheme(() => setTimeout(draw, 30));
     });
