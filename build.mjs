@@ -100,7 +100,7 @@ for (const f of readdirSync('src').filter(f => f.endsWith('.html')).sort()) {
   const src = rd(join('src', f), 'utf8');
   for (const m of src.matchAll(/<page\s([^>]*)>([\s\S]*?)<\/page>/g)) {
     const a = attrs(m[1]);
-    pages[a.slug] = { ...a, body: m[2] };
+    pages[a.slug] = { ...a, body: m[2], file: 'src/' + f };
   }
 }
 function attrs(s) { const o = {}; for (const m of s.matchAll(/([\w-]+)="([^"]*)"/g)) o[m[1]] = m[2]; for (const m of s.replace(/"[^"]*"/g, '""').matchAll(/(?:^|\s)([\w-]+)(?=\s|$)/g)) if (!(m[1] in o)) o[m[1]] = true; return o; }
@@ -191,6 +191,7 @@ function layout(p, idx) {
 <title>${title}</title>
 <meta name="description" content="${desc.replace(/"/g, '&quot;')}">
 <meta name="d-root" content="${R}">
+<meta name="d-slug" content="${p.slug}"><meta name="d-src" content="${p.file || ''}">
 <meta property="og:title" content="${title}"><meta property="og:description" content="${desc.replace(/"/g, '&quot;')}"><meta property="og:image" content="${SITE}/assets/og.png">
 <link rel="canonical" href="${SITE}/${p.slug === 'index' ? '' : p.slug + '/'}">
 <link rel="icon" href="${R}assets/brand/favicon-32.png">
@@ -198,6 +199,7 @@ function layout(p, idx) {
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400..600&display=swap" rel="stylesheet">
 ${THEME_BOOT}
 ${WORLD_BOOT}
+<script>(function(){try{if(localStorage.getItem('hr-edit')||/(^|[#&?])edit($|[&=])/.test(location.hash+location.search)){var s=document.createElement('script');s.src='${R}js/edit.js?v=${V('js/edit.js')}';document.head.appendChild(s)}}catch(e){}})();</script>
 <link rel="stylesheet" href="${R}heyrav.css?v=${V('heyrav.css')}">
 <link rel="stylesheet" href="${R}css/docs.css?v=${V('css/docs.css')}">
 <link rel="stylesheet" href="${R}worlds.css?v=${V('worlds.css')}">

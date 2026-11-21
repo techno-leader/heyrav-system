@@ -47,3 +47,14 @@ node build.mjs
 ```
 
 No dependencies. Regenerates `css/tokens.css`, `heyrav.css`, `worlds.css`, `js/worlds-data.js`, every page folder, the search index, `sitemap.xml` and `404.html`. Generated page folders carry a `.generated` marker and are rebuilt from scratch, so never use a page slug that matches a source folder.
+
+## Edit mode (owner only)
+
+Open any page with `#edit` at the end of the address (for example `https://system.heyrav.in/#edit`) and paste a fine-grained GitHub token that can write to this repository (Contents and Pull requests: read and write). The token is checked with GitHub and kept only in that tab. After that, the device shows an "Edit page" button on every page.
+
+- **Text**: click any heading, paragraph, list item, caption or table cell and type. Enter or Esc finishes.
+- **Remove**: click a block to strike it out; click again to bring it back.
+- **Add**: click a block to add a paragraph after it.
+- **Note**: drag a box and write a note for Claude.
+
+Everything autosaves on the device (`localStorage` "hr-edits"). **Raise a PR** writes the edits into `src/*.html` on a `copy-edits/…` branch, saves the full list in `edits/`, and opens a pull request that lists anything it could not place. **Copy for Claude** copies the same list as a message. Locally, `node scripts/apply-edits.mjs <file>` applies an exported list to `src/`. Run `node build.mjs` before merging. Visitors never load the editor: the page only fetches `js/edit.js` on a device that has unlocked it or when the address has `#edit`.
