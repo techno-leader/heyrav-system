@@ -52,7 +52,9 @@ No dependencies. Regenerates `css/tokens.css`, `heyrav.css`, `worlds.css`, `js/w
 
 Open any page with `#edit` at the end of the address (for example `https://system.heyrav.in/#edit`) and paste a fine-grained GitHub token that can write to this repository (Contents and Pull requests: read and write). The token is checked with GitHub and kept only in that tab. After that, the device shows an "Edit page" button on every page.
 
-- **Text**: click any heading, paragraph, list item, caption or table cell and type. Enter or Esc finishes.
+The editor is one widget at the bottom of the page: a pencil when collapsed, a row of tools when open, and a larger panel grown from the same bar to review changes, sign in and raise a pull request. Keys: T, R, A, N pick a tool; Esc closes.
+
+- **Text**: click any text, including labels inside the live demos, and type. Enter finishes, Esc cancels.
 - **Remove**: click a block to strike it out; click again to bring it back.
 - **Add**: click a block to add a paragraph after it.
 - **Note**: drag a box and write a note for Claude.

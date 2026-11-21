@@ -34,10 +34,16 @@
         text = text.slice(0, r.start) + nt + text.slice(r.start + r.open); done.push(c); continue;
       }
       let m = null;
-      const target = c.type === 'text' ? c.before : c.before;
-      const i = body.indexOf(target.trim());
-      if (i >= 0) m = { index: i, len: target.trim().length };
-      else { const mm = loose(target).exec(body); if (mm) m = { index: mm.index, len: mm[0].length }; }
+      // short text (a button label, a word in a demo) can appear many times: find the element by its
+      // whole tag first, and take the same occurrence the editor saw on the page
+      if (c.type === 'text' && c.outer && c.outer !== c.before) {
+        const re = new RegExp(loose(c.outer).source, 'g'), hits = [...body.matchAll(re)], h = hits[Math.min(c.nth || 0, hits.length - 1)];
+        if (h) { const open = h[0].indexOf('>') + 1, inner = h[0].slice(open), close = inner.lastIndexOf('</'), j = close >= 0 ? close : inner.length;
+          m = { index: h.index + open, len: j }; }
+      }
+      const target = c.before;
+      if (!m) { const i = body.indexOf(target.trim()); if (i >= 0) m = { index: i, len: target.trim().length }; }
+      if (!m) { const mm = loose(target).exec(body); if (mm) m = { index: mm.index, len: mm[0].length }; }
       if (!m) { missed.push(c); continue; }
       const a = bodyStart + m.index, b = a + m.len; let rep;
       if (c.type === 'text') rep = c.after;
