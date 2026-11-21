@@ -50,7 +50,7 @@ No dependencies. Regenerates `css/tokens.css`, `heyrav.css`, `worlds.css`, `js/w
 
 ## Edit mode (owner only)
 
-Open any page with `#edit` at the end of the address (for example `https://system.heyrav.in/#edit`) and paste a fine-grained GitHub token that can write to this repository (Contents and Pull requests: read and write). The token is checked with GitHub and kept only in that tab. After that, the device shows an "Edit page" button on every page.
+Open any page with `#edit` at the end of the address (for example `https://system.heyrav.in/#edit`) and paste a fine-grained GitHub token that can write to this repository (Contents and Pull requests: read and write). The token is checked with GitHub once and remembered in that browser (`localStorage` "hr-edit-token") until it expires or you press Forget token in the review panel. On that device the site stops loading the Clarity analytics script. After that, the device shows an "Edit page" button on every page.
 
 The editor is one widget at the bottom of the page: a pencil when collapsed, a row of tools when open, and a larger panel grown from the same bar to review changes, sign in and raise a pull request. Keys: T, R, A, N pick a tool; Esc closes.
 

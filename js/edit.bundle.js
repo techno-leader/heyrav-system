@@ -87,14 +87,14 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   const doc = document, html = doc.documentElement, IC = window.HR_ED_ICONS || {};
   const meta = n => (doc.querySelector(`meta[name="${n}"]`) || {}).content || '';
   const root = meta('d-root') || '/', SRC = meta('d-src'), SLUG = meta('d-slug') || 'index';
-  const ls = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+  const ls = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} }, del(k) { try { localStorage.removeItem(k); } catch {} } };
   const icon = n => `<svg class="icon" viewBox="0 0 256 256" aria-hidden="true">${IC[n] || ''}</svg>`;
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const norm = s => (s || '').replace(/\s+/g, ' ').trim();
   const strip = h => norm(String(h).replace(/<[^>]+>/g, ' ')).replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ');
   const uid = () => Math.random().toString(36).slice(2, 9);
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let token = null, store = load(), tool = 'text', state = 'off', pristine = null, editing = null, panelData = {};
+  let token = ls.get('hr-edit-token'), store = load(), tool = 'text', state = 'off', pristine = null, editing = null, panelData = {};
   function load() { try { const s = JSON.parse(ls.get(KEY) || 'null'); if (s && s.v === 1) return s; } catch {} return { v: 1, changes: [], notes: [] }; }
   function save() { ls.set(KEY, JSON.stringify(store)); counts(); }
   const article = () => doc.querySelector('.d-doc');
@@ -346,7 +346,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   const TYPE_IC = { text: 'text-t', remove: 'eraser', add: 'plus' };
   function renderReview(p) {
     const ch = store.changes, notes = store.notes.filter(n => norm(n.text));
-    p.innerHTML = `<div class="ed-head"><h2>Changes</h2>${ch.length || notes.length ? `<button type="button" class="btn btn-quiet btn-sm" data-x="clear">Clear all</button>` : ''}</div>` +
+    p.innerHTML = `<div class="ed-head"><h2>Changes</h2><div class="ed-row">${token ? `<button type="button" class="btn btn-quiet btn-sm" data-x="forget">Forget token</button>` : ''}${ch.length || notes.length ? `<button type="button" class="btn btn-quiet btn-sm" data-x="clear">Clear all</button>` : ''}</div></div>` +
       (ch.length || notes.length ? '' : '<p>Nothing yet. Pick a tool below and click something on the page.</p>') +
       (ch.length ? `<ul class="ed-list">${ch.map(c => `<li data-id="${c.id}">${icon(TYPE_IC[c.type])}<div><b>${esc(pageName(c.slug))}</b>${
         c.type === 'text' ? `<small><span class="was">${esc(c.was.slice(0, 140))}</span></small><small class="now">${esc(strip(c.after).slice(0, 200))}</small>` :
@@ -357,12 +357,12 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   function renderCopy(p) { p.innerHTML = `<div class="ed-head"><h2>Copy this</h2></div><p>The browser did not allow copying. Select the text and copy it.</p><textarea readonly>${esc(panelData.text || '')}</textarea>`; }
   function tokenForm(p, title, lead, go) {
     p.innerHTML = `<div class="ed-head"><h2>${title}</h2></div><p>${lead}</p>
-      <p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Make a fine-grained token</a> with repository access to <b>${REPO}</b> only, and set <b>Contents</b> and <b>Pull requests</b> to <b>Read and write</b>. It is checked with GitHub and kept in this tab only.</p>
+      <p><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Make a fine-grained token</a> with repository access to <b>${REPO}</b> only, and set <b>Contents</b> and <b>Pull requests</b> to <b>Read and write</b>. It is checked with GitHub once and then remembered in this browser, so you will not be asked again until it expires or you choose Forget token.</p>
       <div class="ed-field"><label for="ed-tok">GitHub token</label><input id="ed-tok" type="password" autocomplete="off" spellcheck="false"></div>
       <p class="ed-err" hidden></p><div class="ed-row"><button type="button" class="btn btn-primary btn-sm" data-x="tok">Continue ${icon('arrow-right')}</button></div>`;
     const inp = p.querySelector('input'), err = p.querySelector('.ed-err'), ok = p.querySelector('[data-x="tok"]');
     const run = () => { const t = inp.value.trim(); if (!t) return; token = t; ok.disabled = true;
-      Promise.all([gh('/user'), gh(`/repos/${OWNER}/${REPO}`)]).then(([u, r]) => { if (!r.permissions || !r.permissions.push) throw new Error(`This token's account cannot change ${REPO}.`); ls.set(UNLOCK, u.login); go(); })
+      Promise.all([gh('/user'), gh(`/repos/${OWNER}/${REPO}`)]).then(([u, r]) => { if (!r.permissions || !r.permissions.push) throw new Error(`This token's account cannot change ${REPO}.`); ls.set(UNLOCK, u.login); ls.set('hr-edit-token', t); go(); })
         .catch(e => { token = null; err.hidden = false; err.textContent = e.message; ok.disabled = false; }); };
     ok.onclick = run; inp.addEventListener('keydown', e => { if (e.key === 'Enter') run(); }); setTimeout(() => inp.focus({ preventScroll: true }), 50);
   }
@@ -396,7 +396,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
     .then(r => { lastHeaders = r.headers; return r.status === 204 ? null : r.json().then(j => { if (!r.ok) { const e = new Error((j && j.message) || ('GitHub said ' + r.status)); e.status = r.status; e.need = r.headers.get('x-accepted-github-permissions'); throw e; } return j; }); });
   function explain(e) {
     if (/not accessible by personal access token/i.test(e.message)) return { title: 'This token can read the repository but not change it.', help: `On GitHub, open the token, and under Repository permissions set <b>Contents</b> and <b>Pull requests</b> to <b>Read and write</b>${e.need ? ` (GitHub asked for: ${esc(e.need)})` : ''}. Save it, then try again here with the same token.` };
-    if (e.status === 401) return { title: 'GitHub did not accept this token.', help: 'It may have expired or been pasted incompletely. Make a new one and try again.' };
+    if (e.status === 401) return { title: 'GitHub did not accept this token.', help: 'It may have expired. On GitHub, open the token and choose Regenerate, then paste the new one here; it is remembered again.' };
     return { title: e.message, help: 'Try again in a moment. If it keeps failing, use Copy for Claude instead.' };
   }
   const b64dec = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, '')), c => c.charCodeAt(0)));
@@ -420,7 +420,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
       const body = `Copy edits made on the live site in edit mode.\n\n**Applied to the pages (${done.length})**\n${done.map(md).join('\n') || '- none'}\n\n**For Claude to place by hand (${missed.length})**\n${missed.map(md).join('\n') || '- none'}\n\n**Notes (${b.notes.length})**\n${b.notes.map(n => `- **${n.slug}**, under "${n.near}": ${n.text}`).join('\n') || '- none'}\n\nThe full list is in \`edits/${stamp}.json\`. Before merging: place anything above by hand, run \`node build.mjs\`, check the pages, and delete \`edits/\`.`;
       const pr = await gh(`/repos/${OWNER}/${REPO}/pulls`, { method: 'POST', body: JSON.stringify({ title: `Copy edits (${b.changes.length} changes, ${b.notes.length} notes)`, head: branch, base: BASE, body }) });
       step(4); setState('pr', { result: { url: pr.html_url, number: pr.number, title: pr.title, done: done.length, missed: missed.length, notes: b.notes.length } });
-    } catch (e) { setState('pr', { error: explain(e) }); }
+    } catch (e) { if (e.status === 401) forget(); setState('pr', { error: explain(e) }); }
   }
 
   /* ---------- wiring ---------- */
@@ -435,10 +435,12 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
     if (act === 'copy') copyForClaude(b);
     if (b.dataset.undo) { const c = store.changes.find(q => q.id === b.dataset.undo); if (c) { store.changes.splice(store.changes.indexOf(c), 1); undoLive(c); save(); } }
     if (x === 'clear') { if (b.dataset.sure) { store.changes.slice().forEach(undoLive); store = { v: 1, changes: [], notes: [] }; doc.querySelectorAll('.ed-note').forEach(n => n.remove()); save(); } else { b.dataset.sure = '1'; b.textContent = 'Clear all? Click again'; b.classList.add('btn-primary'); } }
+    if (x === 'forget') { forget(); counts(); }
     if (x === 'keep') setState('bar');
     if (x === 'wipe') { store.changes.slice().forEach(undoLive); store = { v: 1, changes: [], notes: [] }; doc.querySelectorAll('.ed-note').forEach(n => n.remove()); save(); setState('bar'); }
     if (x === 'retry') setState('pr', { run: true });
   });
+  function forget() { token = null; ls.del('hr-edit-token'); }
   function undoLive(c) { if (c.slug !== SLUG || !pristine) return;
     if (c.type === 'add') { const n = doc.querySelector(`.ed-new[data-ed-id="${c.id}"]`); n && n.remove(); return; }
     const el = liveFor(c.tag, c.ord); if (!el) return;

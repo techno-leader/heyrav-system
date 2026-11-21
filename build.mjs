@@ -151,7 +151,7 @@ function transform(body, slug) {
 }
 const badge = s => ({ shipped: '<span class="badge badge-solid">Shipped</span>', tools: '<span class="badge">In tools</span>', spec: '<span class="badge badge-line">Spec</span>' }[s] || '');
 
-const CLARITY = `<script>(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","ysfrdr3mko");</script>`;
+const CLARITY = `<script>try{if(localStorage.getItem('hr-edit'))throw 0;(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","ysfrdr3mko");}catch(e){}</script>`;
 const THEME_BOOT = `<script>(function(){var m;try{m=localStorage.getItem('hr-theme')}catch(e){}m=m||'system';document.documentElement.dataset.theme=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;})();</script>`;
 
 /* fingerprints: GitHub Pages caches every file on its own clock, so a page
