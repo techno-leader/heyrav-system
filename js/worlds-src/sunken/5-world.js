@@ -77,7 +77,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
       for (const r of rs) { const sel = r.selectorText; if (!sel || !sel.includes('[data-theme="dark"]') || sel.includes(':not([data-theme="dark"])')) continue;
         if (sel.includes('[data-world="') && !sel.includes('[data-world="sunken"]')) continue;          // another world's night
         out.push(r.cssText.split('[data-theme="dark"]').join('[data-sk-deep]')); } }
-    deepCss.textContent = out.join('\n') + '\n.sk-flip,.sk-flip *{transition:color 1.4s ease,fill 1.4s ease,border-color 1.4s ease!important;}'; } catch {}
+    deepCss.textContent = out.join('\n') + '\n.sk-flip,.sk-flip *{transition:color 2.6s cubic-bezier(.45,0,.25,1),background-color 2.6s cubic-bezier(.45,0,.25,1),fill 2.6s cubic-bezier(.45,0,.25,1),stroke 2.6s cubic-bezier(.45,0,.25,1),border-color 2.6s cubic-bezier(.45,0,.25,1)!important;}'; } catch {}
   doc.head.append(deepCss);
   /* The ground (glass, paper, surfaces, lines) is mixed continuously between the day and night values as you
      descend, easing toward its target so nothing changes in a jump; the ink turns over halfway through. */
@@ -87,7 +87,8 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   const parseC = c => c[0] === '#' ? [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16)).concat(1) : c.match(/[\d.]+/g).map(Number);
   const GP = Object.fromEntries(Object.entries(G).map(([k, [l, d]]) => [k, [parseC(l), parseC(d)]]));
   let deep = false, flipT = 0, kNow = 0, kSet = -1, lastT = 0;
-  function setDeep(on) { if (on === deep) return; deep = on; root.classList.add('sk-flip'); clearTimeout(flipT); flipT = setTimeout(() => root.classList.remove('sk-flip'), 1500);
+  const flip = () => { root.classList.add('sk-flip'); clearTimeout(flipT); flipT = setTimeout(() => root.classList.remove('sk-flip'), 2800); };
+  function setDeep(on) { if (on === deep) return; deep = on; flip();
     on ? root.setAttribute('data-sk-deep', '') : root.removeAttribute('data-sk-deep'); nacre(); ctx.announce(on ? 'The light runs out: twilight zone' : 'Back in the sunlight'); }
   const sstep = (a, b, x) => { const u = clamp((x - a) / (b - a)); return u * u * (3 - 2 * u); };
   let aim = false;
@@ -95,7 +96,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
     if (ctx.dark()) { if (kSet !== -1) { Object.keys(G).forEach(k => root.style.removeProperty('--' + k)); kSet = -1; } setDeep(false); return; }
     aim = aim ? m > 170 : m > 240;
     const target = aim ? .72 + .28 * sstep(240, 900, m) : .3 * sstep(60, 240, m), dt = lastT ? Math.min(.1, t - lastT) : 1; lastT = t;
-    kNow += (target - kNow) * (1 - Math.exp(-dt * 1.5));
+    kNow += (target - kNow) * (1 - Math.exp(-dt * 0.55));          // a slow, even fade: about five seconds from day to night
     if (Math.abs(kNow - kSet) < .004) return; kSet = kNow;
     const lightA = .52 + .2 * clamp(m / 200);
     for (const [k, [l, d]] of Object.entries(GP)) {
@@ -104,6 +105,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
     }
     setDeep(kNow > .5);
   }
+  ctx.onTheme(flip);
   ctx.cleanup(() => { deepCss.remove(); root.removeAttribute('data-sk-deep'); root.classList.remove('sk-flip'); Object.keys(G).forEach(k => root.style.removeProperty('--' + k)); });
 
   /* ---------- depth marks on section headings, and the gauge ---------- */
@@ -176,7 +178,9 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
       const gap = hump && Math.random() < .4 ? 1.5 + Math.random() * 3 : Math.random() < .3 ? 60 + Math.random() * 50 : 18 + Math.random() * 40;
       nextAt = Date.now() + (dur + gap) * 1000; ss.set('sk-next', String(nextAt)); const w = whale; whale = null; return w;
     }
-    return { want: () => want, on: () => !!(ac && ac.state === 'running' && want), start, stop, save, tick, disarm,
+    // the close pass sings as it goes by, and the next call waits a while after it
+    const sing = () => { if (!ac || ac.state !== 'running' || !want || !bufs.calls) return; call('hb3', 1); nextAt = Date.now() + 45000; ss.set('sk-next', String(nextAt)); };
+    return { want: () => want, on: () => !!(ac && ac.state === 'running' && want), start, stop, save, tick, disarm, sing,
       toggle() { want = !want; st.set('sk-sound', want ? 'on' : 'off'); want ? (disarm(), start()) : stop(); return want; },
       close() { save(); disarm(); if (ac) { Object.values(srcs).forEach(s => { try { s.stop(); } catch {} }); ac.close(); ac = null; } } };
   })();
@@ -244,7 +248,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   ctx.onTheme(() => { ctx.later(build, 30); });
   ctx.cleanup(() => doc.querySelectorAll('.sk-wet').forEach(f => { f.style.background = ''; f.classList.remove('sk-wet'); }));
   // pages that change their own content (tabs, world sections) get their glass list refreshed now and then
-  let tick = 0, lastWhale = -60, heard = null;
+  let tick = 0, lastWhale = -60, heard = null, passed = false, humps = 0, passM = 0, passT = 0;
   function frame(t) {
     const d = depthNow(), vw = innerWidth, vh = innerHeight;
     if (sea) {
@@ -257,6 +261,10 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
       const z = WaterSea.zone(Object.assign({}, WaterSea.DEFAULTS, WATER), d), fog = z.top.map((c, i) => (c + z.bot[i]) / 2), mm = Sea3D.metres(d);
       // whales pass when they call: humpbacks near the top, a sperm whale in the deep; with the sound off, now and then
       let whales = heard; heard = null; if (!whales && !sound.on() && t - lastWhale > 90 && ((mm > 15 && mm < 250) || (mm > 450 && mm < 2200))) whales = true;
+      // after ABZÛ: once a page, the first time you are among the humpbacks, a pod of huge ones slides past close by; and every fourth song
+      if (whales === 'humpback' && ++humps % 4 === 0) whales = 'pass';
+      if (Math.abs(mm - passM) > 3) { passM = mm; passT = t; }          // waits for a pause in the scrolling, so the pass is seen
+      if (!passed && mm > 50 && mm < 220 && t - passT > 1.2 && t > 3) { passed = true; whales = 'pass'; sound.sing(); }
       if (whales) lastWhale = t;
       life.frame(t, { depth: d, range: range(), w: vw, h: vh, pointer: ptr, fog, top: z.top, whales });
     }

@@ -392,7 +392,7 @@
    Sea3D.load()                       -> Promise (three.js from cdnjs)
    const s = Sea3D.create(canvas, o)  o: { quality: 0-1 }
    s.frame(t, cam)  cam: { depth 0-1, range [a, b], w, h, pointer, fog [r,g,b], top [r,g,b], whales }
-   s.whales(kind)   sends a pod across ('humpback' near the top, 'sperm' in the deep)
+   s.whales(kind)   sends a pod across ('humpback' near the top, 'sperm' in the deep, 'pass': a pod of huge humpbacks close by)
    Sea3D.specimens(o) -> { add(type, canvas2d), frame(t) }  one creature per tile
    Sea3D.metres(d), Sea3D.frac(m)                                                           */
 (function () {
@@ -838,10 +838,17 @@
     // humpbacks pass in the sunlit water (0-200 m), a sperm whale hunts squid in the deep (500-2000 m)
     function sendWhales(kind) {
       const m = metres(clamp(-camera.position.y / DEPTH, 0, 1));
+      // the close pass: a pod of huge humpbacks sliding up past the camera on a diagonal, filling the frame
+      if (kind === 'pass') { if (m > 260) return null; const y = yOf(clamp(m, 12, 200)), a = 0.5, ca = Math.cos(a), sa = Math.sin(a);
+        [[0, 0, 6.2, 0], [-16, 9, 4.4, 2.2], [14, -10, 4.9, 1.1], [-34, 17, 3.4, 3.6], [26, 14, 3.1, 4.4]].forEach(([dz, dy, sc, delay], i) => {
+          const w = C.whale(), sp = 7 - i * 0.45; w.scale.setScalar(sc); w.rotation.set(0, -0.32, a);
+          w.position.set(-48 - sc * 7 - delay * sp * ca, y - 34 + dy - delay * sp * sa, -12 + dz); scene.add(w); live.push(w);
+          whales.push({ w, born: lastT, vx: sp * ca, vy: sp * sa, end: 70 + sc * 8, follow: camera.position.y }); });
+        return 'pass'; }
       if (kind !== 'sperm' && m < 260) { const y = yOf(clamp(m, 12, 190));
-        for (let i = 0; i < 3; i++) { const w = C.whale(); w.position.set(-70 - i * 18, y - 4 + i * 5, -30 - i * 9); w.rotation.set(0, -.15, .22); w.scale.setScalar(1 + i * .1); scene.add(w); live.push(w); whales.push({ w, born: lastT, v: .32 - i * .02, rise: .015 }); } return 'humpback'; }
+        for (let i = 0; i < 3; i++) { const w = C.whale(); w.position.set(-70 - i * 18, y - 4 + i * 5, -30 - i * 9); w.rotation.set(0, -.15, .22); w.scale.setScalar(1 + i * .1); scene.add(w); live.push(w); whales.push({ w, born: lastT, vx: 1.9 - i * .12, vy: .9, end: 90 }); } return 'humpback'; }
       if (kind !== 'humpback' && m > 420 && m < 2300) { const y = yOf(clamp(m, 500, 2000)), w = C.sperm();
-        w.position.set(-75, y - 6, -26); w.rotation.set(0, -.1, -.28); scene.add(w); live.push(w); whales.push({ w, born: lastT, v: .26, rise: -.006 }); return 'sperm'; }
+        w.position.set(-75, y - 6, -26); w.rotation.set(0, -.1, -.28); scene.add(w); live.push(w); whales.push({ w, born: lastT, vx: 1.56, vy: -.36, end: 90 }); return 'sperm'; }
       return null;
     }
     const ray = new T.Raycaster(), plane = new T.Plane(new T.Vector3(0, 0, 1), 12), hit = new T.Vector3(), ndc = new T.Vector2();
@@ -863,8 +870,9 @@
         o.traverse && o.children.length && o.children.forEach(c => { if (c.material && c.material.userData && c.material.userData.u) c.material.userData.u.uTime.value = t; });
         const sw = o.userData.swim; if (sw) { if (sw.vx) { o.position.x += sw.vx * dt; if (Math.abs(o.position.x) > sw.range) { sw.vx *= -1; o.rotation.y += Math.PI; } } if (sw.bob) o.position.y += Math.sin(t * .8 + o.id) * .004; }
         if (o.userData.shaft) { o.material.opacity = (.12 + .06 * Math.sin(t * .3 + o.id)) * lit; o.position.x += Math.sin(t * .05 + o.id) * .01; } });
-      whales.forEach(wh => { wh.w.position.x += wh.v * 60 * dt * .1; wh.w.position.y += wh.rise; wh.w.children[0].material.userData.u.uTime.value = t; });
-      for (let i = whales.length - 1; i >= 0; i--) if (whales[i].w.position.x > 90) { scene.remove(whales[i].w); live.splice(live.indexOf(whales[i].w), 1); whales.splice(i, 1); }
+      whales.forEach(wh => { wh.w.position.x += wh.vx * dt; wh.w.position.y += wh.vy * dt;
+        if (wh.follow != null) { wh.w.position.y += (cy - wh.follow) * 0.9; wh.follow = cy; } /* the close pass keeps company with the camera */ wh.w.children[0].material.userData.u.uTime.value = t; });
+      for (let i = whales.length - 1; i >= 0; i--) if (whales[i].w.position.x > whales[i].end) { scene.remove(whales[i].w); live.splice(live.indexOf(whales[i].w), 1); whales.splice(i, 1); }
       // marine snow follows the camera, drifting down
       if (built) { const sp = built.sp; for (let i = 0; i < sp.length; i += 3) { sp[i + 1] -= .01; const rel = sp[i + 1] - (cy - 30); if (rel < 0) sp[i + 1] += 60; else if (rel > 60) sp[i + 1] -= 60; }
         built.snow.geometry.attributes.position.needsUpdate = true; built.snow.material.color.setRGB(.86 - dark * .2, .97, .95); }
@@ -997,7 +1005,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
       for (const r of rs) { const sel = r.selectorText; if (!sel || !sel.includes('[data-theme="dark"]') || sel.includes(':not([data-theme="dark"])')) continue;
         if (sel.includes('[data-world="') && !sel.includes('[data-world="sunken"]')) continue;          // another world's night
         out.push(r.cssText.split('[data-theme="dark"]').join('[data-sk-deep]')); } }
-    deepCss.textContent = out.join('\n') + '\n.sk-flip,.sk-flip *{transition:color 1.4s ease,fill 1.4s ease,border-color 1.4s ease!important;}'; } catch {}
+    deepCss.textContent = out.join('\n') + '\n.sk-flip,.sk-flip *{transition:color 2.6s cubic-bezier(.45,0,.25,1),background-color 2.6s cubic-bezier(.45,0,.25,1),fill 2.6s cubic-bezier(.45,0,.25,1),stroke 2.6s cubic-bezier(.45,0,.25,1),border-color 2.6s cubic-bezier(.45,0,.25,1)!important;}'; } catch {}
   doc.head.append(deepCss);
   /* The ground (glass, paper, surfaces, lines) is mixed continuously between the day and night values as you
      descend, easing toward its target so nothing changes in a jump; the ink turns over halfway through. */
@@ -1007,7 +1015,8 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   const parseC = c => c[0] === '#' ? [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16)).concat(1) : c.match(/[\d.]+/g).map(Number);
   const GP = Object.fromEntries(Object.entries(G).map(([k, [l, d]]) => [k, [parseC(l), parseC(d)]]));
   let deep = false, flipT = 0, kNow = 0, kSet = -1, lastT = 0;
-  function setDeep(on) { if (on === deep) return; deep = on; root.classList.add('sk-flip'); clearTimeout(flipT); flipT = setTimeout(() => root.classList.remove('sk-flip'), 1500);
+  const flip = () => { root.classList.add('sk-flip'); clearTimeout(flipT); flipT = setTimeout(() => root.classList.remove('sk-flip'), 2800); };
+  function setDeep(on) { if (on === deep) return; deep = on; flip();
     on ? root.setAttribute('data-sk-deep', '') : root.removeAttribute('data-sk-deep'); nacre(); ctx.announce(on ? 'The light runs out: twilight zone' : 'Back in the sunlight'); }
   const sstep = (a, b, x) => { const u = clamp((x - a) / (b - a)); return u * u * (3 - 2 * u); };
   let aim = false;
@@ -1015,7 +1024,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
     if (ctx.dark()) { if (kSet !== -1) { Object.keys(G).forEach(k => root.style.removeProperty('--' + k)); kSet = -1; } setDeep(false); return; }
     aim = aim ? m > 170 : m > 240;
     const target = aim ? .72 + .28 * sstep(240, 900, m) : .3 * sstep(60, 240, m), dt = lastT ? Math.min(.1, t - lastT) : 1; lastT = t;
-    kNow += (target - kNow) * (1 - Math.exp(-dt * 1.5));
+    kNow += (target - kNow) * (1 - Math.exp(-dt * 0.55));          // a slow, even fade: about five seconds from day to night
     if (Math.abs(kNow - kSet) < .004) return; kSet = kNow;
     const lightA = .52 + .2 * clamp(m / 200);
     for (const [k, [l, d]] of Object.entries(GP)) {
@@ -1024,6 +1033,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
     }
     setDeep(kNow > .5);
   }
+  ctx.onTheme(flip);
   ctx.cleanup(() => { deepCss.remove(); root.removeAttribute('data-sk-deep'); root.classList.remove('sk-flip'); Object.keys(G).forEach(k => root.style.removeProperty('--' + k)); });
 
   /* ---------- depth marks on section headings, and the gauge ---------- */
@@ -1096,7 +1106,9 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
       const gap = hump && Math.random() < .4 ? 1.5 + Math.random() * 3 : Math.random() < .3 ? 60 + Math.random() * 50 : 18 + Math.random() * 40;
       nextAt = Date.now() + (dur + gap) * 1000; ss.set('sk-next', String(nextAt)); const w = whale; whale = null; return w;
     }
-    return { want: () => want, on: () => !!(ac && ac.state === 'running' && want), start, stop, save, tick, disarm,
+    // the close pass sings as it goes by, and the next call waits a while after it
+    const sing = () => { if (!ac || ac.state !== 'running' || !want || !bufs.calls) return; call('hb3', 1); nextAt = Date.now() + 45000; ss.set('sk-next', String(nextAt)); };
+    return { want: () => want, on: () => !!(ac && ac.state === 'running' && want), start, stop, save, tick, disarm, sing,
       toggle() { want = !want; st.set('sk-sound', want ? 'on' : 'off'); want ? (disarm(), start()) : stop(); return want; },
       close() { save(); disarm(); if (ac) { Object.values(srcs).forEach(s => { try { s.stop(); } catch {} }); ac.close(); ac = null; } } };
   })();
@@ -1164,7 +1176,7 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   ctx.onTheme(() => { ctx.later(build, 30); });
   ctx.cleanup(() => doc.querySelectorAll('.sk-wet').forEach(f => { f.style.background = ''; f.classList.remove('sk-wet'); }));
   // pages that change their own content (tabs, world sections) get their glass list refreshed now and then
-  let tick = 0, lastWhale = -60, heard = null;
+  let tick = 0, lastWhale = -60, heard = null, passed = false, humps = 0, passM = 0, passT = 0;
   function frame(t) {
     const d = depthNow(), vw = innerWidth, vh = innerHeight;
     if (sea) {
@@ -1177,6 +1189,10 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
       const z = WaterSea.zone(Object.assign({}, WaterSea.DEFAULTS, WATER), d), fog = z.top.map((c, i) => (c + z.bot[i]) / 2), mm = Sea3D.metres(d);
       // whales pass when they call: humpbacks near the top, a sperm whale in the deep; with the sound off, now and then
       let whales = heard; heard = null; if (!whales && !sound.on() && t - lastWhale > 90 && ((mm > 15 && mm < 250) || (mm > 450 && mm < 2200))) whales = true;
+      // after ABZÛ: once a page, the first time you are among the humpbacks, a pod of huge ones slides past close by; and every fourth song
+      if (whales === 'humpback' && ++humps % 4 === 0) whales = 'pass';
+      if (Math.abs(mm - passM) > 3) { passM = mm; passT = t; }          // waits for a pause in the scrolling, so the pass is seen
+      if (!passed && mm > 50 && mm < 220 && t - passT > 1.2 && t > 3) { passed = true; whales = 'pass'; sound.sing(); }
       if (whales) lastWhale = t;
       life.frame(t, { depth: d, range: range(), w: vw, h: vh, pointer: ptr, fog, top: z.top, whales });
     }

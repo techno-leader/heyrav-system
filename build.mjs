@@ -231,6 +231,8 @@ ${CLARITY}
 <script src="${R}js/docs.js?v=${V('js/docs.js')}" defer></script>
 <script src="${R}js/worlds-data.js?v=${V('js/worlds-data.js')}" defer></script>
 <script src="${R}js/worlds.js?v=${V('js/worlds.js')}" defer></script>
+<script src="${R}js/scroll-nav.js?v=${V('js/scroll-nav.js')}" defer></script>
+<script src="${R}js/doc-nav.js?v=${V('js/doc-nav.js')}" defer></script>
 </body>
 </html>
 ` };

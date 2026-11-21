@@ -330,3 +330,7 @@ body.d{background:var(--surface);font-size:var(--t-ui);}
 .d-nest .nest>*,.d-nest .bad>*{height:100%;background:var(--paper);border:var(--bw) var(--bs) var(--line-2);box-sizing:border-box}
 .d-nest .bad{border-radius:var(--r-lg);padding:var(--s-2)}
 .d-nest .bad>*{border-radius:var(--r-lg)}
+
+/* long pages: the scroll nav carries the chapters, so the On this page list steps aside */
+.has-snav .d-panel{grid-template-columns:minmax(0,1fr);}
+.has-snav .d-toc{display:none;}
