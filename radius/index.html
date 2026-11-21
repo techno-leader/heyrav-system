@@ -6,19 +6,19 @@
 <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#181818" media="(prefers-color-scheme: dark)">
 <title>Radius - heyrav Design System</title>
-<meta name="description" content="Outer shell 20, inner element 14, innermost 8. Corners step down as they nest, and every corner resolves to one of six values.">
+<meta name="description" content="Six corner values, and one rule for nesting: an inner corner is the outer radius minus the gap between them, so curves stay parallel.">
 <meta name="d-root" content="../">
 <meta name="d-slug" content="radius"><meta name="d-src" content="src/10-foundations.html">
-<meta property="og:title" content="Radius - heyrav Design System"><meta property="og:description" content="Outer shell 20, inner element 14, innermost 8. Corners step down as they nest, and every corner resolves to one of six values."><meta property="og:image" content="https://system.heyrav.in/assets/og.png">
+<meta property="og:title" content="Radius - heyrav Design System"><meta property="og:description" content="Six corner values, and one rule for nesting: an inner corner is the outer radius minus the gap between them, so curves stay parallel."><meta property="og:image" content="https://system.heyrav.in/assets/og.png">
 <link rel="canonical" href="https://system.heyrav.in/radius/">
 <link rel="icon" href="../assets/brand/favicon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400..600&display=swap" rel="stylesheet">
 <script>(function(){var m;try{m=localStorage.getItem('hr-theme')}catch(e){}m=m||'system';document.documentElement.dataset.theme=m==='system'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;})();</script>
 <script>(function(){var w,F={"pixel":"https://fonts.googleapis.com/css2?family=Jersey+15&family=Pixelify+Sans:wght@400..700&family=Tiny5&family=VT323&display=swap","paper":"https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap","aurora":"https://fonts.googleapis.com/css2?family=Unbounded:wght@300..600&family=Manrope:wght@400..700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap","sunken":"https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:ital,wght@0,400..700;1,400..700&family=Martian+Mono:wght@400;500&display=swap"};try{w=localStorage.getItem('hr-world')}catch(e){}if(w&&F.hasOwnProperty(w)){document.documentElement.dataset.world=w;if(F[w]){var l=document.createElement('link');l.rel='stylesheet';l.href=F[w];l.dataset.worldFonts=w;document.head.appendChild(l);}}})();</script>
-<script>(function(){try{if(localStorage.getItem('hr-edit')||/(^|[#&?])edit($|[&=])/.test(location.hash+location.search)){var s=document.createElement('script');s.src='../js/edit.bundle.js?v=9f7228d439';document.head.appendChild(s)}}catch(e){}})();</script>
-<link rel="stylesheet" href="../heyrav.css?v=810f4b0536">
-<link rel="stylesheet" href="../css/docs.css?v=2852d50e54">
+<script>(function(){try{if(localStorage.getItem('hr-edit')||/(^|[#&?])edit($|[&=])/.test(location.hash+location.search)){var s=document.createElement('script');s.src='../js/edit.bundle.js?v=a10cbc3740';document.head.appendChild(s)}}catch(e){}})();</script>
+<link rel="stylesheet" href="../heyrav.css?v=75ca1ca01d">
+<link rel="stylesheet" href="../css/docs.css?v=7dff5fa928">
 <link rel="stylesheet" href="../worlds.css?v=d964c1d859">
 <script>try{if(localStorage.getItem('hr-edit'))throw 0;(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","ysfrdr3mko");}catch(e){}</script>
 </head>
@@ -37,7 +37,7 @@
     <a class="btn btn-ghost btn-sm btn-block" href="https://heyrav.in"><span data-say="visit">Open heyrav.in</span> <svg class="icon" viewBox="0 0 256 256" aria-hidden="true" data-i="arrow-up-right"><path d="M200,64V168a8,8,0,0,1-16,0V83.31L69.66,197.66a8,8,0,0,1-11.32-11.32L172.69,72H88a8,8,0,0,1,0-16H192A8,8,0,0,1,200,64Z"/></svg></a>
   </div>
 </aside>
-<main class="d-main" id="main"><div class="d-panel"><article class="d-doc"><header class="d-head"><div class="d-eyebrow"><span class="label">Foundations</span><span class="badge badge-solid">Shipped</span></div><h1 data-say="h1.radius">Radius</h1><p class="d-lede" data-say="lede.radius">Outer shell 20, inner element 14, innermost 8. Corners step down as they nest, and every corner resolves to one of six values.</p></header>
+<main class="d-main" id="main"><div class="d-panel"><article class="d-doc"><header class="d-head"><div class="d-eyebrow"><span class="label">Foundations</span><span class="badge badge-solid">Shipped</span></div><h1 data-say="h1.radius">Radius</h1><p class="d-lede" data-say="lede.radius">Six corner values, and one rule for nesting: an inner corner is the outer radius minus the gap between them, so curves stay parallel.</p></header>
 <div class="d-ex"><div class="d-stage ">
   <div class="d-stack"><div class="d-box r-xs"></div><code>--r-xs · 4</code></div>
   <div class="d-stack"><div class="d-box r-sm"></div><code>--r-sm · 8</code></div>
@@ -53,11 +53,24 @@
 <span class="t">&lt;div</span> <span class="a">class</span>=<span class="s">"d-stack"</span><span class="t">&gt;</span><span class="t">&lt;div</span> <span class="a">class</span>=<span class="s">"d-box r-pill"</span><span class="t">&gt;</span><span class="t">&lt;/div</span><span class="t">&gt;</span><span class="t">&lt;code</span><span class="t">&gt;</span>--r-pill · 99<span class="t">&lt;/code</span><span class="t">&gt;</span><span class="t">&lt;/div</span><span class="t">&gt;</span></code></pre></details></div>
 <div class="d-scroll"><table class="d-tbl"><thead><tr><th>Token</th><th>Value</th><th>Role</th><th>Status</th></tr></thead><tbody><tr><td><code>--r-xs</code></td><td><code data-tok="r-xs">4px</code></td><td>Tool UI only: swatch chips, tiny insets.</td><td><span class="badge">In tools</span></td></tr><tr><td><code>--r-sm</code></td><td><code data-tok="r-sm">8px</code></td><td>Inner elements: inputs, leaves, images inside a card, focus rings.</td><td><span class="badge badge-solid">Shipped</span></td></tr><tr><td><code>--r-md</code></td><td><code data-tok="r-md">14px</code></td><td>Cards, popovers, case-nav tiles, ad images.</td><td><span class="badge badge-solid">Shipped</span></td></tr><tr><td><code>--r-lg</code></td><td><code data-tok="r-lg">20px</code></td><td>Outer shells: figures, fx-wrap, video, dialogs.</td><td><span class="badge badge-solid">Shipped</span></td></tr><tr><td><code>--r-device</code></td><td><code data-tok="r-device">34px</code></td><td>Phone frames. Screen radius derives from it (minus border).</td><td><span class="badge badge-solid">Shipped</span></td></tr><tr><td><code>--r-pill</code></td><td><code data-tok="r-pill">99px</code></td><td>Buttons, chips, badges, the video control bar.</td><td><span class="badge badge-solid">Shipped</span></td></tr></tbody></table></div>
 <h2 id="nesting">Nesting</h2>
-<p>A figure (<code>--r-lg</code>) holding images steps them to <code>--r-md</code>; a card (<code>--r-md</code>) holding a leaf steps it to <code>--r-sm</code>. A device frame derives its screen radius from its own token: <code>calc(var(--r-device) - 2px)</code>, so changing one value moves the whole phone.</p>
+<p>Corners inside corners are concentric. The inner radius is the outer radius minus the gap between the two edges: a <code>--r-lg</code> shell (20) with an 8px gap holds a 12px corner, so the space between the curves stays even all the way round. The same radius inside and out makes the gap fat at the corners and thin on the sides.</p>
+<div class="d-ex"><div class="d-stage ">
+  <div class="d-nest">
+    <figure><div class="nest"><div></div></div><figcaption>20 − 8 = 12</figcaption></figure>
+    <figure><div class="bad"><div></div></div><figcaption>20 inside 20</figcaption></figure>
+  </div>
+</div><details class="d-code"><summary><svg class="icon" viewBox="0 0 256 256" aria-hidden="true" data-i="caret-right"><path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"/></svg><span data-say="code">Show code</span><button class="d-copy" type="button" aria-label="Copy code"><svg class="icon" viewBox="0 0 256 256" aria-hidden="true" data-i="copy"><path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"/></svg></button></summary><pre><code><span class="t">&lt;div</span> <span class="a">class</span>=<span class="s">"d-nest"</span><span class="t">&gt;</span>
+  <span class="t">&lt;figure</span><span class="t">&gt;</span><span class="t">&lt;div</span> <span class="a">class</span>=<span class="s">"nest"</span><span class="t">&gt;</span><span class="t">&lt;div</span><span class="t">&gt;</span><span class="t">&lt;/div</span><span class="t">&gt;</span><span class="t">&lt;/div</span><span class="t">&gt;</span><span class="t">&lt;figcaption</span><span class="t">&gt;</span>20 − 8 = 12<span class="t">&lt;/figcaption</span><span class="t">&gt;</span><span class="t">&lt;/figure</span><span class="t">&gt;</span>
+  <span class="t">&lt;figure</span><span class="t">&gt;</span><span class="t">&lt;div</span> <span class="a">class</span>=<span class="s">"bad"</span><span class="t">&gt;</span><span class="t">&lt;div</span><span class="t">&gt;</span><span class="t">&lt;/div</span><span class="t">&gt;</span><span class="t">&lt;/div</span><span class="t">&gt;</span><span class="t">&lt;figcaption</span><span class="t">&gt;</span>20 inside 20<span class="t">&lt;/figcaption</span><span class="t">&gt;</span><span class="t">&lt;/figure</span><span class="t">&gt;</span>
+<span class="t">&lt;/div</span><span class="t">&gt;</span></code></pre></details></div>
+<p>In CSS the rule is the <code>.nest</code> utility: set the shell's radius and gap, and every direct child takes the difference.</p>
+<div class="code"><div class="code-head"><span>nested corners</span></div><pre>.nest { --nest-r: var(--r-lg); --nest-gap: var(--s-2); }
+/* children: border-radius: calc(var(--nest-r) - var(--nest-gap)) */</pre></div>
+<p>Components follow it the same way: a segmented control's selected item is <code>--r-sm</code> minus its 3px inset, a menu item is <code>--r-md</code> minus the menu's padding, and a device screen is <code>--r-device</code> minus its 2px edge. When the gap is as large as the outer radius or larger, the curves no longer read together; the inner element takes its own token from the scale.</p>
 <nav class="d-pn" aria-label="Pager"><a href="../layout/"><small data-say="prev">Previous</small><b>Layout</b></a><a class="n" href="../elevation/"><small data-say="next">Next</small><b>Elevation</b></a></nav></article><div></div></div></main>
 </div>
 <dialog class="d-k" id="d-k" aria-label="Search"><input type="search" placeholder="Search components, tokens, patterns" data-say-ph="searchph" aria-label="Search"><ul></ul></dialog>
-<script src="../js/search-index.js?v=b65b711c38" defer></script>
+<script src="../js/search-index.js?v=a0d601e863" defer></script>
 <script src="../js/heyrav.js?v=0f43f03b2c" defer></script>
 <script src="../js/docs.js?v=54f02872da" defer></script>
 <script src="../js/worlds-data.js?v=a62437d35a" defer></script>

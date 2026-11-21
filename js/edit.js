@@ -48,6 +48,10 @@
   .ed-bar{display:flex;align-items:center;gap:var(--s-1);padding:var(--s-1);flex-wrap:nowrap}
   .ed-bar .seg{gap:0}
   .ed-bar .seg button{padding:0;width:var(--target);display:grid;place-items:center}
+  /* concentric corners: shell r-lg, bar inset s-1, segmented inset --seg-pad */
+  .ed:not([data-state="off"]) .ed-bar{--ed-in:calc(var(--r-lg) - var(--s-1))}
+  .ed:not([data-state="off"]) .ed-bar .btn,.ed:not([data-state="off"]) .ed-bar .seg{border-radius:var(--ed-in)}
+  .ed:not([data-state="off"]) .ed-bar .seg button{border-radius:max(0px,calc(var(--ed-in) - var(--seg-pad,3px)))}
   .ed-bar .icon{width:20px;height:20px}
   .ed-sep{width:1px;align-self:stretch;margin:var(--s-2) var(--s-1);background:var(--line)}
   .ed-n{position:absolute;top:4px;right:2px;min-width:18px;height:18px;padding:0 5px;border-radius:var(--r-pill);background:var(--ink);color:var(--paper);font:600 11px/18px var(--mono);text-align:center;pointer-events:none}
@@ -60,7 +64,7 @@
   .ed-saved{display:grid;place-items:center;width:28px;color:var(--ink-3)}
   .ed-saved.pulse .icon{animation:ed-pulse var(--d-slow) var(--ease-out)}
   @keyframes ed-pulse{40%{transform:scale(1.25);color:var(--accent)}}
-  @media (max-width:440px){.ed .ed-savedwrap,.ed .ed-sep{display:none!important}.ed-bar{gap:0}.ed-bar .btn-icon,.ed-bar .seg button{width:40px;min-height:40px}}
+  @media (max-width:440px){.ed .ed-savedwrap,.ed .ed-sep{display:none!important}.ed-bar{gap:0}.ed-bar .btn-icon{width:40px;min-height:40px}.ed-bar .seg button{width:40px;min-height:calc(40px - 2 * var(--seg-pad,3px))}}
   .ed-panel{display:flex;flex-direction:column;gap:var(--s-3);padding:var(--s-5) var(--s-5) var(--s-3);border-bottom:1px solid var(--line);max-height:min(60vh,560px);overflow:auto;overscroll-behavior:contain;width:min(560px,calc(100vw - 2 * var(--s-4)));box-sizing:border-box}
   .ed-panel[hidden]{display:none}
   .ed-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s-3)}

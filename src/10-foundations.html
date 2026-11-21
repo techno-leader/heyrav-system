@@ -170,7 +170,7 @@
 <tokentable group="z"/>
 </page>
 
-<page slug="radius" title="Radius" lede="Outer shell 20, inner element 14, innermost 8. Corners step down as they nest, and every corner resolves to one of six values." keywords="corner border radius rounded pill" status="shipped">
+<page slug="radius" title="Radius" lede="Six corner values, and one rule for nesting: an inner corner is the outer radius minus the gap between them, so curves stay parallel." keywords="corner border radius rounded pill" status="shipped">
 <example>
   <div class="d-stack"><div class="d-box r-xs"></div><code>--r-xs · 4</code></div>
   <div class="d-stack"><div class="d-box r-sm"></div><code>--r-sm · 8</code></div>
@@ -181,7 +181,17 @@
 </example>
 <tokentable group="radius"/>
 <h2>Nesting</h2>
-<p>A figure (<code>--r-lg</code>) holding images steps them to <code>--r-md</code>; a card (<code>--r-md</code>) holding a leaf steps it to <code>--r-sm</code>. A device frame derives its screen radius from its own token: <code>calc(var(--r-device) - 2px)</code>, so changing one value moves the whole phone.</p>
+<p>Corners inside corners are concentric. The inner radius is the outer radius minus the gap between the two edges: a <code>--r-lg</code> shell (20) with an 8px gap holds a 12px corner, so the space between the curves stays even all the way round. The same radius inside and out makes the gap fat at the corners and thin on the sides.</p>
+<example>
+  <div class="d-nest">
+    <figure><div class="nest"><div></div></div><figcaption>20 − 8 = 12</figcaption></figure>
+    <figure><div class="bad"><div></div></div><figcaption>20 inside 20</figcaption></figure>
+  </div>
+</example>
+<p>In CSS the rule is the <code>.nest</code> utility: set the shell's radius and gap, and every direct child takes the difference.</p>
+<div class="code"><div class="code-head"><span>nested corners</span></div><pre>.nest { --nest-r: var(--r-lg); --nest-gap: var(--s-2); }
+/* children: border-radius: calc(var(--nest-r) - var(--nest-gap)) */</pre></div>
+<p>Components follow it the same way: a segmented control's selected item is <code>--r-sm</code> minus its 3px inset, a menu item is <code>--r-md</code> minus the menu's padding, and a device screen is <code>--r-device</code> minus its 2px edge. When the gap is as large as the outer radius or larger, the curves no longer read together; the inner element takes its own token from the scale.</p>
 </page>
 
 <page slug="elevation" title="Elevation" lede="One shadow. Surfaces are flat; only things that float above text get lifted." keywords="shadow depth elevation flat" status="shipped">
