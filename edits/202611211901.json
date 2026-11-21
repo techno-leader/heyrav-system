@@ -1,0 +1,21 @@
+{
+ "site": "system.heyrav.in",
+ "repo": "techno-leader/heyrav-system",
+ "made": "2026-11-21T19:01:31.355Z",
+ "changes": [
+  {
+   "id": "3xvt9kz",
+   "slug": "worlds",
+   "src": "src/05-worlds.html",
+   "type": "text",
+   "kind": "",
+   "tag": "p",
+   "ord": 16,
+   "before": "Name what the world is - a platformer, a polar night - and decide its type, shape, depth and motion before its colours.",
+   "after": "Name what the world is - a platform, a polar night - and decide its type, shape, depth and motion before  its colours.",
+   "was": "Name what the world is - a platformer, a polar night - and decide its type, shape, depth and motion before its colours.",
+   "at": 1795286253447
+  }
+ ],
+ "notes": []
+}
