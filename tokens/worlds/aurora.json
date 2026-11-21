@@ -2,7 +2,7 @@
   "$description": "Aurora - a heyrav world. base: any theme; light/dark: per theme; voice: words reworded in this world. Keys are token names without the --.",
   "order": 3,
   "name": "Aurora",
-  "line": "A polar sky: glass panels over light that moves, and answers the pointer.",
+  "line": "A night in Lapland: the aurora coloured by height over fells, spruce and a frozen lake, and scroll is the night.",
   "chips": [
     "#060a18",
     "#3be8a8",
