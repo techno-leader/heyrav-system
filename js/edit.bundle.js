@@ -186,7 +186,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   /* ---------- the page as built, before any script touched it ---------- */
   function getPristine() {
     if (pristine) return Promise.resolve(pristine);
-    return fetch(location.pathname, { cache: 'no-cache' }).then(r => r.text()).then(t => (pristine = new DOMParser().parseFromString(t, 'text/html').querySelector('.d-doc')));
+    return fetch(location.pathname, { cache: 'no-cache' }).then(r => r.text()).then(t => (pristine = (d => d.querySelector(CFG.scope) || d.body)(new DOMParser().parseFromString(t, 'text/html'))));
   }
   const list = (scope, tag) => [...scope.querySelectorAll(tag)].filter(e => !inSkip(e));
   const tagOf = el => el.tagName.toLowerCase() + (el.classList.contains('d-lede') ? '.d-lede' : '');
