@@ -219,7 +219,7 @@ ${CLARITY}
   <nav class="d-nav" aria-label="Sections">${sidebar(p.slug, R)}</nav>
   <div class="d-foot">
     ${WORLD_PICK}
-    <div class="seg" role="group" aria-label="Theme"><button data-theme-set="system" aria-pressed="false">System</button><button data-theme-set="light" aria-pressed="false">Light</button><button data-theme-set="dark" aria-pressed="false">Dark</button></div>
+    <div class="d-foot-row"><div class="seg" role="group" aria-label="Theme"><button data-theme-set="system" aria-pressed="false">System</button><button data-theme-set="light" aria-pressed="false">Light</button><button data-theme-set="dark" aria-pressed="false">Dark</button></div><span class="tip"><button class="btn btn-ghost btn-icon d-snd-sw" type="button" data-snd-toggle aria-pressed="false" aria-label="Interface sound" aria-describedby="d-snd-tt">${icon('speaker-slash', 'icon d-on-0')}${icon('speaker-high', 'icon d-on-1')}</button><span role="tooltip" id="d-snd-tt">Sound off</span></span></div>
     <a class="btn btn-ghost btn-sm btn-block" href="https://heyrav.in"><span data-say="visit">Open heyrav.in</span> ${icon('arrow-up-right')}</a>
   </div>
 </aside>
@@ -233,7 +233,8 @@ ${CLARITY}
 <script src="${R}js/worlds.js?v=${V('js/worlds.js')}" defer></script>
 <script src="${R}js/scroll-nav.js?v=${V('js/scroll-nav.js')}" defer></script>
 <script src="${R}js/doc-nav.js?v=${V('js/doc-nav.js')}" defer></script>
-${(p.js || '').split(/\s+/).filter(Boolean).map(n => `<script src="${R}js/${n}.js?v=${V(`js/${n}.js`)}" defer></script>\n`).join('')}</body>
+${(p.js || '').split(/\s+/).filter(Boolean).map(n => `<script src="${R}js/${n}.js?v=${V(`js/${n}.js`)}" defer></script>\n`).join('')}<script src="${R}js/sound-ui.js?v=${V('js/sound-ui.js')}" data-v-sound="${V('js/sound.js')}" data-v-packs="${V('js/sound-packs.js')}" defer></script>
+</body>
 </html>
 ` };
 }
