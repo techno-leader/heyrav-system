@@ -1177,6 +1177,64 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
   ctx.cleanup(() => doc.querySelectorAll('.sk-wet').forEach(f => { f.style.background = ''; f.classList.remove('sk-wet'); }));
   // pages that change their own content (tabs, world sections) get their glass list refreshed now and then
   let tick = 0, lastWhale = -60, heard = null, passed = false, humps = 0, passM = 0, passT = 0;
+  /* ---------- whales passing: 2.5D, from a photograph ----------
+     A humpback photographed underwater (NOAA, public domain) is cut out once and drawn as layers.
+     Each whale is graded to the water at its distance (far ones sink into the haze and soften,
+     near ones keep their detail and catch the light from above), and swims: the body is drawn
+     in thin strips that ride a travelling wave, strongest toward the tail. They cross on a
+     slow rising diagonal, the near one huge, after the teaser at 1:05. */
+  const pass = (() => {
+    const me = doc.querySelector('script[src*="js/worlds/sunken.js"]'), url = new URL('../../assets/sunken-whale.webp', me ? me.src : location.href).href;
+    const L = ctx.layer('sk-pass'), cv = doc.createElement('canvas'), g = cv.getContext('2d'); L.append(cv); doc.body.append(L);   // above the sea, still behind the page
+    let img = null, loading = null, list = [], lastT = 0, lastY = scrollY;
+    const load = () => loading || (loading = new Promise(res => { const i = new Image(); i.decoding = 'async'; i.onload = () => { img = i; res(i); }; i.onerror = () => res(null); i.src = url; }));
+    const rgb = c => `rgb(${c.map(v => Math.round(v * 255)).join(',')})`;
+    function grade(fog, top, haze, blur, w) {               // the whale as seen through this much water
+      const k = Math.min(1, w / img.width), c = doc.createElement('canvas'); c.width = Math.round(img.width * k) + 16; c.height = Math.round(img.height * k) + 16;
+      const x = c.getContext('2d'); if (blur > .3) x.filter = `blur(${blur}px)`; x.drawImage(img, 8, 8, c.width - 16, c.height - 16); x.filter = 'none';
+      x.globalCompositeOperation = 'source-atop';
+      const lg = x.createLinearGradient(0, 0, 0, c.height); lg.addColorStop(0, rgb(top)); lg.addColorStop(1, rgb(fog.map(v => v * .55)));   // light from above, shade below
+      x.globalAlpha = .28 + .3 * haze; x.fillStyle = lg; x.fillRect(0, 0, c.width, c.height);
+      x.globalAlpha = haze; x.fillStyle = rgb(fog); x.fillRect(0, 0, c.width, c.height);                       // distance is water
+      return c;
+    }
+    function start(kind, fog, top) {
+      if (ctx.reduce()) return;
+      load().then(() => { if (!img) return;
+        const W = innerWidth, H = innerHeight;
+        // haze, blur, size (of the screen's width), delay (s), where it crosses the middle (of the screen's height)
+        const lay = kind === 'pass' ? [[.72, 2.6, .42, 0, .3], [.55, 1.4, .7, 2.2, .62], [.2, 0, 1.45, 4, .5]] : [[.62, 2.4, .34, 0, .4], [.66, 2.8, .3, 3, .62], [.7, 3, .26, 5, .25]];
+        lay.forEach(([haze, blur, sc, delay, mid], i) => {
+          const w = W * sc, c = grade(fog, top, haze, blur, Math.min(1600, w * Math.min(2, devicePixelRatio || 1)));
+          const ang = -.36 - (i % 2) * .07, speed = W * (kind === 'pass' ? .05 + .02 * sc : .045), x0 = -w * .55, y0 = H * mid - Math.tan(ang) * (W * .5 - x0);
+          list.push({ c, w, h: w * c.height / c.width, ang, speed, born: performance.now() / 1000 + delay, x: x0, y: y0, ph: Math.random() * 6, z: haze });
+        });
+        list.sort((a, b) => b.z - a.z);                                                  // far first, near last
+      });
+    }
+    function draw() {
+      const t = performance.now() / 1000, dt = lastT ? Math.min(.1, t - lastT) : 0; lastT = t;
+      const W = innerWidth, H = innerHeight, dpr = Math.min(2, devicePixelRatio || 1), dy = scrollY - lastY; lastY = scrollY;
+      if (!list.length) { if (cv.width) { cv.width = 0; cv.height = 0; } return; }
+      if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cv.style.width = W + 'px'; cv.style.height = H + 'px'; }
+      g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+      for (let i = list.length - 1; i >= 0; i--) { const o = list[i]; if (t < o.born) continue;
+        o.x += Math.cos(o.ang) * o.speed * dt; o.y += Math.sin(o.ang) * o.speed * dt - dy * (1 - o.z) * .35;   // nearer whales slide with the scroll a little
+        if (o.x - o.w > W * 1.1 || o.y + o.h < -H * .6) { list.splice(i, 1); continue; } }
+      for (const o of list) { if (t < o.born) continue;
+        // swim on a level scratch canvas (no seams between strips), then turn the whole body as one image
+        const fadeIn = Math.min(1, (t - o.born) / 2.5), N = 48, cw = o.c.width, ch = o.c.height, pad = Math.round(ch * .08), sw = cw / N, amp = ch * .035, k = 2.4, ph = t * 1.3 + o.ph;
+        if (!o.s) { o.s = doc.createElement('canvas'); o.s.width = cw; o.s.height = ch + pad * 2; o.sx = o.s.getContext('2d'); }
+        const sx = o.sx; sx.clearRect(0, 0, cw, ch + pad * 2);
+        for (let j = 0; j < N; j++) { const u = j / N, f = Math.pow(1 - u, 1.8), wav = Math.sin(ph - u * k) * f * amp, sy = 1 + Math.cos(ph - u * k) * f * .02;
+          sx.drawImage(o.c, Math.floor(j * sw), 0, Math.ceil(sw) + 1, ch, Math.floor(j * sw), pad + wav - ch * (sy - 1) / 2, Math.ceil(sw) + 1, ch * sy); }
+        g.save(); g.globalAlpha = fadeIn; g.translate(o.x, o.y); g.rotate(o.ang);
+        g.drawImage(o.s, -o.w * .5, -o.h * .5 - o.h * pad / ch, o.w, o.h * (ch + pad * 2) / ch); g.restore(); }
+    }
+    ctx.cleanup(() => { list = []; });
+    return { start, draw, busy: () => list.length > 0 };
+  })();
+
   function frame(t) {
     const d = depthNow(), vw = innerWidth, vh = innerHeight;
     if (sea) {
@@ -1194,7 +1252,10 @@ window.heyravWorlds && heyravWorlds.define('sunken', ctx => {
       if (Math.abs(mm - passM) > 3) { passM = mm; passT = t; }          // waits for a pause in the scrolling, so the pass is seen
       if (!passed && mm > 50 && mm < 220 && t - passT > 1.2 && t > 3) { passed = true; whales = 'pass'; sound.sing(); }
       if (whales) lastWhale = t;
+      // humpbacks are drawn from the photograph (a close pass, or a far pod); the sperm whale in the deep stays in the 3D sea
+      if (whales && mm < 260) { pass.start(whales === 'pass' ? 'pass' : 'pod', fog, z.top); whales = false; }
       life.frame(t, { depth: d, range: range(), w: vw, h: vh, pointer: ptr, fog, top: z.top, whales });
+      pass.draw();
     }
     // the glass gets clearer near the surface, where the water is bright
     const m0 = Sea3D.metres(d); ground(m0, t);
