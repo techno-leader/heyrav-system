@@ -99,6 +99,8 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   const strip = h => norm(String(h).replace(/<[^>]+>/g, ' ')).replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ');
   const uid = () => Math.random().toString(36).slice(2, 9);
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // heard in the current world's voice when the site's sound is on (sound-ui.js); silent anywhere else
+  const snd = id => { try { window.HRSoundUI && window.HRSoundUI.cue(id); } catch {} };
   let token = ls.get('hr-edit-token'), store = load(), tool = 'text', state = 'off', pristine = null, editing = null, panelData = {};
   function load() { try { const s = JSON.parse(ls.get(KEY) || 'null'); if (s && s.v === 1) return s; } catch {} return { v: 1, changes: [], notes: [] }; }
   function save() { store.changes.forEach(c => { if (c.slug === SLUG && !c.url) c.url = location.pathname; }); ls.set(KEY, JSON.stringify(store)); counts(); }
@@ -232,7 +234,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
       const lead = tn.textContent.match(/^\s*/)[0], tail = tn.textContent.match(/\s*$/)[0]; tn.textContent = lead + inp.value.trim() + tail;
       const after = clean(el.innerHTML.replace(/\s*class="ed-hov"/g, '')), base = clean(pr.p.innerHTML), c = find('text', pr.tag, pr.ord);
       if (after === base) { if (c) store.changes.splice(store.changes.indexOf(c), 1); el.classList.remove('ed-changed'); }
-      else { if (c) c.after = after; else store.changes.push({ id: uid(), slug: SLUG, src: SRC, type: 'text', kind: '', tag: pr.tag, ord: pr.ord, outer: pr.outer, nth: pr.nth, before: pr.p.innerHTML, after, was: norm(pr.p.textContent), at: Date.now() }); el.classList.add('ed-changed'); }
+      else { if (c) c.after = after; else store.changes.push({ id: uid(), slug: SLUG, src: SRC, type: 'text', kind: '', tag: pr.tag, ord: pr.ord, outer: pr.outer, nth: pr.nth, before: pr.p.innerHTML, after, was: norm(pr.p.textContent), at: Date.now() }); el.classList.add('ed-changed'); snd('tick'); }
       save(); };
     inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); done(true); } if (e.key === 'Escape') { e.preventDefault(); done(false); } e.stopPropagation(); });
     const y0 = scrollY, onScroll = () => { if (Math.abs(scrollY - y0) > 60) done(true); };
@@ -252,19 +254,19 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
     if (el.classList.contains('ed-new')) { const c = store.changes.find(x => x.id === el.dataset.edId); if (c) { c.after = '<p>' + clean(el.innerHTML) + '</p>'; if (!norm(el.textContent)) { store.changes.splice(store.changes.indexOf(c), 1); el.remove(); } save(); } return; }
     const pr = el.__pair, after = clean(el.innerHTML), base = clean(pr.p.innerHTML), ch = find('text', pr.tag, pr.ord);
     if (after === base) { if (ch) store.changes.splice(store.changes.indexOf(ch), 1); el.classList.remove('ed-changed'); }
-    else { if (ch) ch.after = after; else store.changes.push({ id: uid(), slug: SLUG, src: SRC, type: 'text', kind: kindOf(el), tag: pr.tag, ord: pr.ord, outer: pr.outer, nth: pr.nth, before: pr.p.innerHTML, after, was: norm(pr.p.textContent), at: Date.now() }); el.classList.add('ed-changed'); }
+    else { if (!ch || ch.after !== after) snd('tick'); if (ch) ch.after = after; else store.changes.push({ id: uid(), slug: SLUG, src: SRC, type: 'text', kind: kindOf(el), tag: pr.tag, ord: pr.ord, outer: pr.outer, nth: pr.nth, before: pr.p.innerHTML, after, was: norm(pr.p.textContent), at: Date.now() }); el.classList.add('ed-changed'); }
     save();
   }
   function toggleRemove(el) {
     const pr = pairFor(el); if (!pr) return; const ch = find('remove', pr.tag, pr.ord);
-    if (ch) { store.changes.splice(store.changes.indexOf(ch), 1); el.classList.remove('ed-gone'); }
-    else { store.changes.push({ id: uid(), slug: SLUG, src: SRC, type: 'remove', kind: kindOf(el), tag: pr.tag, ord: pr.ord, before: pr.p.outerHTML, was: norm(pr.p.textContent).slice(0, 160), at: Date.now() }); el.classList.add('ed-gone'); }
+    if (ch) { store.changes.splice(store.changes.indexOf(ch), 1); el.classList.remove('ed-gone'); snd('undo'); }
+    else { snd('delete'); store.changes.push({ id: uid(), slug: SLUG, src: SRC, type: 'remove', kind: kindOf(el), tag: pr.tag, ord: pr.ord, before: pr.p.outerHTML, was: norm(pr.p.textContent).slice(0, 160), at: Date.now() }); el.classList.add('ed-gone'); }
     save();
   }
   function addAfter(el) {
     const pr = pairFor(el); if (!pr) return;
     const c = { id: uid(), slug: SLUG, src: SRC, type: 'add', kind: '', tag: pr.tag, ord: pr.ord, before: pr.p.outerHTML, after: '<p></p>', was: norm(pr.p.textContent).slice(0, 160), at: Date.now() };
-    store.changes.push(c); save(); const n = placeNew(el, c); finishEdit(); n.contentEditable = 'true'; editing = n; n.focus();
+    store.changes.push(c); save(); snd('expand'); const n = placeNew(el, c); finishEdit(); n.contentEditable = 'true'; editing = n; n.focus();
   }
   function placeNew(anchor, c) { const n = doc.createElement('p'); n.className = 'ed-new ed-changed'; n.dataset.edId = c.id; n.innerHTML = c.after.replace(/^<p>|<\/p>$/g, ''); anchor.after(n); return n; }
 
@@ -277,7 +279,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
     el.innerHTML = `<header>${icon('note-pencil')}<button type="button" class="btn btn-quiet btn-icon btn-sm" aria-label="Delete note">${icon('x')}</button></header><textarea aria-label="Note for Claude" placeholder="A note for Claude"></textarea>`;
     const ta = el.querySelector('textarea'); ta.value = n.text || '';
     ta.addEventListener('input', () => { n.text = ta.value; n.near = headingAbove(n.y); save(); });
-    el.querySelector('button').addEventListener('click', () => { store.notes.splice(store.notes.indexOf(n), 1); el.remove(); save(); });
+    el.querySelector('button').addEventListener('click', () => { store.notes.splice(store.notes.indexOf(n), 1); el.remove(); save(); snd('delete'); });
     new ResizeObserver(() => { if (el.isConnected && (Math.abs(el.offsetWidth - n.w) > 1 || Math.abs(el.offsetHeight - n.h) > 1)) { n.w = el.offsetWidth; n.h = el.offsetHeight; save(); } }).observe(el);
     el.querySelector('header').addEventListener('pointerdown', e => { if (e.target.closest('button')) return; e.preventDefault(); const sx = e.clientX - n.x, sy = e.clientY - n.y;
       const mv = ev => { n.x = ev.clientX - sx; n.y = ev.clientY - sy; el.style.left = n.x + 'px'; el.style.top = n.y + 'px'; };
@@ -294,7 +296,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
       const up = ev => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); box.remove();
         const x1 = ev.clientX - r.left, y1 = ev.clientY - r.top;
         const n = { id: uid(), slug: SLUG, src: SRC, x: Math.round(Math.min(x0, x1)), y: Math.round(Math.min(y0, y1)), w: Math.round(Math.max(220, Math.abs(x1 - x0))), h: Math.round(Math.max(110, Math.abs(y1 - y0))), text: '', near: headingAbove(Math.min(y0, y1)), at: Date.now() };
-        store.notes.push(n); save(); setTool('text'); drawNote(n).querySelector('textarea').focus(); };
+        store.notes.push(n); save(); snd('press'); setTool('text'); drawNote(n).querySelector('textarea').focus(); };
       addEventListener('pointermove', mv); addEventListener('pointerup', up); });
   }
 
@@ -342,7 +344,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
     else if (!html.classList.contains('ed-ready')) { html.classList.add('ed-ready'); getPristine().then(() => { mark(); restore(); }); window.clarity && window.clarity('stop'); }
     else if (!doc.querySelector('.ed-can')) { mark(); store.notes.filter(n => n.slug === SLUG && !doc.querySelector(`.ed-note[data-id="${n.id}"]`)).forEach(drawNote); }
   }
-  function setTool(t) { finishEdit(); tool = t; html.className = html.className.replace(/\bed-t-\w+/g, '').trim() + ' ed-t-' + t;
+  function setTool(t, heard) { finishEdit(); if (heard && t !== tool) snd('select'); tool = t; html.className = html.className.replace(/\bed-t-\w+/g, '').trim() + ' ed-t-' + t;
     W.querySelectorAll('[data-tool]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tool === t))); noteLayer(t === 'note'); }
   function counts() { const n = store.changes.length + store.notes.filter(x => norm(x.text)).length;
     W.querySelectorAll('.ed-n').forEach(e => e.textContent = n ? String(n) : '');
@@ -380,8 +382,8 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
       <p class="ed-err" hidden></p><div class="ed-row"><button type="button" class="btn btn-primary btn-sm" data-x="tok">Continue ${icon('arrow-right')}</button></div>`;
     const inp = p.querySelector('input'), err = p.querySelector('.ed-err'), ok = p.querySelector('[data-x="tok"]');
     const run = () => { const t = inp.value.trim(); if (!t) return; token = t; ok.disabled = true;
-      Promise.all([gh('/user'), gh(`/repos/${OWNER}/${REPO}`)]).then(([u, r]) => { if (!r.permissions || !r.permissions.push) throw new Error(`This token's account cannot change ${REPO}.`); ls.set(UNLOCK, u.login); ls.set('hr-edit-token', t); go(); })
-        .catch(e => { token = null; err.hidden = false; err.textContent = e.message; ok.disabled = false; }); };
+      Promise.all([gh('/user'), gh(`/repos/${OWNER}/${REPO}`)]).then(([u, r]) => { if (!r.permissions || !r.permissions.push) throw new Error(`This token's account cannot change ${REPO}.`); ls.set(UNLOCK, u.login); ls.set('hr-edit-token', t); snd('success'); go(); })
+        .catch(e => { snd('error'); token = null; err.hidden = false; err.textContent = e.message; ok.disabled = false; }); };
     ok.onclick = run; inp.addEventListener('keydown', e => { if (e.key === 'Enter') run(); }); setTimeout(() => inp.focus({ preventScroll: true }), 50);
   }
   function renderSignin(p) { tokenForm(p, 'Edit this site', 'Only the owner can edit. Sign in with a GitHub token that can change the repository.', () => { setState('bar'); setTool('text'); }); }
@@ -406,7 +408,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
     const txt = `Copy edits for ${CFG.site} (${b.changes.length} changes, ${b.notes.length} notes). Apply them to the page files with scripts/apply-edits.mjs, do the notes by hand, build, check and open a PR.\n\n` +
       b.changes.map((c, i) => `${i + 1}. ${line(c)}`).join('\n') + (b.notes.length ? '\n\nNotes:\n' + b.notes.map(n => `- ${n.slug}, under "${n.near}": ${n.text}`).join('\n') : '') + '\n\n```json\n' + JSON.stringify(b) + '\n```\n';
     const tip = btn.parentElement.querySelector('[role="tooltip"]');
-    const ok = () => { btn.innerHTML = icon('check'); tip.textContent = 'Copied for Claude'; setTimeout(() => { btn.innerHTML = icon('copy'); tip.textContent = 'Copy for Claude'; }, 1800); };
+    const ok = () => { snd('copy'); btn.innerHTML = icon('check'); tip.textContent = 'Copied for Claude'; setTimeout(() => { btn.innerHTML = icon('copy'); tip.textContent = 'Copy for Claude'; }, 1800); };
     navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(txt).then(ok, () => setState('copy', { text: txt })) : setState('copy', { text: txt });
   }
   let lastHeaders = null;
@@ -422,6 +424,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   const ORDER = { add: 0, text: 1, remove: 2 };
   async function runPR(b) {
     finishEdit(); const stamp = new Date().toISOString().slice(0, 16).replace(/[-:T]/g, ''), branch = 'copy-edits/' + stamp; let done = [], missed = [];
+    snd('send');
     try {
       step(0); const ref = await gh(`/repos/${OWNER}/${REPO}/git/ref/heads/${BASE}`);
       await gh(`/repos/${OWNER}/${REPO}/git/refs`, { method: 'POST', body: JSON.stringify({ ref: 'refs/heads/' + branch, sha: ref.object.sha }) });
@@ -437,25 +440,25 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
       const md = c => '- **' + line(c).replace(/^([^:]+):/, '$1**:');
       const body = `Copy edits made on the live site in edit mode.\n\n**Applied to the pages (${done.length})**\n${done.map(md).join('\n') || '- none'}\n\n**For Claude to place by hand (${missed.length})**\n${missed.map(md).join('\n') || '- none'}\n\n**Notes (${b.notes.length})**\n${b.notes.map(n => `- **${n.slug}**, under "${n.near}": ${n.text}`).join('\n') || '- none'}\n\nThe full list is in \`edits/${stamp}.json\`. Before merging: place anything above by hand, run \`node build.mjs\`, check the pages, and delete \`edits/\`.`;
       const pr = await gh(`/repos/${OWNER}/${REPO}/pulls`, { method: 'POST', body: JSON.stringify({ title: `Copy edits (${b.changes.length} changes, ${b.notes.length} notes)`, head: branch, base: BASE, body }) });
-      step(4); setState('pr', { result: { url: pr.html_url, number: pr.number, title: pr.title, done: done.length, missed: missed.length, notes: b.notes.length } });
-    } catch (e) { if (e.status === 401) forget(); setState('pr', { error: explain(e) }); }
+      step(4); snd('success'); setState('pr', { result: { url: pr.html_url, number: pr.number, title: pr.title, done: done.length, missed: missed.length, notes: b.notes.length } });
+    } catch (e) { if (e.status === 401) forget(); snd('error'); setState('pr', { error: explain(e) }); }
   }
 
   /* ---------- wiring ---------- */
   W.addEventListener('click', e => {
     const b = e.target.closest('button,a'); if (!b) return;
-    if (b.dataset.tool) { setTool(b.dataset.tool); if (state !== 'bar') setState('bar'); return; }
+    if (b.dataset.tool) { setTool(b.dataset.tool, true); if (state !== 'bar') setState('bar'); return; }
     const act = b.dataset.act, x = b.dataset.x;
-    if (act === 'open') { setState(ls.get(UNLOCK) ? 'bar' : 'signin'); setTool(tool); }
-    if (act === 'close') state === 'bar' ? setState('off') : setState('bar');
-    if (act === 'review') setState(state === 'review' ? 'bar' : 'review');
-    if (act === 'pr') setState(state === 'pr' ? 'bar' : 'pr', { run: true });
+    if (act === 'open') { snd('open'); setState(ls.get(UNLOCK) ? 'bar' : 'signin'); setTool(tool); }
+    if (act === 'close') snd(state === 'bar' ? 'close' : 'collapse'), state === 'bar' ? setState('off') : setState('bar');
+    if (act === 'review') snd(state === 'review' ? 'collapse' : 'expand'), setState(state === 'review' ? 'bar' : 'review');
+    if (act === 'pr') snd(state === 'pr' ? 'collapse' : 'expand'), setState(state === 'pr' ? 'bar' : 'pr', { run: true });
     if (act === 'copy') copyForClaude(b);
-    if (b.dataset.undo) { const c = store.changes.find(q => q.id === b.dataset.undo); if (c) { store.changes.splice(store.changes.indexOf(c), 1); undoLive(c); save(); } }
-    if (x === 'clear') { if (b.dataset.sure) { store.changes.slice().forEach(undoLive); store = { v: 1, changes: [], notes: [] }; doc.querySelectorAll('.ed-note').forEach(n => n.remove()); save(); } else { b.dataset.sure = '1'; b.textContent = 'Clear all? Click again'; b.classList.add('btn-primary'); } }
+    if (b.dataset.undo) { const c = store.changes.find(q => q.id === b.dataset.undo); if (c) { store.changes.splice(store.changes.indexOf(c), 1); undoLive(c); save(); snd('undo'); } }
+    if (x === 'clear') { if (b.dataset.sure) { snd('delete'); store.changes.slice().forEach(undoLive); store = { v: 1, changes: [], notes: [] }; doc.querySelectorAll('.ed-note').forEach(n => n.remove()); save(); } else { b.dataset.sure = '1'; b.textContent = 'Clear all? Click again'; b.classList.add('btn-primary'); } }
     if (x === 'forget') { forget(); counts(); }
-    if (x === 'keep') setState('bar');
-    if (x === 'wipe') { store.changes.slice().forEach(undoLive); store = { v: 1, changes: [], notes: [] }; doc.querySelectorAll('.ed-note').forEach(n => n.remove()); save(); setState('bar'); }
+    if (x === 'keep') { snd('collapse'); setState('bar'); }
+    if (x === 'wipe') { snd('delete'); store.changes.slice().forEach(undoLive); store = { v: 1, changes: [], notes: [] }; doc.querySelectorAll('.ed-note').forEach(n => n.remove()); save(); setState('bar'); }
     if (x === 'retry') setState('pr', { run: true });
   });
   function forget() { token = null; ls.del('hr-edit-token'); }
@@ -479,8 +482,8 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   doc.addEventListener('keydown', e0 => { const e = { key: e0.key, metaKey: e0.metaKey, ctrlKey: e0.ctrlKey, altKey: e0.altKey, shiftKey: e0.shiftKey, target: (e0.composedPath && e0.composedPath()[0]) || e0.target, preventDefault: () => e0.preventDefault() };
     if (editing) { if (e.key === 'Escape' || (e.key === 'Enter' && !e.shiftKey)) { e.preventDefault(); const el = editing; finishEdit(); el.blur(); } return; }
     if (state === 'off' || state === 'signin' || e.metaKey || e.ctrlKey || e.altKey || /INPUT|TEXTAREA|SELECT/.test((e.target.tagName || '')) || e.target.isContentEditable) return;
-    const k = { t: 'text', r: 'remove', a: 'add', n: 'note' }[e.key.toLowerCase()]; if (k) { e.preventDefault(); setTool(k); }
-    if (e.key === 'Escape') { e.preventDefault(); state === 'bar' ? setState('off') : setState('bar'); }
+    const k = { t: 'text', r: 'remove', a: 'add', n: 'note' }[e.key.toLowerCase()]; if (k) { e.preventDefault(); setTool(k, true); }
+    if (e.key === 'Escape') { e.preventDefault(); snd(state === 'bar' ? 'close' : 'collapse'); state === 'bar' ? setState('off') : setState('bar'); }
   });
   doc.addEventListener('focusout', e => { if (editing && e.target === editing) setTimeout(() => { if (editing && doc.activeElement !== editing) finishEdit(); }, 0); });
   doc.addEventListener('paste', e => { if (!editing || !editing.contains(e.target)) return; e.preventDefault(); doc.execCommand('insertText', false, (e.clipboardData || window.clipboardData).getData('text/plain')); });

@@ -107,7 +107,7 @@
 
   /* clicks: read the state before the components change it, decide after */
   document.addEventListener('click', e => {
-    if (!on() || own(e.target)) return;
+    if (!on() || own(e.target) || root.classList.contains('ed-on')) return; // edit mode speaks for itself
     const el = e.target.closest('button,[role="tab"],[role="menuitem"],.chip,a[aria-expanded],[data-copy-var]');
     if (!el || el.disabled || el.matches('[data-snd-toggle]')) return;
     const pre = { pressed: el.getAttribute('aria-pressed'), sel: el.getAttribute('aria-selected'), exp: el.getAttribute('aria-expanded'),
