@@ -19,7 +19,8 @@ window.heyravWorlds && heyravWorlds.define('aurora', ctx => {
   const T0 = performance.now(), now = () => (performance.now() - T0) / 1000;
   const layer = ctx.layer('au-sky'), cv = doc.createElement('canvas'); layer.append(cv);
   const narrow = () => innerWidth < 760 || (navigator.hardwareConcurrency || 8) < 5;
-  const sky = window.AuroraSky && AuroraSky.create(cv, { scale: narrow() ? .36 : .5 });
+  const meA = doc.querySelector('script[src*="js/worlds/aurora.js"]'), treesURL = new URL('../../assets/aurora-treeline.webp', meA ? meA.src : location.href).href;
+  const sky = window.AuroraSky && AuroraSky.create(cv, { scale: narrow() ? .36 : .5, trees: treesURL });
   ctx.cleanup(() => sky && sky.dispose());
 
   /* ---------- tonight's sky: NOAA's planetary Kp, cached for an hour ---------- */
@@ -107,7 +108,7 @@ window.heyravWorlds && heyravWorlds.define('aurora', ctx => {
   /* ---------- specimens on the Assets page: each phase of a night, on its own engine ---------- */
   const specs = [...doc.querySelectorAll('[data-au-spec]')].filter(f => AuroraSky.PRESETS[f.dataset.auSpec]);
   if (specs.length && window.AuroraSky) {
-    const off = doc.createElement('canvas'), eng = AuroraSky.create(off, { scale: .6 });
+    const off = doc.createElement('canvas'), eng = AuroraSky.create(off, { scale: .6, trees: treesURL });
     if (eng) {
       ctx.cleanup(() => eng.dispose());
       const tiles = specs.map(f => { const c = doc.createElement('canvas'); c.className = 'au-spec'; f.prepend(c); ctx.cleanup(() => c.remove()); return { f, c, i: specs.indexOf(f), P: Object.assign({ seed: 3 }, AuroraSky.PRESETS[f.dataset.auSpec]) }; });

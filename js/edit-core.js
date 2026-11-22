@@ -2,6 +2,8 @@
    sources (src/*.html). Shared by the in-page editor (js/edit.js, for "Raise
    a PR") and by scripts/apply-edits.mjs (for edits handed to Claude).
 
+   Works on the system's src/*.html (many <page> blocks per file) and on a
+   site's plain HTML files (the whole file is the page).
    A change is { slug, src, type: 'text'|'remove'|'add', kind: 'h1'|'lede'|'',
    before, after }. `before` is the built HTML of the element (inner HTML for
    text, outer HTML for remove and add), `after` the new inner HTML (text) or
@@ -22,7 +24,8 @@
   function apply(text, changes) {
     const done = [], missed = [];
     for (const c of changes) {
-      const r = pageRange(text, c.slug); if (!r) { missed.push(c); continue; }
+      // design system sources hold many <page> blocks; a site's own HTML file is the page itself
+      const r = pageRange(text, c.slug) || (/<page\s/.test(text) ? null : { start: 0, open: 0, end: text.length }); if (!r) { missed.push(c); continue; }
       const tag = text.slice(r.start, r.start + r.open), bodyStart = r.start + r.open, body = text.slice(bodyStart, r.end);
       if (c.kind === 'h1' || c.kind === 'lede') {
         const name = c.kind, re = new RegExp('(\\s' + name + '=")([^"]*)(")');

@@ -4,6 +4,8 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
    sources (src/*.html). Shared by the in-page editor (js/edit.js, for "Raise
    a PR") and by scripts/apply-edits.mjs (for edits handed to Claude).
 
+   Works on the system's src/*.html (many <page> blocks per file) and on a
+   site's plain HTML files (the whole file is the page).
    A change is { slug, src, type: 'text'|'remove'|'add', kind: 'h1'|'lede'|'',
    before, after }. `before` is the built HTML of the element (inner HTML for
    text, outer HTML for remove and add), `after` the new inner HTML (text) or
@@ -24,7 +26,8 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   function apply(text, changes) {
     const done = [], missed = [];
     for (const c of changes) {
-      const r = pageRange(text, c.slug); if (!r) { missed.push(c); continue; }
+      // design system sources hold many <page> blocks; a site's own HTML file is the page itself
+      const r = pageRange(text, c.slug) || (/<page\s/.test(text) ? null : { start: 0, open: 0, end: text.length }); if (!r) { missed.push(c); continue; }
       const tag = text.slice(r.start, r.start + r.open), bodyStart = r.start + r.open, body = text.slice(bodyStart, r.end);
       if (c.kind === 'h1' || c.kind === 'lede') {
         const name = c.kind, re = new RegExp('(\\s' + name + '=")([^"]*)(")');
@@ -83,10 +86,12 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
    Everything autosaves on this device (localStorage "hr-edits"). */
 (function () {
   if (window.__hrEdit) return; window.__hrEdit = 1;
-  const OWNER = 'techno-leader', REPO = 'heyrav-system', BASE = 'main', KEY = 'hr-edits', UNLOCK = 'hr-edit';
   const doc = document, html = doc.documentElement, IC = window.HR_ED_ICONS || {};
   const meta = n => (doc.querySelector(`meta[name="${n}"]`) || {}).content || '';
-  const root = meta('d-root') || '/', SRC = meta('d-src'), SLUG = meta('d-slug') || 'index';
+  /* each site says where its pages come from (window.HR_EDIT); the design system is the default */
+  const CFG = Object.assign({ owner: 'techno-leader', repo: 'heyrav-system', base: 'main', site: 'system.heyrav.in', scope: '.d-doc', skip: '', src: meta('d-src'), slug: meta('d-slug') || 'index', root: meta('d-root') || '/', css: '' }, window.HR_EDIT || {});
+  const OWNER = CFG.owner, REPO = CFG.repo, BASE = CFG.base, KEY = 'hr-edits', UNLOCK = 'hr-edit';
+  const root = CFG.root, SRC = CFG.src, SLUG = CFG.slug;
   const ls = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} }, del(k) { try { localStorage.removeItem(k); } catch {} } };
   const icon = n => `<svg class="icon" viewBox="0 0 256 256" aria-hidden="true">${IC[n] || ''}</svg>`;
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -96,15 +101,35 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   let token = ls.get('hr-edit-token'), store = load(), tool = 'text', state = 'off', pristine = null, editing = null, panelData = {};
   function load() { try { const s = JSON.parse(ls.get(KEY) || 'null'); if (s && s.v === 1) return s; } catch {} return { v: 1, changes: [], notes: [] }; }
-  function save() { ls.set(KEY, JSON.stringify(store)); counts(); }
-  const article = () => doc.querySelector('.d-doc');
-  const SKIP = '.d-code,pre,.d-pn,.d-toc,.ed,.ed-note,.ed-draw,.d-used,.d-speed,.d-eyebrow';
+  function save() { store.changes.forEach(c => { if (c.slug === SLUG && !c.url) c.url = location.pathname; }); ls.set(KEY, JSON.stringify(store)); counts(); }
+  const article = () => doc.querySelector(CFG.scope) || doc.body;
+  const SKIP = '.d-code,pre,.d-pn,.d-toc,.ed-host,.ed-note,.ed-draw,.ed-inline,.d-used,.d-speed,.d-eyebrow,script,style,noscript,svg,canvas,.snav' + (CFG.skip ? ',' + CFG.skip : '');
   const TEXT = 'h1,h2,h3,h4,p,li,figcaption,dt,dd,blockquote,td,th';
   const BLOCK = 'h1,h2,h3,h4,p,li,ul,ol,figure,table,blockquote,details,dl,.d-ex,.d-sw,.d-worldgrid,.asg,section';
   const inSkip = el => !!el.closest(SKIP);
 
   /* ---------- styles: system tokens and components; only the widget's own frame is defined here ---------- */
+  /* the page itself: outlines, struck-out blocks, notes (fallbacks for sites without the system's tokens) */
   const css = doc.createElement('style'); css.textContent = `
+  :root{--ed-acc:var(--accent,#0a6cff);--ed-dng:var(--danger,#d4380d);--ed-mut:var(--mut,#6b6b6b);--ed-ln2:var(--line-2,rgba(0,0,0,.2));--ed-pap:var(--paper,#fff);--ed-ink:var(--ink,#161616);--ed-ink3:var(--ink-3,#555);--ed-rmd:var(--r-md,14px);--ed-rxs:var(--r-xs,4px);--ed-shd:var(--shadow-pop,0 18px 40px -22px rgba(0,0,0,.3));--ed-s1:var(--s-1,4px);--ed-s3:var(--s-3,12px);--ed-tui:var(--t-ui,14px);--ed-sans:var(--sans,system-ui,sans-serif)}
+  .ed-inline{position:fixed;z-index:2147482999;box-sizing:border-box;border:0;outline:2px solid var(--ed-acc);outline-offset:2px;border-radius:var(--ed-rxs);background:var(--ed-pap);color:var(--ed-ink);padding:0 var(--ed-s1);text-align:center}
+  html.ed-on .ed-can{outline:1px dashed color-mix(in srgb,var(--ed-acc) 50%,transparent);outline-offset:3px}
+  html.ed-on.ed-t-text .ed-can{cursor:text}
+  html.ed-on.ed-t-remove .ed-can,html.ed-on.ed-t-add .ed-can{cursor:pointer}
+  html.ed-on .ed-hov{outline:1px dashed var(--ed-acc);outline-offset:2px;cursor:text}
+  html.ed-on [contenteditable="true"]{outline:2px solid var(--ed-acc)!important;outline-offset:3px;cursor:text}
+  .ed-changed{box-shadow:inset 3px 0 0 var(--ed-acc)}
+  .ed-gone{opacity:.28;text-decoration:line-through;outline:2px dashed var(--ed-dng)!important;outline-offset:3px}
+  .ed-new:empty::before{content:"New text";color:var(--ed-mut)}
+  .ed-note{position:absolute;z-index:50;min-width:160px;min-height:80px;border:1px solid var(--ed-ln2);border-radius:var(--ed-rmd);background:var(--ed-pap);box-shadow:var(--ed-shd);display:flex;flex-direction:column;resize:both;overflow:hidden}
+  .ed-note header{display:flex;justify-content:space-between;align-items:center;padding:var(--ed-s1) var(--ed-s1) 0 var(--ed-s3);cursor:move;user-select:none;color:var(--ed-ink3)}
+  .ed-note header .icon{width:16px;height:16px}
+  .ed-note textarea{flex:1;border:0;background:none;resize:none;font:var(--ed-tui)/1.45 var(--ed-sans);color:var(--ed-ink);padding:0 var(--ed-s3) var(--ed-s3);outline:none}
+  .ed-draw{position:absolute;inset:0;z-index:49;cursor:crosshair}
+  .ed-box{position:absolute;border:2px dashed var(--ed-acc);border-radius:var(--ed-rmd);pointer-events:none}`;
+  doc.head.append(css);
+  /* the widget lives in a shadow root with the design system's own stylesheet, so it looks the same on any site and nothing leaks either way */
+  const WCSS = `
   .ed{position:fixed;left:0;right:0;bottom:max(var(--s-4),env(safe-area-inset-bottom,0px));margin-inline:auto;width:fit-content;max-width:calc(100vw - 2 * var(--s-4));z-index:2147483000;
     display:flex;flex-direction:column;background:var(--paper);color:var(--ink);border:1px solid var(--line-2);border-radius:var(--r-lg);box-shadow:var(--shadow-pop);font-family:var(--sans);font-size:var(--t-ui)}
   .ed.ed-morph{overflow:hidden}
@@ -125,7 +150,6 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   .ed .tip [role="tooltip"]{white-space:nowrap}
   .ed .tip:focus-within:not(:has(:focus-visible)):not(:hover) [role="tooltip"]{opacity:0}
   .ed[data-state="review"] .tip [role="tooltip"],.ed[data-state="pr"] .tip [role="tooltip"]{display:none}
-  .ed-inline{position:fixed;z-index:2147482999;box-sizing:border-box;border:0;outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--r-xs);background:var(--paper);color:var(--ink);padding:0 var(--s-1);text-align:center}
   .ed .kbd{position:static;margin-left:var(--s-2)}
   .ed-saved{display:grid;place-items:center;width:28px;color:var(--ink-3)}
   .ed-saved.pulse .icon{animation:ed-pulse var(--d-slow) var(--ease-out)}
@@ -157,22 +181,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   .ed-field input,.ed-panel textarea{font:14px var(--mono);padding:var(--s-3);border-radius:var(--r-sm);border:1px solid var(--line-2);background:var(--surface);color:var(--ink);width:100%;box-sizing:border-box}
   .ed-panel textarea{min-height:30vh}
   .ed a{color:inherit}
-  html.ed-on .d-doc{position:relative}
-  html.ed-on .ed-can{outline:1px dashed color-mix(in srgb,var(--accent) 50%,transparent);outline-offset:3px}
-  html.ed-on.ed-t-text .ed-can{cursor:text}
-  html.ed-on.ed-t-remove .ed-can,html.ed-on.ed-t-add .ed-can{cursor:pointer}
-  html.ed-on .ed-hov{outline:1px dashed var(--accent);outline-offset:2px;cursor:text}
-  html.ed-on [contenteditable="true"]{outline:2px solid var(--accent)!important;outline-offset:3px;cursor:text}
-  .ed-changed{box-shadow:inset 3px 0 0 var(--accent)}
-  .ed-gone{opacity:.28;text-decoration:line-through;outline:2px dashed var(--danger)!important;outline-offset:3px}
-  .ed-new:empty::before{content:"New text";color:var(--mut)}
-  .ed-note{position:absolute;z-index:50;min-width:160px;min-height:80px;border:1px solid var(--line-2);border-radius:var(--r-md);background:var(--paper);box-shadow:var(--shadow-pop);display:flex;flex-direction:column;resize:both;overflow:hidden}
-  .ed-note header{display:flex;justify-content:space-between;align-items:center;padding:var(--s-1) var(--s-1) 0 var(--s-3);cursor:move;user-select:none;color:var(--ink-3)}
-  .ed-note header .icon{width:16px;height:16px}
-  .ed-note textarea{flex:1;border:0;background:none;resize:none;font:var(--t-ui)/1.45 var(--sans);color:var(--ink);padding:0 var(--s-3) var(--s-3);outline:none}
-  .ed-draw{position:absolute;inset:0;z-index:49;cursor:crosshair}
-  .ed-box{position:absolute;border:2px dashed var(--accent);border-radius:var(--r-md);pointer-events:none}`;
-  doc.head.append(css);
+`;
 
   /* ---------- the page as built, before any script touched it ---------- */
   function getPristine() {
@@ -290,6 +299,11 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   }
 
   /* ---------- the widget ---------- */
+  const host = doc.createElement('div'); host.className = 'ed-host'; const SR = host.attachShadow({ mode: 'open' });
+  const sysCss = doc.createElement('style'), ownCss = doc.createElement('style'); ownCss.textContent = WCSS; SR.append(sysCss, ownCss);
+  fetch(CFG.css || root + 'heyrav.css').then(r => r.text()).then(t => { sysCss.textContent = t.replace(/:root\b/g, ':host').replace(/\[data-theme="dark"\]/g, ':host([data-theme="dark"])'); }).catch(() => {});
+  const syncTheme = () => host.setAttribute('data-theme', html.dataset.theme === 'dark' ? 'dark' : 'light'); syncTheme();
+  new MutationObserver(syncTheme).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
   const W = doc.createElement('div'); W.className = 'ed'; W.setAttribute('role', 'region'); W.setAttribute('aria-label', 'Edit this site');
   const tipBtn = (attrs, ic, label, key, extra = '') => `<span class="tip"><button type="button" class="btn btn-quiet btn-icon" ${attrs} aria-label="${label}">${icon(ic)}${extra}</button><span role="tooltip">${label}${key ? `<span class="kbd">${key}</span>` : ''}</span></span>`;
   W.innerHTML = `<div class="ed-panel" hidden></div><div class="ed-bar">
@@ -310,7 +324,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   function morph(change) {
     const a = W.getBoundingClientRect(); change(); const b = W.getBoundingClientRect();
     if (reduce() || !W.animate || (a.width === b.width && a.height === b.height)) return;
-    const d = parseFloat(getComputedStyle(html).getPropertyValue('--d-modal')) || 320, e = getComputedStyle(html).getPropertyValue('--ease-out').trim() || 'ease-out';
+    const d = parseFloat(getComputedStyle(W).getPropertyValue('--d-modal')) || 320, e = getComputedStyle(W).getPropertyValue('--ease-out').trim() || 'ease-out';
     W.classList.add('ed-morph'); const an = W.animate([{ width: a.width + 'px', height: a.height + 'px' }, { width: b.width + 'px', height: b.height + 'px' }], { duration: d, easing: e });
     an.onfinish = an.oncancel = () => W.classList.remove('ed-morph');
   }
@@ -355,7 +369,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
       (ch.length ? `<ul class="ed-list">${ch.map(c => `<li data-id="${c.id}">${icon(TYPE_IC[c.type])}<div><b>${esc(pageName(c.slug))}</b>${
         c.type === 'text' ? `<small><span class="was">${esc(c.was.slice(0, 140))}</span></small><small class="now">${esc(strip(c.after).slice(0, 200))}</small>` :
         c.type === 'remove' ? `<small class="was">${esc(c.was.slice(0, 160))}</small>` : `<small class="now">${esc(strip(c.after).slice(0, 200))}</small><small>after "${esc(c.was.slice(0, 60))}"</small>`}${c.stale ? '<small class="ed-err">The page changed since. Claude will place this one by hand.</small>' : ''}</div>
-        <div class="acts">${c.slug !== SLUG ? `<a class="btn btn-quiet btn-icon btn-sm" href="${root}${c.slug === 'index' ? '' : c.slug + '/'}" aria-label="Open ${esc(pageName(c.slug))}">${icon('arrow-up-right')}</a>` : ''}<button type="button" class="btn btn-quiet btn-icon btn-sm" data-undo="${c.id}" aria-label="Undo">${icon('arrow-counter-clockwise')}</button></div></li>`).join('')}</ul>` : '') +
+        <div class="acts">${c.slug !== SLUG ? `<a class="btn btn-quiet btn-icon btn-sm" href="${c.url || root + (c.slug === 'index' ? '' : c.slug + '/')}" aria-label="Open ${esc(pageName(c.slug))}">${icon('arrow-up-right')}</a>` : ''}<button type="button" class="btn btn-quiet btn-icon btn-sm" data-undo="${c.id}" aria-label="Undo">${icon('arrow-counter-clockwise')}</button></div></li>`).join('')}</ul>` : '') +
       (notes.length ? `<ul class="ed-list">${notes.map(n => `<li>${icon('note-pencil')}<div><b>${esc(pageName(n.slug))} · under "${esc(n.near)}"</b><small class="now">${esc(n.text)}</small></div><div class="acts"></div></li>`).join('')}</ul>` : '');
   }
   function renderCopy(p) { p.innerHTML = `<div class="ed-head"><h2>Copy this</h2></div><p>The browser did not allow copying. Select the text and copy it.</p><textarea readonly>${esc(panelData.text || '')}</textarea>`; }
@@ -385,11 +399,11 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   const step = i => panel.querySelectorAll('.ed-steps li').forEach((li, j) => { li.className = j < i ? 'done' : j === i ? 'now' : ''; li.querySelector('svg').innerHTML = IC[j < i ? 'check' : 'cloud-check'] || ''; });
 
   /* ---------- actions ---------- */
-  function bundle() { return { site: 'system.heyrav.in', repo: OWNER + '/' + REPO, made: new Date().toISOString(), changes: store.changes, notes: store.notes.filter(n => norm(n.text)) }; }
+  function bundle() { return { site: CFG.site, repo: OWNER + '/' + REPO, made: new Date().toISOString(), changes: store.changes, notes: store.notes.filter(n => norm(n.text)) }; }
   const line = c => `${c.slug}: ${c.type === 'text' ? `"${c.was}" -> "${strip(c.after)}"` : c.type === 'remove' ? `remove "${c.was}"` : `add after "${c.was}": "${strip(c.after)}"`}`;
   function copyForClaude(btn) {
     finishEdit(); const b = bundle();
-    const txt = `Copy edits for system.heyrav.in (${b.changes.length} changes, ${b.notes.length} notes). Apply them to src/*.html with scripts/apply-edits.mjs, do the notes by hand, build, check and open a PR.\n\n` +
+    const txt = `Copy edits for ${CFG.site} (${b.changes.length} changes, ${b.notes.length} notes). Apply them to the page files with scripts/apply-edits.mjs, do the notes by hand, build, check and open a PR.\n\n` +
       b.changes.map((c, i) => `${i + 1}. ${line(c)}`).join('\n') + (b.notes.length ? '\n\nNotes:\n' + b.notes.map(n => `- ${n.slug}, under "${n.near}": ${n.text}`).join('\n') : '') + '\n\n```json\n' + JSON.stringify(b) + '\n```\n';
     const tip = btn.parentElement.querySelector('[role="tooltip"]');
     const ok = () => { btn.innerHTML = icon('check'); tip.textContent = 'Copied for Claude'; setTimeout(() => { btn.innerHTML = icon('copy'); tip.textContent = 'Copy for Claude'; }, 1800); };
@@ -462,7 +476,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
   doc.addEventListener('pointerover', e => { if (state === 'off' || tool !== 'text') return; const el = textTarget(e.target); const t = el && el.closest('.d-stage') ? el : null;
     if (hov && hov !== t) hov.classList.remove('ed-hov'); hov = t; t && t.classList.add('ed-hov'); });
   doc.addEventListener('pointerdown', e => { if (editing && !editing.contains(e.target)) finishEdit(); }, true);
-  doc.addEventListener('keydown', e => {
+  doc.addEventListener('keydown', e0 => { const e = { key: e0.key, metaKey: e0.metaKey, ctrlKey: e0.ctrlKey, altKey: e0.altKey, shiftKey: e0.shiftKey, target: (e0.composedPath && e0.composedPath()[0]) || e0.target, preventDefault: () => e0.preventDefault() };
     if (editing) { if (e.key === 'Escape' || (e.key === 'Enter' && !e.shiftKey)) { e.preventDefault(); const el = editing; finishEdit(); el.blur(); } return; }
     if (state === 'off' || state === 'signin' || e.metaKey || e.ctrlKey || e.altKey || /INPUT|TEXTAREA|SELECT/.test((e.target.tagName || '')) || e.target.isContentEditable) return;
     const k = { t: 'text', r: 'remove', a: 'add', n: 'note' }[e.key.toLowerCase()]; if (k) { e.preventDefault(); setTool(k); }
@@ -473,7 +487,7 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
 
   /* ---------- start ---------- */
   function boot() {
-    if (!article()) return; doc.body.append(W); counts(); setTool('text');
+    if (!article()) return; SR.append(W); doc.body.append(host); const sc = article(); if (getComputedStyle(sc).position === 'static') sc.style.position = 'relative'; counts(); setTool('text');
     const wants = /(^|[#&?])edit($|[&=])/.test(location.hash + location.search);
     if (wants && location.hash === '#edit') history.replaceState(null, '', location.pathname + location.search);
     if (!ls.get(UNLOCK)) setState(wants ? 'signin' : 'off');
