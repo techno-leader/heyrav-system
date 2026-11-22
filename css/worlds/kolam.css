@@ -1,0 +1,53 @@
+
+/* ---------- Kolam: what tokens cannot say ---------- */
+/* the floor: washed stone by night, lime wash by day - never one flat colour */
+[data-world="kolam"] body{background-image:var(--tex);background-size:360px 360px;}
+[data-world="kolam"] :is(.card,.d-tile,.d-ex,.dlg,.menu,.pop,.toast,.d-hero){background-image:var(--tex);background-size:360px 360px;}
+[data-world="kolam"] :is(h1,h2,h3,.h1,.h2,.h3) em{font-style:normal;color:var(--accent);}
+[data-world="kolam"] .d-hero h1 em{font-style:normal;font-weight:400;color:var(--accent);}
+
+/* a filled button stands on a small ledge and presses down onto it */
+[data-world="kolam"] :is(.btn-primary,.btn-primary:hover){box-shadow:var(--btn-lift);}
+[data-world="kolam"] .btn-primary:active{box-shadow:var(--btn-lift-press);transform:translateY(1px) scale(var(--press-scale));}
+
+/* focus: a loop that goes round the control and keeps clear of it */
+[data-world="kolam"] :focus-visible{outline:1.5px solid var(--focus);outline-offset:5px;border-radius:calc(var(--r-sm) + 5px);}
+
+/* a checkbox is a dot until chosen; chosen, a ring closes round it (the tick token) */
+[data-world="kolam"] .check input:not([type="radio"]){border-radius:50%;background-size:16px;}
+[data-world="kolam"] .check input:not([type="radio"]):not(:checked){background-image:radial-gradient(circle,var(--ink-3) 0 2px,transparent 2.5px);background-size:auto;}
+[data-world="kolam"] .check input[type="radio"]:checked{box-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 4.5px var(--accent);}
+
+/* dividers are a chain of flour: one line round a row of dots (--kl-chain is drawn by the module) */
+[data-world="kolam"] :is(.divider,hr.divider){height:14px;background:var(--kl-chain,var(--line)) center/auto 14px repeat-x;opacity:.75;}
+[data-world="kolam"] .divider-label::before,[data-world="kolam"] .divider-label::after{height:14px;background:var(--kl-chain,var(--line)) center/auto 14px repeat-x;opacity:.75;}
+
+/* waiting: dots laid first, the line follows */
+[data-world="kolam"] .skel{background:radial-gradient(circle,var(--ink-3) 0 1.6px,transparent 2px) 0 50%/12px 10px repeat-x,var(--surface-2);opacity:.75;}
+[data-world="kolam"] .skel-block,[data-world="kolam"] .skel-circle{background:radial-gradient(circle,var(--ink-3) 0 1.6px,transparent 2px) 6px 6px/14px 14px,var(--surface-2);}
+[data-world="kolam"] .spinner{border:0;background:conic-gradient(from 0deg,var(--accent) 0 12%,transparent 12% 25%,var(--accent) 25% 37%,transparent 37% 50%,var(--accent) 50% 62%,transparent 62% 75%,var(--accent) 75% 87%,transparent 87%);-webkit-mask:radial-gradient(circle,transparent 52%,#000 54% 70%,transparent 72%);mask:radial-gradient(circle,transparent 52%,#000 54% 70%,transparent 72%);animation:spin 2.4s steps(8) infinite;}
+[data-world="kolam"] .progress{height:3px;background:linear-gradient(90deg,var(--accent),var(--accent)) 0 0/100% 1.5px no-repeat,radial-gradient(circle,var(--accent) 0 1.4px,transparent 1.8px) 0 0/10px 3px repeat-x;}
+
+/* the page's kolam: drawn into the page head, in the page's own corner */
+.kl-door{position:absolute;right:0;top:0;width:min(34%,260px);aspect-ratio:1;pointer-events:none;z-index:0;}
+.kl-door svg,.kl-door canvas{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible;}
+.kl-door .kl-flower{position:absolute;left:50%;top:50%;width:26%;height:26%;transform:translate(-50%,-50%);}
+[data-world="kolam"] .d-head{position:relative;}
+[data-world="kolam"] .d-head > *:not(.kl-door){position:relative;z-index:1;max-width:min(62ch,64%);}
+/* on the first page the kolam is the doorstep: above the words, the flower at its centre */
+[data-world="kolam"] .d-hero .kl-door{position:relative;right:auto;top:auto;width:min(46vw,210px);margin:28px auto -18px;}
+[data-world="kolam"] .d-hero img.bg{display:none;}
+@media (max-width:720px){.kl-door{width:38%;opacity:.55;}[data-world="kolam"] .d-head > *:not(.kl-door){max-width:none;}}
+
+/* a success: a small kolam closes beside what earned it */
+.kl-burst{position:fixed;width:84px;height:84px;margin:-42px 0 0 -42px;pointer-events:none;z-index:var(--z-veil);}
+.kl-burst svg{width:100%;height:100%;overflow:visible;}
+@media print{.kl-door,.kl-burst{display:none;}}
+
+/* ---------- the Assets page ---------- */
+.kl-specs{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:14px;}
+.kl-spec{position:relative;margin:0;aspect-ratio:1;border:var(--bw) var(--bs) var(--line-2);border-radius:var(--r-md);overflow:hidden;}
+.kl-spec.wide{grid-column:span 2;aspect-ratio:2/1.2;}
+.kl-spec svg,.kl-spec canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.kl-spec figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px 12px 9px;background:linear-gradient(transparent,rgba(20,14,10,.72));font-family:var(--label-font);text-transform:var(--label-case);letter-spacing:calc(.06em * var(--label-track));font-size:calc(var(--t-label) * var(--label-scale));color:#f2ece1;text-shadow:0 1px 2px rgba(0,0,0,.5);}
+@media (max-width:560px){.kl-spec.wide{grid-column:span 1;aspect-ratio:1;}}

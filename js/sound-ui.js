@@ -21,36 +21,37 @@
 
   /* ---- cues: weight, then the sound in each voice ---- */
   const WEIGHT = { touch: .55, move: .75, result: 1 };
-  //            weight     core                retro / arcade          core / zen
+  //            weight     core                retro / arcade          core / zen              kolam (mridangam)
   const T = {
-    press:        ['touch',  'click',          'wk:retro/click',       'wk:core/click'],
-    'toggle-on':  ['touch',  'toggle-on',      'wk:retro/toggle-on',   'wk:core/toggle-on'],
-    'toggle-off': ['touch',  'toggle-off',     'wk:retro/toggle-off',  'wk:core/toggle-off'],
-    check:        ['touch',  'checkbox',       'wk:retro/checkbox',    'wk:core/checkbox'],
-    uncheck:      ['touch',  'deselect',       'wk:retro/deselect',    'wk:core/deselect'],
-    select:       ['touch',  'tab-switch',     'wk:retro/tab-switch',  'wk:core/tab-switch'],
-    tick:         ['touch',  'tick',           'wk:retro/tap',         'wk:core/tick'],
-    expand:       ['move',   'expand',         'wk:retro/expand',      'ui:zen/expand'],
-    collapse:     ['move',   'collapse',       'wk:retro/collapse',    'ui:zen/collapse'],
-    open:         ['move',   'dropdown-open',  'ui:arcade/open',       'ui:zen/open'],
-    close:        ['move',   'dropdown-close', 'ui:arcade/close',      'ui:zen/close'],
-    search:       ['move',   'command',        'wk:retro/pop',         'ui:zen/open'],
-    dark:         ['move',   'slide-down',     'ui:arcade/sleep',      'ui:zen/sleep'],
-    light:        ['move',   'slide-up',       'ui:arcade/wake',       'ui:zen/wake'],
-    world:        ['move',   'whoosh',         'wk:retro/page-enter',  'ui:zen/swipe'],
-    play:         ['move',   'select',         'ui:arcade/play',       'ui:zen/play'],
-    pause:        ['move',   'deselect',       'ui:arcade/pause',      'ui:zen/pause'],
-    copy:         ['result', 'copy',           'wk:retro/copy',        'ui:zen/copy'],
-    success:      ['result', 'success',        'wk:retro/success',     'ui:zen/success'],
-    error:        ['result', 'error',          'wk:retro/error',       'ui:zen/error'],
-    send:         ['result', 'send',           'wk:retro/send',        'ui:zen/send'],
-    delete:       ['result', 'delete',         'wk:retro/delete',      'ui:zen/delete'],
-    undo:         ['result', 'undo',           'wk:retro/undo',        'ui:zen/undo'],
+    press:        ['touch',  'click',          'wk:retro/click',       'wk:core/click', 'kl:kolam/press'],
+    'toggle-on':  ['touch',  'toggle-on',      'wk:retro/toggle-on',   'wk:core/toggle-on', 'kl:kolam/toggle-on'],
+    'toggle-off': ['touch',  'toggle-off',     'wk:retro/toggle-off',  'wk:core/toggle-off', 'kl:kolam/toggle-off'],
+    check:        ['touch',  'checkbox',       'wk:retro/checkbox',    'wk:core/checkbox', 'kl:kolam/check'],
+    uncheck:      ['touch',  'deselect',       'wk:retro/deselect',    'wk:core/deselect', 'kl:kolam/uncheck'],
+    select:       ['touch',  'tab-switch',     'wk:retro/tab-switch',  'wk:core/tab-switch', 'kl:kolam/select'],
+    tick:         ['touch',  'tick',           'wk:retro/tap',         'wk:core/tick', 'kl:kolam/tick'],
+    expand:       ['move',   'expand',         'wk:retro/expand',      'ui:zen/expand', 'kl:kolam/expand'],
+    collapse:     ['move',   'collapse',       'wk:retro/collapse',    'ui:zen/collapse', 'kl:kolam/collapse'],
+    open:         ['move',   'dropdown-open',  'ui:arcade/open',       'ui:zen/open', 'kl:kolam/open'],
+    close:        ['move',   'dropdown-close', 'ui:arcade/close',      'ui:zen/close', 'kl:kolam/close'],
+    search:       ['move',   'command',        'wk:retro/pop',         'ui:zen/open', 'kl:kolam/search'],
+    dark:         ['move',   'slide-down',     'ui:arcade/sleep',      'ui:zen/sleep', 'kl:kolam/dark'],
+    light:        ['move',   'slide-up',       'ui:arcade/wake',       'ui:zen/wake', 'kl:kolam/light'],
+    world:        ['move',   'whoosh',         'wk:retro/page-enter',  'ui:zen/swipe', 'kl:kolam/world'],
+    play:         ['move',   'select',         'ui:arcade/play',       'ui:zen/play', 'kl:kolam/play'],
+    pause:        ['move',   'deselect',       'ui:arcade/pause',      'ui:zen/pause', 'kl:kolam/pause'],
+    copy:         ['result', 'copy',           'wk:retro/copy',        'ui:zen/copy', 'kl:kolam/copy'],
+    success:      ['result', 'success',        'wk:retro/success',     'ui:zen/success', 'kl:kolam/success'],
+    error:        ['result', 'error',          'wk:retro/error',       'ui:zen/error', 'kl:kolam/error'],
+    send:         ['result', 'send',           'wk:retro/send',        'ui:zen/send', 'kl:kolam/send'],
+    delete:       ['result', 'delete',         'wk:retro/delete',      'ui:zen/delete', 'kl:kolam/delete'],
+    undo:         ['result', 'undo',           'wk:retro/undo',        'ui:zen/undo', 'kl:kolam/undo'],
   };
   const VOICES = {
     core:   { name: 'Core',   worlds: ['studio', 'paper', 'sunken'], col: 1 },
     pixel:  { name: 'Pixel',  worlds: ['pixel'],  col: 2 },
     aurora: { name: 'Aurora', worlds: ['aurora'], col: 3 },
+    kolam:  { name: 'Kolam',  worlds: ['kolam'],  col: 4 },
   };
   const voiceOf = w => Object.keys(VOICES).find(v => VOICES[v].worlds.includes(w)) || 'core';
   const world = () => root.dataset.world || 'studio';
@@ -63,8 +64,8 @@
     window.HRSound || js('sound', me && me.dataset.vSound),
     window.HR_SOUND_LIB || js('sound-packs', me && me.dataset.vPacks),
   ]).then(() => { warm(voiceOf(world())); return true; }, () => { ready = null; return false; }));
-  const sfx = (pack, n) => BASE + 'assets/sfx/' + pack + '/' + n + '.mp3';
-  const warm = v => { if (!window.HRSound) return; for (const id in T) { const r = ref(id, v); if (r.startsWith('ui:')) { const [p, n] = r.slice(3).split('/'); HRSound.preload(sfx(p, n)); } } };
+  const sfx = (pack, n) => BASE + 'assets/sfx/' + pack + '/' + n + (pack === 'kolam' ? '.m4a' : '.mp3');
+  const warm = v => { if (!window.HRSound) return; for (const id in T) { const r = ref(id, v); if (r.startsWith('ui:') || r.startsWith('kl:')) { const [p, n] = r.slice(3).split('/'); HRSound.preload(sfx(p, n)); } } };
   // UI SFX files carry their own level (about 0.2); bring them to the synthesised voices' loudness
   const uiGain = n => { const c = window.HR_SOUND_LIB && HR_SOUND_LIB.uisfx.cues.find(c => c[0] === n); return (c ? c[2] : .2) / .2 * .55; };
 
@@ -78,6 +79,7 @@
       if (!ok || !r) return;
       const [lib, rest] = [r.slice(0, 2), r.slice(3)], [pack, n] = rest.split('/');
       if (lib === 'wk') { const d = HR_SOUND_LIB.webkits[pack] && HR_SOUND_LIB.webkits[pack].s[n]; if (d) return HRSound.play(d, { volume: w * (o.volume || 1), key: o.key || 'cue:' + id, gap: o.gap }); }
+      else if (lib === 'kl') return HRSound.play(sfx(pack, n), { volume: .5 * w * (o.volume || 1), key: o.key || 'cue:' + id, gap: o.gap }).catch(() => {});
       else return HRSound.play(sfx(pack, n), { volume: uiGain(n) * w * (o.volume || 1), key: o.key || 'cue:' + id, gap: o.gap }).catch(() => {});
     });
   }

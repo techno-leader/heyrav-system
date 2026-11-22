@@ -276,11 +276,12 @@ addEventListener('heyrav:speed',
 <tr><td>Studio, Paper Pixel, Sunken</td><td>Core</td><td>Core</td><td>Core</td></tr>
 <tr><td>Pixel</td><td>Pixel</td><td>Retro</td><td>Retro, with Arcade for open, close, theme and video, which Retro has no sound for</td></tr>
 <tr><td>Aurora</td><td>Aurora</td><td>Core</td><td>Zen: pure tones and dry wood for everything that moves or finishes</td></tr>
+<tr><td>Kolam</td><td>Kolam</td><td>Mridangam strokes, recorded</td><td>Mridangam, and a temple bell for a success. A veena plays low under the page while sound is on, with a koel now and then.</td></tr>
 </tbody>
 </table>
 </div>
 <h2>Where sound goes</h2>
-<p>Every interaction in the system that carries a sound, sorted into three weights. The controls play the voice picked in the bar. Under each one, the same cue in all three voices.</p>
+<p>Every interaction in the system that carries a sound, sorted into three weights. The controls play the voice picked in the bar. Under each one, the same cue in all four voices.</p>
 <ul>
 <li><strong>Touch</strong> - a control changed state under the finger. Shortest and quietest: under 80ms, about half volume.</li>
 <li><strong>Move</strong> - something opened, closed or changed place. Under 250ms.</li>
@@ -288,13 +289,13 @@ addEventListener('heyrav:speed',
 </ul>
 <div class="d-snd-wrap" data-snd-own>
 <div class="d-snd-bar" data-snd-bar>
-  <div class="field"><label id="snd-v-l">Voice</label><div class="seg" role="group" aria-labelledby="snd-v-l" data-snd-voices><button data-snd-voice="core" aria-pressed="true">Core</button><button data-snd-voice="pixel" aria-pressed="false">Pixel</button><button data-snd-voice="aurora" aria-pressed="false">Aurora</button></div></div>
+  <div class="field"><label id="snd-v-l">Voice</label><div class="seg" role="group" aria-labelledby="snd-v-l" data-snd-voices><button data-snd-voice="core" aria-pressed="true">Core</button><button data-snd-voice="pixel" aria-pressed="false">Pixel</button><button data-snd-voice="aurora" aria-pressed="false">Aurora</button><button data-snd-voice="kolam" aria-pressed="false">Kolam</button></div></div>
   <div class="field d-snd-vol"><div class="row-top"><label for="snd-vol">Volume</label><span class="val" data-snd-volval>70</span></div><input class="rng" id="snd-vol" type="range" min="0" max="100" value="70" data-snd-vol></div>
 </div>
 <template data-snd-icons><ph play/></template>
 <div class="d-snd-map" data-snd-map>
 <p class="label d-snd-w">Touch</p>
-<div class="d-snd-heads" aria-hidden="true"><span></span><span>Core</span><span>Pixel</span><span>Aurora</span></div>
+<div class="d-snd-heads" aria-hidden="true"><span></span><span>Core</span><span>Pixel</span><span>Aurora</span><span>Kolam</span></div>
 <div class="d-snd-row" data-cues="press">
   <div class="d-snd-what"><b>Press</b><span>A button commits something: save, export, send a form. Plain buttons that only navigate stay silent.</span></div>
   <div class="d-snd-try"><button class="btn btn-primary btn-sm" data-snd="press">Save</button></div>
