@@ -266,6 +266,140 @@ addEventListener('heyrav:speed',
   .nav{transition:none;}   /* still tucks - a layout response, not decoration */
 }</pre></div>
 </page>
+<page slug="sound" title="Sound" lede="Sound confirms what the hand just did. It stays off until a visitor turns it on, sits under the volume of a room, and never plays on hover or scroll." keywords="audio sound effects sfx ui sounds click feedback earcon web audio volume mute" js="sound-packs sound sound-sheet">
+<h2>Where sound goes</h2>
+<p>Every interaction in the system that could carry a sound, sorted into three weights. The controls in the middle column play the library and pack picked in the bar. The buttons on the right play the same cue from both libraries, so the two can be compared directly.</p>
+<ul>
+<li><strong>Touch</strong> - a control changed state under the finger. Shortest and quietest: under 80ms, about half volume.</li>
+<li><strong>Move</strong> - something opened, closed or changed place. Under 250ms.</li>
+<li><strong>Result</strong> - work finished or failed. The only weight allowed a tail, and still under 600ms.</li>
+</ul>
+<div class="d-snd-wrap">
+<div class="d-snd-bar" data-snd-bar>
+  <div class="seg" role="group" aria-label="Library the controls play"><button data-snd-lib="webkits" aria-pressed="true">Web Kits</button><button data-snd-lib="uisfx" aria-pressed="false">UI SFX</button></div>
+  <div class="field"><label for="snd-wk">Web Kits pack</label><select class="sel" id="snd-wk" data-snd-pack="webkits"></select></div>
+  <div class="field"><label for="snd-ui">UI SFX pack</label><select class="sel" id="snd-ui" data-snd-pack="uisfx"></select></div>
+  <div class="field d-snd-vol"><div class="row-top"><label for="snd-vol">Volume</label><span class="val" data-snd-volval>70</span></div><input class="rng" id="snd-vol" type="range" min="0" max="100" value="70" data-snd-vol></div>
+</div>
+<template data-snd-icons><ph play/><ph check/></template>
+<div class="d-snd-map" data-snd-map>
+<p class="label d-snd-w">Touch</p>
+<div class="d-snd-row" data-cues="press">
+  <div class="d-snd-what"><b>Press</b><span>A button commits something: save, export, send a form. Plain buttons that only navigate stay silent.</span></div>
+  <div class="d-snd-try"><button class="btn btn-primary btn-sm" data-snd="press">Save</button></div>
+</div>
+<div class="d-snd-row" data-cues="toggle-on toggle-off">
+  <div class="d-snd-what"><b>Switch</b><span>A setting flips. Rising when it turns on, falling when it turns off.</span></div>
+  <div class="d-snd-try"><label class="tgl">Show grid <input type="checkbox" data-snd-on="toggle-on" data-snd-off="toggle-off"><span class="sw"></span></label></div>
+</div>
+<div class="d-snd-row" data-cues="check uncheck">
+  <div class="d-snd-what"><b>Checkbox</b><span>One item joins or leaves a set.</span></div>
+  <div class="d-snd-try"><label class="check"><input type="checkbox" data-snd-on="check" data-snd-off="uncheck"> Include experiments</label></div>
+</div>
+<div class="d-snd-row" data-cues="select">
+  <div class="d-snd-what"><b>Select</b><span>Segmented control, chip, tab or radio: one option out of a few is picked.</span></div>
+  <div class="d-snd-try"><div class="seg" role="group" aria-label="Range" data-snd-seg="select"><button aria-pressed="true">Day</button><button aria-pressed="false">Week</button><button aria-pressed="false">Month</button></div></div>
+</div>
+<div class="d-snd-row" data-cues="tick">
+  <div class="d-snd-what"><b>Slider step</b><span>Only on whole steps, never on every pixel of a drag.</span></div>
+  <div class="d-snd-try"><input class="rng" type="range" min="0" max="10" step="1" value="4" aria-label="Density" data-snd-range="tick"></div>
+</div>
+<p class="label d-snd-w">Move</p>
+<div class="d-snd-row" data-cues="expand collapse">
+  <div class="d-snd-what"><b>Expand</b><span>Accordion, and the morph button growing into its panel.</span></div>
+  <div class="d-snd-try"><details class="acc d-snd-acc" data-snd-on="expand" data-snd-off="collapse"><summary>Is there a dark theme? <ph plus/></summary><div class="acc-body">Yes, opt-in with data-theme="dark".</div></details></div>
+</div>
+<div class="d-snd-row" data-cues="open close">
+  <div class="d-snd-what"><b>Open</b><span>Menu, popover, glossary term, lightbox: a layer arrives over the page, then leaves.</span></div>
+  <div class="d-snd-try"><button class="btn btn-ghost btn-sm" aria-expanded="false" data-snd-flip="open close">Menu <ph caret-down/></button></div>
+</div>
+<div class="d-snd-row" data-cues="search">
+  <div class="d-snd-what"><b>Search</b><span>The ⌘K palette opens from the keyboard.</span></div>
+  <div class="d-snd-try"><button class="btn btn-ghost btn-sm" data-snd="search"><ph magnifying-glass/> Search <span class="kbd">⌘K</span></button></div>
+</div>
+<div class="d-snd-row" data-cues="dark light">
+  <div class="d-snd-what"><b>Theme</b><span>Light to dark falls, dark to light rises. The page does not change here.</span></div>
+  <div class="d-snd-try"><div class="seg" role="group" aria-label="Theme (demo)" data-snd-seg="light dark"><button aria-pressed="true" aria-label="Light"><ph sun/></button><button aria-pressed="false" aria-label="Dark"><ph moon/></button></div></div>
+</div>
+<div class="d-snd-row" data-cues="world">
+  <div class="d-snd-what"><b>World</b><span>The whole site re-tunes. The one move that earns a longer sweep.</span></div>
+  <div class="d-snd-try"><div class="seg" role="group" aria-label="World (demo)" data-snd-seg="world"><button aria-pressed="true">Studio</button><button aria-pressed="false">Pixel</button><button aria-pressed="false">Aurora</button></div></div>
+</div>
+<div class="d-snd-row" data-cues="play pause">
+  <div class="d-snd-what"><b>Video</b><span>Play and pause on the film player.</span></div>
+  <div class="d-snd-try"><button class="btn btn-primary btn-icon" aria-label="Play" aria-pressed="false" data-snd-flip="play pause"><ph play class="icon d-on-0"/><ph pause class="icon d-on-1"/></button></div>
+</div>
+<p class="label d-snd-w">Result</p>
+<div class="d-snd-row" data-cues="copy">
+  <div class="d-snd-what"><b>Copy</b><span>A code block, token or link lands on the clipboard. The icon turns to a tick at the same moment.</span></div>
+  <div class="d-snd-try"><button class="btn btn-ghost btn-icon" aria-label="Copy" data-snd="copy" data-snd-tick><ph copy class="icon d-on-0"/><ph check class="icon d-on-1"/></button></div>
+</div>
+<div class="d-snd-row" data-cues="success error">
+  <div class="d-snd-what"><b>Toast</b><span>Saved, or failed. The toast and the sound arrive together.</span></div>
+  <div class="d-snd-try"><button class="btn btn-ghost btn-sm" data-toast="Saved to the system" data-tone="ok" data-snd="success">Success</button><button class="btn btn-ghost btn-sm" data-toast="Export failed" data-tone="danger" data-snd="error">Error</button></div>
+</div>
+<div class="d-snd-row" data-cues="send">
+  <div class="d-snd-what"><b>Send</b><span>The edit widget raises a pull request.</span></div>
+  <div class="d-snd-try"><button class="btn btn-primary btn-sm" data-snd="send"><ph git-pull-request/> Raise PR</button></div>
+</div>
+<div class="d-snd-row" data-cues="delete undo">
+  <div class="d-snd-what"><b>Remove and undo</b><span>A block is taken out of the page, then put back.</span></div>
+  <div class="d-snd-try"><button class="btn btn-ghost btn-icon" aria-label="Remove" data-snd="delete"><ph trash/></button><button class="btn btn-ghost btn-icon" aria-label="Undo" data-snd="undo"><ph arrow-counter-clockwise/></button></div>
+</div>
+</div>
+</div>
+<div class="d-snd-picks" data-snd-picks hidden>
+  <span class="label">Picks</span><code data-snd-picks-out></code>
+  <button class="btn btn-ghost btn-sm" data-snd-picks-copy><ph copy/> Copy picks</button><button class="btn btn-quiet btn-sm" data-snd-picks-clear>Clear</button>
+</div>
+<h2>Silent on purpose</h2>
+<ul>
+<li><strong>Hover and focus.</strong> They happen dozens of times a minute without intent. A sound there turns into noise within one page.</li>
+<li><strong>Scroll, reveals and the nav tuck.</strong> Motion already says it; sound would say it twice.</li>
+<li><strong>Links that change the page.</strong> The new page is the feedback.</li>
+<li><strong>Typing.</strong> The keyboard already makes its own sound.</li>
+<li><strong>Tooltips, the progress comet, the loader.</strong> Ambient information, never an event.</li>
+<li><strong>Anything nobody did.</strong> Autoplay, timers and background saves. Sound follows a hand, not the system.</li>
+</ul>
+<h2>Rules</h2>
+<ul>
+<li><strong>Off until asked.</strong> One speaker switch turns sound on for the whole site and is remembered per device. Worlds with their own ambience (Sunken, Aurora) keep their own switch.</li>
+<li><strong>One pack.</strong> Every cue comes from the same pack, tuned to one key. Mixing packs sounds like two products.</li>
+<li><strong>Never alone.</strong> Every sound has a visible change at the same moment. Muted, nothing is lost.</li>
+<li><strong>Never twice in 40ms</strong> for the same cue, so a dragged slider or a held key stays clean.</li>
+<li><strong>Nothing while the tab is hidden</strong>, and a soft limiter on the master bus so two cues together never clip.</li>
+<li><strong>Phones obey the ring switch.</strong> On iOS a silenced phone mutes the page too. That is correct.</li>
+</ul>
+<div class="code"><pre>&lt;script src="js/sound.js"&gt;&lt;/script&gt;
+
+HRSound.enabled(true);          // the visitor's switch
+HRSound.play(patch.press);      // a synthesised definition
+HRSound.play('/sfx/copy.mp3');  // or a short file
+HRSound.volume(0.5);            // master, 0 to 1</pre></div>
+<h2>Web Kits: every sound</h2>
+<p>The baseline. Ten packs of sounds synthesised in the browser from plain data: no audio files, 66 kB for all ten. Any sound can be retuned in its data (pitch, length, filter), which is how a Studio pack would be made.</p>
+<div class="chips d-snd-tabs" data-snd-grid-packs="webkits"></div>
+<p class="d-snd-desc" data-snd-grid-desc="webkits"></p>
+<div class="d-snd-grid" data-snd-grid="webkits"></div>
+<h2>UI SFX: every sound</h2>
+<p>The comparison. Twelve packs over the same 78 cues, rendered to 5 kB files and released CC0. Cues are named by meaning (press, success, open) rather than by sound, so a product can change pack without touching its code. Loops are left out.</p>
+<div class="chips d-snd-tabs" data-snd-grid-packs="uisfx"></div>
+<p class="d-snd-desc" data-snd-grid-desc="uisfx"></p>
+<div class="d-snd-grid" data-snd-grid="uisfx"></div>
+<h2>Libraries compared</h2>
+<div class="table-scroll">
+<table class="table">
+<thead><tr><th>Library</th><th>What it is</th><th>Licence</th><th>Fit</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/raphaelsalaja/audio">@web-kits/audio</a></td><td>10 packs, about 300 sounds, synthesised from data. 11 kB runtime.</td><td>MIT</td><td>The baseline. Smallest, and every sound is editable.</td></tr>
+<tr><td><a href="https://github.com/romainsimon/uisfx">UI SFX</a></td><td>12 packs over 78 cues by meaning, as MP3, Ogg and a synth runtime.</td><td>MIT code, CC0 audio</td><td>The strongest alternative. The cue names are the right model even if the sounds are not used.</td></tr>
+<tr><td><a href="https://github.com/kapishdima/soundcn">soundcn</a></td><td>700+ clips installed one by one as code, audio inlined as base64.</td><td>MIT; most clips CC0, one collection not free</td><td>A big catalogue with no system. Every clip needs its own licence check.</td></tr>
+<tr><td>Kenney Interface Sounds</td><td>100 recorded clicks, switches and drops.</td><td>CC0</td><td>Good raw material, no structure. Picking would be by hand.</td></tr>
+<tr><td>Little Robot Sound Factory UI</td><td>Recorded interface sounds.</td><td>CC BY, credit required</td><td>Ruled out: a credit line on every page that plays one.</td></tr>
+</tbody>
+</table>
+</div>
+</page>
 
 <page slug="icons" title="Iconography" lede="Phosphor Regular, inlined as SVG. Sized in em so one rule fits a 12px label and an 18px button." keywords="icon phosphor svg glyph" status="shipped">
 <example>
