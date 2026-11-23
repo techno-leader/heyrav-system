@@ -163,7 +163,7 @@ const VSRC = sha(readdirSync('src').filter(f => f.endsWith('.html')).sort().map(
 
 /* the world is set before first paint, and its fonts start loading with the page */
 const WORLD_BOOT = `<script>(function(){var w,F=${JSON.stringify(Object.fromEntries(WORLDS.filter(w => w.id !== 'studio').map(w => [w.id, fontURL(w)])))};try{w=localStorage.getItem('hr-world')}catch(e){}if(w&&F.hasOwnProperty(w)){document.documentElement.dataset.world=w;if(F[w]){var l=document.createElement('link');l.rel='stylesheet';l.href=F[w];l.dataset.worldFonts=w;document.head.appendChild(l);}}})();</script>`;
-const WORLD_PICK = `<div class="d-worlds" role="group" aria-label="World">${WORLDS.map(w => `<button type="button" class="d-world" data-world-set="${w.id}" aria-pressed="false" title="${w.name}: ${w.line}"><i style="--a:${w.chips[0]};--b:${w.chips[1]};--c:${w.chips[2]}"></i><span>${w.name}</span></button>`).join('')}</div>`;
+const WORLD_PICK = `<div class="d-worlds" role="group" aria-label="World (R for a random one)" aria-keyshortcuts="r">${WORLDS.map(w => `<button type="button" class="d-world" data-world-set="${w.id}" aria-pressed="false" title="${w.name}: ${w.line}"><i style="--a:${w.chips[0]};--b:${w.chips[1]};--c:${w.chips[2]}"></i><span>${w.name}</span></button>`).join('')}</div>`;
 
 function sidebar(cur, R) {
   return NAV.map(([g, slugs]) => `<h3>${g}</h3>` + slugs.filter(s => pages[s]).map(s => {

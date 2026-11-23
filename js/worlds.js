@@ -8,7 +8,8 @@
    Markup:  <button data-world-set="pixel">Pixel</button>
             <svg class="icon" data-i="check">   - swapped for the world's icon set
             <span data-say="toc">On this page</span> - reworded in the world's voice
-   Script:  heyravWorlds.set(id) · .current() · .say(key, fallback) · .celebrate(el)
+   Keys:    R - a random world (not while typing)
+   Script:  heyravWorlds.set(id) · .random() · .current() · .say(key, fallback) · .celebrate(el)
             heyravWorlds.define(id, ctx => ({ unmount, celebrate }))   (modules)
             'worldchange' event on window */
 (() => {
@@ -158,7 +159,36 @@
   document.addEventListener('pointerover', e => { const b = e.target.closest('[data-world-set]'); if (b) { const w = BY[b.dataset.worldSet]; warm(w); moduleOf(w); } }, { passive: true });
   addEventListener('storage', e => { if (e.key === 'hr-world' && e.newValue && BY[e.newValue] && e.newValue !== current()) Promise.all([warm(BY[e.newValue]), moduleOf(BY[e.newValue])]).then(() => apply(e.newValue)); });
 
-  window.heyravWorlds = { set, current, say, celebrate, define, list: () => LIST.map(w => w.id), get: id => BY[id || current()] };
+  /* R: a random world. Every world comes round once before any repeats, and the
+     next one's fonts, icons and module load while this one is being looked at,
+     so the press after this one switches at once. */
+  let bag = [], next = null, rolling = false;
+  const idle = fn => (window.requestIdleCallback || (f => setTimeout(f, 200)))(fn);
+  function draw() {
+    if (!bag.length) {
+      bag = LIST.map(w => w.id);
+      for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; }
+    }
+    let id = bag.shift();
+    if (id === current()) { bag.push(id); id = bag.shift(); }
+    return id;
+  }
+  const prepare = full => { next = draw(); const w = BY[next]; idle(() => { warm(w); if (full) moduleOf(w); }); };
+  function random() {
+    if (rolling || LIST.length < 2) return;
+    const id = next && next !== current() ? next : draw(); next = null;
+    const pick = document.querySelector(`.d-worlds [data-world-set="${id}"]`);
+    rolling = true;
+    set(id, pick && pick.offsetParent ? pick : null).finally(() => { rolling = false; prepare(true); });
+  }
+  document.addEventListener('keydown', e => {
+    if ((e.key !== 'r' && e.key !== 'R') || e.metaKey || e.ctrlKey || e.altKey || e.repeat || e.defaultPrevented) return;
+    if (e.target.closest?.('input,textarea,select,[contenteditable]') || document.querySelector('dialog[open]') || root.classList.contains('ed-on')) return;
+    e.preventDefault(); random();
+  });
+  addEventListener('load', () => idle(() => prepare(false)), { once: true });
+
+  window.heyravWorlds = { set, random, current, say, celebrate, define, list: () => LIST.map(w => w.id), get: id => BY[id || current()] };
 
   const start = BY[current()] ? current() : 'studio';
   if (start !== current()) delete root.dataset.world;
