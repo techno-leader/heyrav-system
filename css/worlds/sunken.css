@@ -157,3 +157,7 @@
 @media (prefers-reduced-motion:reduce){[data-world="sunken"] :is(.btn-primary,.case-link){transition:none;}}
 [data-world="sunken"] .check input:indeterminate{border:1.5px solid var(--accent);border-radius:6px;background:var(--accent) linear-gradient(var(--on-accent),var(--on-accent)) center/9px 2px no-repeat;}
 html[data-world="sunken"] body .toast.toast{background:var(--sk-glass);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);box-shadow:inset 0 1px 0 var(--sk-rim),inset 0 0 0 1px var(--line-2),var(--shadow-pop);}
+
+/* the R key: a pebble of sea glass that bobs back up */
+[data-world="sunken"] .keycap{--kc-round:.42;--kc-h:.34;--kc-taper:.14;--kc-gloss:1;--kc-top:#a6e6df;--kc-left:#cdf4ee;--kc-right:#4fb0b1;--kc-line:#0b5e6e;--kc-ink:#06303a;--kc-hole:color-mix(in srgb,var(--paper) 70%,#0b5e6e);--kc-dots:color-mix(in srgb,#0b5e6e 50%,transparent);--kc-rel:1000ms;}
+@supports (transition-timing-function:linear(0,1)){[data-world="sunken"] .keycap{--kc-spring:linear(0,.3 8%,.82 18%,1.14 30%,1.2 36%,1.12 46%,.97 60%,.95 68%,1.01 82%,1);}}

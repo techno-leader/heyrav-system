@@ -245,3 +245,11 @@
 .px-spec.wide{grid-column:span 2;}
 .px-spec canvas{image-rendering:pixelated;max-width:90%;}
 .px-spec figcaption{position:absolute;left:8px;bottom:6px;font:12px "Tiny5",monospace;color:var(--ink-3);}
+
+/* the R key: a bonus block - square, outlined hard, four rivets, moving in frames */
+[data-world="pixel"] .keycap{--kc-round:0;--kc-taper:.05;--kc-h:.46;--kc-lw:3px;--kc-rivets:1;--kc-top:#ffd23f;--kc-left:#f2b01e;--kc-right:#c2741a;--kc-line:#14183d;--kc-ink:#14183d;--kc-hole:color-mix(in srgb,var(--paper) 70%,#14183d);--kc-dots:var(--line-2);--kc-spring:steps(3,end);--kc-rel:160ms;}
+[data-world="pixel"] .kc-svg{shape-rendering:crispEdges;}
+[data-world="pixel"] .kc-glyph{shape-rendering:auto;}
+[data-world="pixel"] .keycap.is-down .kc-cap,[data-world="pixel"] .keycap:active .kc-cap{transition-timing-function:steps(2,end);}
+[data-world="pixel"] .kc-ring{animation-timing-function:steps(8,end);}
+[data-world="pixel"] .kc-glyph{font-size:66px;}

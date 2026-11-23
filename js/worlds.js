@@ -8,7 +8,8 @@
    Markup:  <button data-world-set="pixel">Pixel</button>
             <svg class="icon" data-i="check">   - swapped for the world's icon set
             <span data-say="toc">On this page</span> - reworded in the world's voice
-   Keys:    R - a random world (not while typing)
+   Keys:    R - a random world (not while typing) · Esc - back to the world before the first R
+            <button class="keycap" data-world-random> - the same, as a key you press
    Script:  heyravWorlds.set(id) · .random() · .current() · .say(key, fallback) · .celebrate(el)
             heyravWorlds.define(id, ctx => ({ unmount, celebrate }))   (modules)
             'worldchange' event on window */
@@ -173,22 +174,53 @@
     if (id === current()) { bag.push(id); id = bag.shift(); }
     return id;
   }
-  const prepare = full => { next = draw(); const w = BY[next]; idle(() => { warm(w); if (full) moduleOf(w); }); };
-  function random() {
+  /* keys ([data-world-random], the .keycap component) show the next world in their pulse */
+  const keys = () => document.querySelectorAll('[data-world-random]');
+  function paintKeys() {
+    const w = BY[next]; if (!w) return;
+    keys().forEach(k => {
+      (w.chips || []).forEach((c, i) => k.style.setProperty('--kc-next-' + 'abc'[i], c));
+      k.dataset.next = w.name;
+      k.setAttribute('aria-label', `A random world. Next: ${w.name}`);
+    });
+  }
+  const prepare = full => { next = draw(); paintKeys(); const w = BY[next]; idle(() => { warm(w); if (full) moduleOf(w); }); };
+  let origin = null; // the world before the first R, for Esc
+  function random(from) {
     if (rolling || LIST.length < 2) return;
+    if (origin == null) origin = current();
     const id = next && next !== current() ? next : draw(); next = null;
     const pick = document.querySelector(`.d-worlds [data-world-set="${id}"]`);
     rolling = true;
-    set(id, pick && pick.offsetParent ? pick : null).finally(() => { rolling = false; prepare(true); });
+    set(id, from || (pick && pick.offsetParent ? pick : null)).finally(() => { rolling = false; prepare(true); });
   }
+  function back() { if (origin == null || rolling) return false; const o = origin; origin = null; if (o !== current()) set(o); return true; }
+  const typing = t => t.closest?.('input,textarea,select,[contenteditable]');
+  const busy = () => document.querySelector('dialog[open],[aria-expanded="true"][aria-controls]') || root.classList.contains('ed-on');
+  const press = on => keys().forEach(k => k.classList.toggle('is-down', on));
+  /* Esc goes back only when it has nothing else to close: read that before anything else hears the key */
+  let escFree = false;
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') escFree = !busy() && !typing(e.target); }, true);
   document.addEventListener('keydown', e => {
-    if ((e.key !== 'r' && e.key !== 'R') || e.metaKey || e.ctrlKey || e.altKey || e.repeat || e.defaultPrevented) return;
-    if (e.target.closest?.('input,textarea,select,[contenteditable]') || document.querySelector('dialog[open]') || root.classList.contains('ed-on')) return;
-    e.preventDefault(); random();
+    if (e.metaKey || e.ctrlKey || e.altKey || typing(e.target)) return;
+    if (e.key === 'Escape') { if (escFree && !e.defaultPrevented) back(); return; }
+    if (e.defaultPrevented) return;
+    if ((e.key !== 'r' && e.key !== 'R') || busy()) return;
+    e.preventDefault(); press(true);
+    if (!e.repeat) random(Array.from(keys()).find(k => k.getBoundingClientRect().bottom > 0 && k.getBoundingClientRect().top < innerHeight));
   });
+  document.addEventListener('keyup', e => { if (e.key === 'r' || e.key === 'R') press(false); });
+  addEventListener('blur', () => press(false));
+  /* the key itself: held under a finger, the world changes when it lets go */
+  document.addEventListener('pointerdown', e => { const k = e.target.closest?.('[data-world-random]'); if (k && e.button === 0) k.classList.add('is-down'); });
+  const lift = () => keys().forEach(k => k.classList.remove('is-down'));
+  document.addEventListener('pointerup', lift); document.addEventListener('pointercancel', lift);
+  document.addEventListener('click', e => { const k = e.target.closest?.('[data-world-random]'); if (k) random(k); });
   addEventListener('load', () => idle(() => prepare(false)), { once: true });
+  /* a world picked by hand may be the one that was coming next: draw again */
+  addEventListener('worldchange', () => { if (next === current()) prepare(false); });
 
-  window.heyravWorlds = { set, random, current, say, celebrate, define, list: () => LIST.map(w => w.id), get: id => BY[id || current()] };
+  window.heyravWorlds = { set, random, back, peek: () => next, current, say, celebrate, define, list: () => LIST.map(w => w.id), get: id => BY[id || current()] };
 
   const start = BY[current()] ? current() : 'studio';
   if (start !== current()) delete root.dataset.world;

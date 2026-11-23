@@ -29,3 +29,8 @@ html.pp-toy[data-world="paper"] :is(input:not([type=range]):not([type=checkbox])
 .pp-specimen figcaption{position:absolute;left:12px;right:12px;bottom:10px;display:flex;justify-content:space-between;gap:8px;font-family:var(--label-font);font-size:calc(var(--t-label) * var(--label-scale));letter-spacing:calc(.06em * var(--label-track));text-transform:var(--label-case);color:var(--ink-3);}
 .pp-cat-sheet{margin-top:12px;padding:16px;border:var(--bw) var(--bs) var(--line);border-radius:var(--r-md);background:var(--panel);background-image:var(--tex);}
 .pp-cat-sheet canvas{display:block;image-rendering:pixelated;}
+
+/* the R key: a stack of card, cut out of the page along a dashed line */
+[data-world="paper"] .keycap{--kc-round:.1;--kc-taper:.015;--kc-h:.34;--kc-strata:3;--kc-top:var(--paper);--kc-left:var(--paper);--kc-right:color-mix(in srgb,var(--paper) 94%,var(--ink));--kc-line:color-mix(in srgb,var(--ink) 75%,transparent);--kc-hole:color-mix(in srgb,var(--paper) 94%,var(--ink));--kc-dots:color-mix(in srgb,var(--ink) 45%,transparent);}
+[data-world="paper"] .kc-dots{stroke-dasharray:7px 5px;stroke-width:1.2px;stroke-linecap:butt;}
+[data-world="paper"] .kc-svg{filter:drop-shadow(0 6px 10px rgba(0,0,0,.08));}

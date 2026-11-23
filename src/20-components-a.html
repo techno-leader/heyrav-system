@@ -283,3 +283,38 @@
 </example>
 <p>Hide shortcuts below 900px - phones have no keyboard to press them with.</p>
 </page>
+<page slug="keycap" title="Keycap" status="spec" lede="A key you can press. It sinks while held and springs back past rest, and the pulse behind it shows the world that comes next." keywords="key button press 3d mechanical pressable isometric random world R shortcut escape" js="keycap">
+<example class="col">
+  <div class="d-keycap"><button class="keycap" type="button" data-world-random data-glyph="mark" aria-keyshortcuts="r" aria-label="A random world"><span class="keycap-glyph">R</span></button><span class="keycap-note">Press R for a new world · Esc to go back</span></div>
+</example>
+<h2>Anatomy</h2>
+<ul>
+<li><strong>Plate.</strong> A dotted outline on the page, with a hole cut in it for the key.</li>
+<li><strong>Cap.</strong> The part that travels. Held, it goes most of the way into the hole and gives a little; let go and it springs back past rest.</li>
+<li><strong>Lip.</strong> The front edge of the hole, drawn over the cap, so the cap goes into the plate rather than squashing.</li>
+<li><strong>Pulse.</strong> Rings in the next world's colours ripple out of the hole, so the next look is never a surprise.</li>
+</ul>
+<h2>Behaviour</h2>
+<ul>
+<li><strong>Held, it stays down.</strong> Mouse, touch and the R key itself all press it, and the world changes as it is pressed. The new world spreads out from the key.</li>
+<li><strong>Every world once.</strong> R walks through all the worlds in a shuffled order before any repeats, and the next one loads while the current one is on screen.</li>
+<li><strong>Esc goes back</strong> to the world before the first press, once nothing else is open for it to close.</li>
+<li><strong>Not while typing.</strong> R in a field is a letter. Reduced motion keeps the press and drops the spring and the pulse.</li>
+</ul>
+<h2>This world's key</h2>
+<p class="d-p" data-for-world="studio">An outlined key in warm off-white, drawn in hairlines on a dotted plate, with a short spring.</p>
+<p class="d-p" data-for-world="pixel">A bonus block: square and gold, four rivets, a hard outline, and it moves in frames, not tweens.</p>
+<p class="d-p" data-for-world="paper">A stack of card cut out of the page along a dashed line, its layers showing on the sides.</p>
+<p class="d-p" data-for-world="aurora">Frosted glass over a hole that glows with the sky's green and violet, slow to sink and slow to rise.</p>
+<p class="d-p" data-for-world="sunken">A rounded pebble of sea glass with a highlight on top. It bobs on the way back up.</p>
+<p class="d-p" data-for-world="kolam">A washed stone tile with its dots laid, the letter in kaavi, its sides stained with red earth.</p>
+<div class="code"><pre>&lt;button class="keycap" data-world-random data-glyph="mark" aria-keyshortcuts="r"&gt;&lt;span class="keycap-glyph"&gt;R&lt;/span&gt;&lt;/button&gt;
+&lt;script src="js/keycap.js" defer&gt;&lt;/script&gt;   &lt;!-- draws it; the letter is the button's name until then --&gt;
+
+/* a world reshapes it with numbers, and colours it with plain CSS */
+[data-world="pixel"] .keycap{ --kc-round:0; --kc-h:.5; --kc-lw:3px; --kc-rivets:1; }
+
+heyravWorlds.random();   // the same as a press
+heyravWorlds.peek();     // the world that comes next
+heyravWorlds.back();     // Esc</pre></div>
+</page>

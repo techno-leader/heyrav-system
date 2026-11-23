@@ -392,6 +392,14 @@ html.w-switching *,html.w-switching *::before,html.w-switching *::after{transiti
 .px-spec canvas{image-rendering:pixelated;max-width:90%;}
 .px-spec figcaption{position:absolute;left:8px;bottom:6px;font:12px "Tiny5",monospace;color:var(--ink-3);}
 
+/* the R key: a bonus block - square, outlined hard, four rivets, moving in frames */
+[data-world="pixel"] .keycap{--kc-round:0;--kc-taper:.05;--kc-h:.46;--kc-lw:3px;--kc-rivets:1;--kc-top:#ffd23f;--kc-left:#f2b01e;--kc-right:#c2741a;--kc-line:#14183d;--kc-ink:#14183d;--kc-hole:color-mix(in srgb,var(--paper) 70%,#14183d);--kc-dots:var(--line-2);--kc-spring:steps(3,end);--kc-rel:160ms;}
+[data-world="pixel"] .kc-svg{shape-rendering:crispEdges;}
+[data-world="pixel"] .kc-glyph{shape-rendering:auto;}
+[data-world="pixel"] .keycap.is-down .kc-cap,[data-world="pixel"] .keycap:active .kc-cap{transition-timing-function:steps(2,end);}
+[data-world="pixel"] .kc-ring{animation-timing-function:steps(8,end);}
+[data-world="pixel"] .kc-glyph{font-size:66px;}
+
 /* ---- Paper Pixel ---- */
 [data-world="paper"]{
   --label-font:"Silkscreen",var(--mono);
@@ -447,6 +455,11 @@ html.pp-toy[data-world="paper"] :is(input:not([type=range]):not([type=checkbox])
 .pp-specimen figcaption{position:absolute;left:12px;right:12px;bottom:10px;display:flex;justify-content:space-between;gap:8px;font-family:var(--label-font);font-size:calc(var(--t-label) * var(--label-scale));letter-spacing:calc(.06em * var(--label-track));text-transform:var(--label-case);color:var(--ink-3);}
 .pp-cat-sheet{margin-top:12px;padding:16px;border:var(--bw) var(--bs) var(--line);border-radius:var(--r-md);background:var(--panel);background-image:var(--tex);}
 .pp-cat-sheet canvas{display:block;image-rendering:pixelated;}
+
+/* the R key: a stack of card, cut out of the page along a dashed line */
+[data-world="paper"] .keycap{--kc-round:.1;--kc-taper:.015;--kc-h:.34;--kc-strata:3;--kc-top:var(--paper);--kc-left:var(--paper);--kc-right:color-mix(in srgb,var(--paper) 94%,var(--ink));--kc-line:color-mix(in srgb,var(--ink) 75%,transparent);--kc-hole:color-mix(in srgb,var(--paper) 94%,var(--ink));--kc-dots:color-mix(in srgb,var(--ink) 45%,transparent);}
+[data-world="paper"] .kc-dots{stroke-dasharray:7px 5px;stroke-width:1.2px;stroke-linecap:butt;}
+[data-world="paper"] .kc-svg{filter:drop-shadow(0 6px 10px rgba(0,0,0,.08));}
 
 /* ---- Aurora ---- */
 [data-world="aurora"]{
@@ -686,6 +699,11 @@ html[data-world="aurora"]{background-color:var(--paper);}
 [data-world="aurora"] figure[data-au-spec]{position:relative;overflow:hidden;background:#060a18;aspect-ratio:16/9;min-height:0;}
 [data-world="aurora"] figure[data-au-spec] .au-spec{position:absolute;inset:0;width:100%;height:100%;}
 [data-world="aurora"] figure[data-au-spec] figcaption{position:absolute;left:var(--s-3);bottom:var(--s-3);right:auto;top:auto;margin:0;z-index:1;color:#e8f3ff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
+
+/* the R key: frosted glass over a glow of the sky's green and violet, slow to sink and slow to rise */
+[data-world="aurora"] .keycap{--kc-round:.26;--kc-h:.36;--kc-taper:.1;--kc-gloss:1;--kc-top:color-mix(in srgb,var(--paper) 55%,transparent);--kc-left:color-mix(in srgb,var(--paper) 38%,transparent);--kc-right:color-mix(in srgb,var(--paper) 22%,transparent);--kc-line:color-mix(in srgb,var(--ink) 55%,transparent);--kc-ink:var(--ink);--kc-hole:color-mix(in srgb,#3be8a8 22%,transparent);--kc-dots:color-mix(in srgb,var(--ink) 30%,transparent);--kc-rel:950ms;}
+[data-world="aurora"] .kc-hole{filter:drop-shadow(0 0 10px color-mix(in srgb,#3be8a8 70%,transparent)) drop-shadow(0 -6px 18px color-mix(in srgb,#a77bff 45%,transparent));}
+[data-world="aurora"] .kc-glyph{filter:drop-shadow(0 0 6px color-mix(in srgb,#3be8a8 60%,transparent));}
 
 /* ---- Sunken ---- */
 [data-world="sunken"]{
@@ -943,6 +961,10 @@ html[data-world="aurora"]{background-color:var(--paper);}
 [data-world="sunken"] .check input:indeterminate{border:1.5px solid var(--accent);border-radius:6px;background:var(--accent) linear-gradient(var(--on-accent),var(--on-accent)) center/9px 2px no-repeat;}
 html[data-world="sunken"] body .toast.toast{background:var(--sk-glass);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);box-shadow:inset 0 1px 0 var(--sk-rim),inset 0 0 0 1px var(--line-2),var(--shadow-pop);}
 
+/* the R key: a pebble of sea glass that bobs back up */
+[data-world="sunken"] .keycap{--kc-round:.42;--kc-h:.34;--kc-taper:.14;--kc-gloss:1;--kc-top:#a6e6df;--kc-left:#cdf4ee;--kc-right:#4fb0b1;--kc-line:#0b5e6e;--kc-ink:#06303a;--kc-hole:color-mix(in srgb,var(--paper) 70%,#0b5e6e);--kc-dots:color-mix(in srgb,#0b5e6e 50%,transparent);--kc-rel:1000ms;}
+@supports (transition-timing-function:linear(0,1)){[data-world="sunken"] .keycap{--kc-spring:linear(0,.3 8%,.82 18%,1.14 30%,1.2 36%,1.12 46%,.97 60%,.95 68%,1.01 82%,1);}}
+
 /* ---- Kolam ---- */
 [data-world="kolam"]{
   --sans:"Hind Madurai",system-ui,sans-serif;
@@ -1091,6 +1113,9 @@ html[data-world="sunken"] body .toast.toast{background:var(--sk-glass);backdrop-
 .kl-spec svg,.kl-spec canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
 .kl-spec figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px 12px 9px;background:linear-gradient(transparent,rgba(20,14,10,.72));font-family:var(--label-font);text-transform:var(--label-case);letter-spacing:calc(.06em * var(--label-track));font-size:calc(var(--t-label) * var(--label-scale));color:#f2ece1;text-shadow:0 1px 2px rgba(0,0,0,.5);}
 @media (max-width:560px){.kl-spec.wide{grid-column:span 1;aspect-ratio:1;}}
+
+/* the R key: a washed stone tile with its dots laid and the letter in kaavi, on a ledge of red earth */
+[data-world="kolam"] .keycap{--kc-round:.12;--kc-h:.4;--kc-taper:.07;--kc-pulli:1;--kc-top:var(--paper);--kc-left:color-mix(in srgb,var(--paper) 80%,var(--accent));--kc-right:color-mix(in srgb,var(--paper) 52%,var(--accent));--kc-line:color-mix(in srgb,var(--ink) 70%,transparent);--kc-ink:var(--accent);--kc-hole:var(--surface-2);--kc-dots:color-mix(in srgb,var(--ink) 40%,transparent);--kc-rel:720ms;}
 
 /* ---- content for one world ---- */
 [data-for-world],.d-toc [data-for-world]{display:none;}

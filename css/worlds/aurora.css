@@ -121,3 +121,8 @@ html[data-world="aurora"]{background-color:var(--paper);}
 [data-world="aurora"] figure[data-au-spec]{position:relative;overflow:hidden;background:#060a18;aspect-ratio:16/9;min-height:0;}
 [data-world="aurora"] figure[data-au-spec] .au-spec{position:absolute;inset:0;width:100%;height:100%;}
 [data-world="aurora"] figure[data-au-spec] figcaption{position:absolute;left:var(--s-3);bottom:var(--s-3);right:auto;top:auto;margin:0;z-index:1;color:#e8f3ff;text-shadow:0 1px 8px rgba(0,0,0,.7);}
+
+/* the R key: frosted glass over a glow of the sky's green and violet, slow to sink and slow to rise */
+[data-world="aurora"] .keycap{--kc-round:.26;--kc-h:.36;--kc-taper:.1;--kc-gloss:1;--kc-top:color-mix(in srgb,var(--paper) 55%,transparent);--kc-left:color-mix(in srgb,var(--paper) 38%,transparent);--kc-right:color-mix(in srgb,var(--paper) 22%,transparent);--kc-line:color-mix(in srgb,var(--ink) 55%,transparent);--kc-ink:var(--ink);--kc-hole:color-mix(in srgb,#3be8a8 22%,transparent);--kc-dots:color-mix(in srgb,var(--ink) 30%,transparent);--kc-rel:950ms;}
+[data-world="aurora"] .kc-hole{filter:drop-shadow(0 0 10px color-mix(in srgb,#3be8a8 70%,transparent)) drop-shadow(0 -6px 18px color-mix(in srgb,#a77bff 45%,transparent));}
+[data-world="aurora"] .kc-glyph{filter:drop-shadow(0 0 6px color-mix(in srgb,#3be8a8 60%,transparent));}

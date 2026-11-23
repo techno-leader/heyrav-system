@@ -362,3 +362,4 @@ body.d{background:var(--surface);font-size:var(--t-ui);}
 .d-snd-try [aria-expanded] .icon{transition:transform var(--d-move) var(--ease-snap);}
 .d-snd-try [aria-expanded="true"] .icon{transform:rotate(180deg);}
 @media (max-width:640px){.d-snd-row{grid-template-columns:minmax(0,1fr);}}
+.d-keycap{display:grid;justify-items:center;padding:28px 0 8px;text-align:center;}
