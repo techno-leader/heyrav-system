@@ -231,6 +231,17 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
     return b;
   }
 
+  /* what the pointer is really on: a click that lands on something faded out (stacked slides,
+     annotations that cross-fade) goes to the visible element under it instead */
+  function seen(el) {
+    for (let e = el; e && e.nodeType === 1; e = e.parentElement) { const cs = getComputedStyle(e); if (cs.visibility === 'hidden' || cs.display === 'none' || +cs.opacity < .05) return false; }
+    return true;
+  }
+  function visibleAt(t, x, y) {
+    if (!t || seen(t)) return t;
+    return (doc.elementsFromPoint(x, y) || []).find(e => !e.closest('.ed-host,.ed-notes,.ed-draw') && inScope(e) && seen(e)) || null;
+  }
+
   /* ---------- text, remove, add ---------- */
   const clean = h => h.replace(/\s*contenteditable="[^"]*"/g, '').replace(/<br>\s*$/, '').replace(/&nbsp;/g, ' ').replace(/<(\/?)div>/g, '').replace(/ {2,}/g, ' ').trim();
   // buttons, labels and summaries cannot hold a caret, so their words are edited in a field laid over them
@@ -592,17 +603,18 @@ window.HR_ED_ICONS={"pencil-simple":"<path d=\"M227.31,73.37,182.63,28.68a16,16,
     if (c.type === 'text') { el.innerHTML = c.before; el.classList.remove('ed-changed'); } else el.classList.remove('ed-gone'); }
 
   doc.addEventListener('click', e => {
-    if (state === 'off' || state === 'signin') return; const a = rootOf(e.target); if (!a || e.target.closest('.ed-note,.ed-draw,.ed-notes')) return;
-    if (e.target.closest('[contenteditable="true"]')) return;
-    if (e.target.closest('a,button,summary,label,input,select,textarea,[role="tab"],[role="switch"]')) e.preventDefault();
-    if (tool === 'text') { const el = textTarget(e.target); if (el) { e.preventDefault(); e.stopPropagation(); startEdit(el); } else finishEdit(); }
-    else if (tool === 'remove') { const el = e.target.closest(BLOCK + ',' + TEXT); if (el && !inSkip(el) && el !== a) { e.preventDefault(); e.stopPropagation(); toggleRemove(el); } }
-    else if (tool === 'add') { const el = e.target.closest(TEXT + ',figure,table,.d-ex'); if (el && !inSkip(el)) { e.preventDefault(); e.stopPropagation(); addAfter(el.closest('li') ? el.closest('ul,ol') : el); } }
+    if (state === 'off' || state === 'signin') return; if (e.target.closest && e.target.closest('.ed-note,.ed-draw,.ed-notes,.ed-host')) return;
+    const t = visibleAt(e.target, e.clientX, e.clientY), a = t && rootOf(t); if (!a) return;
+    if (t.closest('[contenteditable="true"]')) return;
+    if (e.target.closest('a,button,summary,label,input,select,textarea,[role="tab"],[role="switch"]') || t.closest('a,button,summary,label')) e.preventDefault();
+    if (tool === 'text') { const el = textTarget(t); if (el) { e.preventDefault(); e.stopPropagation(); startEdit(el); } else finishEdit(); }
+    else if (tool === 'remove') { const el = t.closest(BLOCK + ',' + TEXT); if (el && !inSkip(el) && el !== a) { e.preventDefault(); e.stopPropagation(); toggleRemove(el); } }
+    else if (tool === 'add') { const el = t.closest(TEXT + ',figure,table,.d-ex'); if (el && !inSkip(el)) { e.preventDefault(); e.stopPropagation(); addAfter(el.closest('li') ? el.closest('ul,ol') : el); } }
   }, true);
   let hov = null;
-  doc.addEventListener('pointerover', e => { if (state === 'off' || tool !== 'text') return; const el = textTarget(e.target); const t = el && el.closest('.d-stage') ? el : null;
+  doc.addEventListener('pointerover', e => { if (state === 'off' || tool !== 'text') return; const el = textTarget(visibleAt(e.target, e.clientX, e.clientY)); const t = el && el.closest('.d-stage') ? el : null;
     if (hov && hov !== t) hov.classList.remove('ed-hov'); hov = t; t && t.classList.add('ed-hov'); });
-  doc.addEventListener('pointerdown', e => { if (editing && !editing.contains(e.target)) finishEdit(); }, true);
+  doc.addEventListener('pointerdown', e => { if (editing && !editing.contains(visibleAt(e.target, e.clientX, e.clientY))) finishEdit(); }, true);
   doc.addEventListener('keydown', e0 => { const e = { key: e0.key, metaKey: e0.metaKey, ctrlKey: e0.ctrlKey, altKey: e0.altKey, shiftKey: e0.shiftKey, target: (e0.composedPath && e0.composedPath()[0]) || e0.target, preventDefault: () => e0.preventDefault() };
     if (editing) { if (e.key === 'Escape' || (e.key === 'Enter' && !e.shiftKey)) { e.preventDefault(); const el = editing; finishEdit(); el.blur(); } return; }
     if (state === 'off' || state === 'signin' || e.metaKey || e.ctrlKey || e.altKey || /INPUT|TEXTAREA|SELECT/.test((e.target.tagName || '')) || e.target.isContentEditable) return;
