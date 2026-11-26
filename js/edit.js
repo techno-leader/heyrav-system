@@ -12,8 +12,11 @@
                 raise a pull request and watch it happen, all in place.
    Text: click any text, demos included, and type; Enter or Esc finishes.
    Remove: click a block to strike it out, again to bring it back.
-   Add: click a block to add a paragraph after it. Note: drag a box and write.
+   Add: click a block to add a paragraph after it. Note: drag a box (or press Enter) and write.
    Keys while the toolbar is open: T R A N pick a tool, Esc closes the panel.
+   A note: Opt/Alt+Return (or Cmd+Return) saves it and folds it to a chip; Esc undoes this
+   edit and folds it; Enter on the chip opens it, arrows move it, Delete removes it.
+   The scope (CFG.scope) may name several roots - header, main, footer - read in page order.
    Everything autosaves on this device (localStorage "hr-edits"). */
 (function () {
   if (window.__hrEdit) return; window.__hrEdit = 1;
@@ -35,8 +38,14 @@
   let token = ls.get('hr-edit-token'), store = load(), tool = 'text', state = 'off', pristine = null, editing = null, panelData = {};
   function load() { try { const s = JSON.parse(ls.get(KEY) || 'null'); if (s && s.v === 1) return s; } catch {} return { v: 1, changes: [], notes: [] }; }
   function save() { store.changes.forEach(c => { if (c.slug === SLUG && !c.url) c.url = location.pathname; }); ls.set(KEY, JSON.stringify(store)); counts(); }
-  const article = () => doc.querySelector(CFG.scope) || doc.body;
-  const SKIP = '.d-code,pre,.d-pn,.d-toc,.ed-host,.ed-note,.ed-draw,.ed-inline,.d-used,.d-speed,.d-eyebrow,script,style,noscript,svg,canvas,.snav' + (CFG.skip ? ',' + CFG.skip : '');
+  /* the editable parts of the page: every root CFG.scope names, outermost only, in page order */
+  const outermost = rs => rs.filter(r => !rs.some(o => o !== r && o.contains(r)));
+  const roots = () => outermost([...doc.querySelectorAll(CFG.scope)]);
+  const article = () => roots()[0] || doc.body;
+  const rootOf = n => roots().find(r => r.contains(n)) || null;
+  const inScope = n => !!rootOf(n);
+  const scopeAll = sel => roots().flatMap(r => [...r.querySelectorAll(sel)]);
+  const SKIP = '.d-code,pre,.d-pn,.d-toc,.ed-host,.ed-note,.ed-notes,.ed-draw,.ed-box,.ed-inline,.d-used,.d-speed,.d-eyebrow,script,style,noscript,svg,canvas,.snav' + (CFG.skip ? ',' + CFG.skip : '');
   const TEXT = 'h1,h2,h3,h4,p,li,figcaption,dt,dd,blockquote,td,th';
   const BLOCK = 'h1,h2,h3,h4,p,li,ul,ol,figure,table,blockquote,details,dl,.d-ex,.d-sw,.d-worldgrid,.asg,section';
   const inSkip = el => !!el.closest(SKIP);
@@ -54,12 +63,10 @@
   .ed-changed{box-shadow:inset 3px 0 0 var(--ed-acc)}
   .ed-gone{opacity:.28;text-decoration:line-through;outline:2px dashed var(--ed-dng)!important;outline-offset:3px}
   .ed-new:empty::before{content:"New text";color:var(--ed-mut)}
-  .ed-note{position:absolute;z-index:50;min-width:160px;min-height:80px;border:1px solid var(--ed-ln2);border-radius:var(--ed-rmd);background:var(--ed-pap);box-shadow:var(--ed-shd);display:flex;flex-direction:column;resize:both;overflow:hidden}
-  .ed-note header{display:flex;justify-content:space-between;align-items:center;padding:var(--ed-s1) var(--ed-s1) 0 var(--ed-s3);cursor:move;user-select:none;color:var(--ed-ink3)}
-  .ed-note header .icon{width:16px;height:16px}
-  .ed-note textarea{flex:1;border:0;background:none;resize:none;font:var(--ed-tui)/1.45 var(--ed-sans);color:var(--ed-ink);padding:0 var(--ed-s3) var(--ed-s3);outline:none}
-  .ed-draw{position:absolute;inset:0;z-index:49;cursor:crosshair}
-  .ed-box{position:absolute;border:2px dashed var(--ed-acc);border-radius:var(--ed-rmd);pointer-events:none}`;
+  .ed-notes{position:absolute;left:0;top:0;width:0;height:0;z-index:2147482990}
+  .ed-note{position:absolute}
+  .ed-draw{position:fixed;inset:0;z-index:2147482995;cursor:crosshair}
+  .ed-box{position:fixed;z-index:2147482996;border:2px dashed var(--ed-acc);border-radius:var(--ed-rmd);pointer-events:none}`;
   doc.head.append(css);
   /* the widget lives in a shadow root with the design system's own stylesheet, so it looks the same on any site and nothing leaks either way */
   const WCSS = `
@@ -119,12 +126,17 @@
   /* ---------- the page as built, before any script touched it ---------- */
   function getPristine() {
     if (pristine) return Promise.resolve(pristine);
-    return fetch(location.pathname, { cache: 'no-cache' }).then(r => r.text()).then(t => (pristine = (d => d.querySelector(CFG.scope) || d.body)(new DOMParser().parseFromString(t, 'text/html'))));
+    return fetch(location.pathname, { cache: 'no-cache' }).then(r => r.text()).then(t => {
+      const d = new DOMParser().parseFromString(t, 'text/html'), w = d.createElement('div');
+      (outermost([...d.querySelectorAll(CFG.scope)]).length ? outermost([...d.querySelectorAll(CFG.scope)]) : [d.body]).forEach(r => w.append(r));
+      return (pristine = w);
+    });
   }
   const list = (scope, tag) => [...scope.querySelectorAll(tag)].filter(e => !inSkip(e));
+  const liveList = tag => scopeAll(tag).filter(e => !inSkip(e));
   const tagOf = el => el.tagName.toLowerCase() + (el.classList.contains('d-lede') ? '.d-lede' : '');
   function pairFor(live) {
-    const tag = tagOf(live), L = list(article(), tag), P = list(pristine, tag), t = norm(live.textContent);
+    const tag = tagOf(live), L = liveList(tag), P = list(pristine, tag), t = norm(live.textContent);
     const same = P.filter(p => norm(p.textContent) === t), liveSame = L.filter(l => norm(l.textContent) === t);
     const p = same.length ? same[Math.max(0, liveSame.indexOf(live))] || same[0] : P[L.indexOf(live)];
     if (!p) return null;
@@ -133,7 +145,7 @@
   }
   function liveFor(tag, ord) {
     const P = list(pristine, tag), p = P[ord]; if (!p) return null;
-    const L = list(article(), tag), t = norm(p.textContent), same = P.filter(q => norm(q.textContent) === t), liveSame = L.filter(l => norm(l.textContent) === t);
+    const L = liveList(tag), t = norm(p.textContent), same = P.filter(q => norm(q.textContent) === t), liveSame = L.filter(l => norm(l.textContent) === t);
     return liveSame[same.indexOf(p)] || L[ord] || null;
   }
   const kindOf = el => el.matches('.d-head h1') ? 'h1' : el.matches('.d-lede') ? 'lede' : '';
@@ -141,7 +153,7 @@
   const find = (type, tag, ord) => store.changes.find(c => c.slug === SLUG && c.type === type && c.tag === tag && c.ord === ord);
   // what a click in Text mode edits: a text block, or inside demos the nearest element that holds words itself
   function textTarget(t) {
-    const a = article(); if (!a || !a.contains(t) || inSkip(t)) return null;
+    const a = rootOf(t); if (!a || inSkip(t)) return null;
     const b = t.closest(TEXT); if (b && !b.closest('.d-stage')) return b;
     for (let e = t; e && e !== a; e = e.parentElement) {
       if (e.closest('svg')) continue;
@@ -173,7 +185,7 @@
   }
   function startEdit(el) {
     if (editing === el) return;
-    const box = el.closest('button,summary,label,select'); if (box && article().contains(box)) return inlineEdit(el.closest('button,summary,label') || el);
+    const box = el.closest('button,summary,label,select'); if (box && inScope(box)) return inlineEdit(el.closest('button,summary,label') || el);
     finishEdit();
     const pr = pairFor(el); if (!pr) return;
     const ch = find('text', pr.tag, pr.ord);
@@ -201,41 +213,148 @@
   }
   function placeNew(anchor, c) { const n = doc.createElement('p'); n.className = 'ed-new ed-changed'; n.dataset.edId = c.id; n.innerHTML = c.after.replace(/^<p>|<\/p>$/g, ''); anchor.after(n); return n; }
 
-  /* ---------- notes ---------- */
-  function headingAbove(y) { const top = article().getBoundingClientRect().top; let h = null;
-    article().querySelectorAll('h1,h2,h3').forEach(e => { if (e.offsetParent && !inSkip(e) && e.getBoundingClientRect().top - top <= y + 4) h = e; }); return h ? norm(h.textContent) : 'the top of the page'; }
-  function drawNote(n) {
+  /* ---------- notes ----------
+     A note is the system's own card, built from its components (label, quiet icon buttons,
+     the textarea, kbd hints) in a shadow root of its own, so the page's styles never reach it
+     and it reads the same on any site. Two states, one shape that morphs between them: open
+     to write, folded to a chip showing its first words. Notes sit in page coordinates on a
+     layer of their own (.ed-notes), so they work over any part of the page. */
+  let sysText = '';
+  const sysSheet = (() => { try { return new CSSStyleSheet(); } catch { return null; } })();
+  const NCSS = `
+  :host{position:absolute;display:block;font-family:var(--sans);font-size:var(--t-ui);color:var(--ink);line-height:1.5}
+  .n{display:flex;flex-direction:column;box-sizing:border-box;min-width:220px;min-height:132px;background:var(--paper);border:1px solid var(--line-2);border-radius:var(--r-lg);box-shadow:var(--shadow-pop);overflow:hidden;resize:both}
+  .n[hidden],.pill[hidden]{display:none}
+  .n-head{display:flex;align-items:center;gap:var(--s-1);padding:var(--s-1);cursor:grab;user-select:none;-webkit-user-select:none}
+  .n-head.grabbing{cursor:grabbing}
+  .n-head .label{flex:1;min-width:0;margin:0;padding-left:var(--s-1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .n-head .btn{cursor:pointer}
+  /* the field is the system's own textarea (.txt): its border, radius and focus ring */
+  .n .txt{flex:1;min-height:56px;width:auto;margin:0 var(--s-2);box-sizing:border-box;resize:none;font-size:var(--t-ui);line-height:1.5}
+  .n-foot{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-1);padding:var(--s-2) var(--s-3) var(--s-2);color:var(--ink-3);font-size:var(--t-label)}
+  .n-foot .kbd{margin:0}
+  .n-foot span+span.kbd,.n-foot .kbd+span{margin-left:2px}
+  .n-foot .sep{flex:1}
+  .pill{display:inline-flex;align-items:center;gap:var(--s-2);max-width:280px;min-height:var(--target);box-sizing:border-box;padding:0 var(--s-4) 0 var(--s-3);border:1px solid var(--line-2);border-radius:var(--r-pill);background:var(--paper);box-shadow:var(--shadow-pop);color:var(--ink);font:inherit;cursor:grab;white-space:nowrap;overflow:hidden}
+  .pill span{overflow:hidden;text-overflow:ellipsis}
+  .pill .icon,.n-head .icon{flex:none}
+  .pill:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+  .pill.empty span{color:var(--mut)}`;
+  const noteSheet = (() => { try { const x = new CSSStyleSheet(); x.replaceSync(NCSS); return x; } catch { return null; } })();
+  const noteHosts = new Set();
+  const notesLayer = () => doc.querySelector('.ed-notes') || doc.body.appendChild(Object.assign(doc.createElement('div'), { className: 'ed-notes' }));
+  function styleNotes() {
+    if (sysSheet) { try { sysSheet.replaceSync(sysText); } catch {} }
+    else noteHosts.forEach(h => { const st = h.shadowRoot.querySelector('style[data-sys]'); if (st) st.textContent = sysText; });
+  }
+  const pageY = el => el.getBoundingClientRect().top + scrollY;
+  function headingAbove(y) { let h = null;
+    scopeAll('h1,h2,h3').forEach(e => { if (e.offsetParent && !inSkip(e) && pageY(e) <= y + 4) h = e; }); return h ? norm(h.textContent) : 'the top of the page'; }
+  const firstWords = t => { const w = norm(t); return w.length > 36 ? w.slice(0, 34).trim() + '…' : w; };
+  const MOD = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌥' : 'Alt';
+  function drawNote(n, open) {
+    // notes made before page coordinates were measured against the first root
+    if (!n.pg) { const r = article().getBoundingClientRect(); n.x += Math.round(r.left + scrollX); n.y += Math.round(r.top + scrollY); n.pg = 1; save(); }
     const el = doc.createElement('div'); el.className = 'ed-note'; el.dataset.id = n.id;
-    Object.assign(el.style, { left: n.x + 'px', top: n.y + 'px', width: n.w + 'px', height: n.h + 'px' });
-    el.innerHTML = `<header>${icon('note-pencil')}<button type="button" class="btn btn-quiet btn-icon btn-sm" aria-label="Delete note">${icon('x')}</button></header><textarea aria-label="Note for Claude" placeholder="A note for Claude"></textarea>`;
-    const ta = el.querySelector('textarea'); ta.value = n.text || '';
+    el.style.left = n.x + 'px'; el.style.top = n.y + 'px';
+    const sr = el.attachShadow({ mode: 'open' });
+    if (sysSheet && noteSheet) sr.adoptedStyleSheets = [sysSheet, noteSheet];
+    else sr.innerHTML = `<style data-sys>${sysText}</style><style>${NCSS}</style>`;
+    el.setAttribute('data-theme', html.dataset.theme === 'dark' ? 'dark' : 'light');
+    const box = doc.createElement('div');
+    box.innerHTML = `<button type="button" class="pill" aria-label="Note for Claude. Enter opens it, arrow keys move it, Delete removes it">${icon('note-pencil')}<span></span></button>
+      <section class="n" role="group" aria-label="Note for Claude">
+        <div class="n-head">
+          <button type="button" class="btn btn-quiet btn-icon btn-sm" data-n="grip" aria-label="Move the note: drag, or arrow keys">${icon('note-pencil')}</button>
+          <p class="label">Note for Claude</p>
+          <button type="button" class="btn btn-quiet btn-icon btn-sm" data-n="fold" aria-label="Save and fold (${MOD}+Return)">${icon('caret-down')}</button>
+          <button type="button" class="btn btn-quiet btn-icon btn-sm" data-n="del" aria-label="Delete the note">${icon('trash')}</button>
+        </div>
+        <textarea class="txt" aria-label="Note for Claude" placeholder="What should change here?"></textarea>
+        <div class="n-foot"><span class="kbd">${MOD}</span><span class="kbd">↩</span><span>save</span><span class="sep"></span><span class="kbd">Esc</span><span>undo and fold</span></div>
+      </section>`;
+    while (box.firstChild) sr.append(box.firstChild);
+    const pill = sr.querySelector('.pill'), card = sr.querySelector('.n'), ta = sr.querySelector('textarea'), head = sr.querySelector('.n-head');
+    card.style.width = n.w + 'px'; card.style.height = n.h + 'px';
+    ta.value = n.text || '';
+    let snapshot = ta.value, morphing = false;
+    const paintPill = () => { const t = firstWords(n.text); pill.querySelector('span').textContent = t || 'Empty note'; pill.classList.toggle('empty', !t); };
+    const place = () => { el.style.left = n.x + 'px'; el.style.top = n.y + 'px'; };
+    // one shape changing state: measure, switch, animate from the old size to the new
+    const morph = (from, to) => {
+      const a = from.getBoundingClientRect(); from.hidden = true; to.hidden = false; const b = to.getBoundingClientRect();
+      if (reduce() || !to.animate) return;
+      const cs = getComputedStyle(to), d = parseFloat(cs.getPropertyValue('--d-move')) || 220, e = cs.getPropertyValue('--ease-out').trim() || 'ease-out';
+      morphing = true; // the size in between is the animation's, not the note's
+      const an = to.animate([{ width: a.width + 'px', height: a.height + 'px', borderRadius: getComputedStyle(from).borderRadius }, { width: b.width + 'px', height: b.height + 'px', borderRadius: cs.borderRadius }], { duration: d, easing: e });
+      an.onfinish = an.oncancel = () => { morphing = false; };
+    };
+    const openNote = () => { if (!card.hidden) return; n.closed = false; save(); morph(pill, card); snapshot = ta.value; snd('expand'); ta.focus({ preventScroll: true }); ta.setSelectionRange(ta.value.length, ta.value.length); };
+    const remove = () => { store.notes.splice(store.notes.indexOf(n), 1); noteHosts.delete(el); el.remove(); save(); snd('delete'); };
+    const fold = keep => {
+      if (!keep) { ta.value = snapshot; n.text = snapshot; }
+      if (!norm(n.text)) return remove(); // nothing written: nothing to keep
+      n.near = headingAbove(n.y); n.closed = true; save(); paintPill(); morph(card, pill); snd(keep ? 'success' : 'collapse'); pill.focus({ preventScroll: true });
+    };
     ta.addEventListener('input', () => { n.text = ta.value; n.near = headingAbove(n.y); save(); });
-    el.querySelector('button').addEventListener('click', () => { store.notes.splice(store.notes.indexOf(n), 1); el.remove(); save(); snd('delete'); });
-    new ResizeObserver(() => { if (el.isConnected && (Math.abs(el.offsetWidth - n.w) > 1 || Math.abs(el.offsetHeight - n.h) > 1)) { n.w = el.offsetWidth; n.h = el.offsetHeight; save(); } }).observe(el);
-    el.querySelector('header').addEventListener('pointerdown', e => { if (e.target.closest('button')) return; e.preventDefault(); const sx = e.clientX - n.x, sy = e.clientY - n.y;
-      const mv = ev => { n.x = ev.clientX - sx; n.y = ev.clientY - sy; el.style.left = n.x + 'px'; el.style.top = n.y + 'px'; };
-      const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); n.near = headingAbove(n.y); save(); };
-      addEventListener('pointermove', mv); addEventListener('pointerup', up); });
-    article().append(el); return el;
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.altKey || e.metaKey || e.ctrlKey)) { e.preventDefault(); e.stopPropagation(); fold(true); return; }
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fold(false); return; }
+      e.stopPropagation(); // the page's single-key tools stay out of a note
+    });
+    sr.querySelector('[data-n="fold"]').addEventListener('click', () => fold(true));
+    sr.querySelector('[data-n="del"]').addEventListener('click', remove);
+    // moving: drag the head or the chip; arrow keys on the grip or the chip (Shift for bigger steps)
+    const nudge = e => {
+      const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key]; if (!k) return false;
+      e.preventDefault(); e.stopPropagation(); const st = e.shiftKey ? 40 : 8;
+      if (e.altKey && !card.hidden) { n.w = Math.max(220, n.w + k[0] * st); n.h = Math.max(132, n.h + k[1] * st); card.style.width = n.w + 'px'; card.style.height = n.h + 'px'; }
+      else { n.x = Math.max(0, n.x + k[0] * st); n.y = Math.max(0, n.y + k[1] * st); place(); }
+      save(); return true;
+    };
+    sr.querySelector('[data-n="grip"]').addEventListener('keydown', nudge);
+    pill.addEventListener('keydown', e => {
+      if (nudge(e)) return;
+      if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); e.stopPropagation(); remove(); return; }
+      if (e.key === 'Escape') { e.stopPropagation(); }
+    });
+    const drag = (target, after) => target.addEventListener('pointerdown', e => {
+      if (e.button !== 0 || (target === head && e.target.closest('button:not([data-n="grip"])'))) return;
+      const sx = e.pageX - n.x, sy = e.pageY - n.y, x0 = e.clientX, y0 = e.clientY; let moved = false;
+      head.classList.add('grabbing');
+      const mv = ev => { if (!moved && Math.hypot(ev.clientX - x0, ev.clientY - y0) < 4) return; moved = true; n.x = Math.max(0, ev.pageX - sx); n.y = Math.max(0, ev.pageY - sy); place(); };
+      const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); head.classList.remove('grabbing'); if (moved) { n.near = headingAbove(n.y); save(); target.__moved = true; setTimeout(() => { target.__moved = false; }, 0); } else after && after(); };
+      addEventListener('pointermove', mv); addEventListener('pointerup', up);
+    });
+    drag(head); drag(pill);
+    pill.addEventListener('click', () => { if (!pill.__moved) openNote(); });
+    new ResizeObserver(() => { if (card.hidden || morphing || !el.isConnected) return; const w = Math.round(card.offsetWidth), h = Math.round(card.offsetHeight); if (Math.abs(w - n.w) > 1 || Math.abs(h - n.h) > 1) { n.w = w; n.h = h; save(); } }).observe(card);
+    paintPill();
+    const isOpen = open || !n.closed || !norm(n.text);
+    pill.hidden = isOpen; card.hidden = !isOpen;
+    noteHosts.add(el); notesLayer().append(el);
+    if (open) { ta.focus({ preventScroll: true }); }
+    return el;
+  }
+  function newNote(x, y, w, h) {
+    const n = { id: uid(), slug: SLUG, src: SRC, pg: 1, x: Math.round(x), y: Math.round(y), w: Math.round(Math.max(260, w || 0)), h: Math.round(Math.max(160, h || 0)), text: '', near: headingAbove(y), at: Date.now() };
+    store.notes.push(n); save(); snd('press'); setTool('text'); drawNote(n, true); return n;
   }
   let drawLayer = null;
   function noteLayer(on) {
     if (drawLayer) { drawLayer.remove(); drawLayer = null; } if (!on) return;
-    const a = article(); drawLayer = doc.createElement('div'); drawLayer.className = 'ed-draw'; a.append(drawLayer);
-    drawLayer.addEventListener('pointerdown', e => { e.preventDefault(); const r = a.getBoundingClientRect(), x0 = e.clientX - r.left, y0 = e.clientY - r.top, box = doc.createElement('div'); box.className = 'ed-box'; a.append(box);
-      const mv = ev => { const x1 = ev.clientX - r.left, y1 = ev.clientY - r.top; Object.assign(box.style, { left: Math.min(x0, x1) + 'px', top: Math.min(y0, y1) + 'px', width: Math.abs(x1 - x0) + 'px', height: Math.abs(y1 - y0) + 'px' }); };
+    drawLayer = doc.createElement('div'); drawLayer.className = 'ed-draw'; drawLayer.setAttribute('aria-hidden', 'true'); doc.body.append(drawLayer);
+    drawLayer.addEventListener('pointerdown', e => { e.preventDefault(); const x0 = e.clientX, y0 = e.clientY, box = doc.createElement('div'); box.className = 'ed-box'; doc.body.append(box);
+      const mv = ev => Object.assign(box.style, { left: Math.min(x0, ev.clientX) + 'px', top: Math.min(y0, ev.clientY) + 'px', width: Math.abs(ev.clientX - x0) + 'px', height: Math.abs(ev.clientY - y0) + 'px' });
       const up = ev => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); box.remove();
-        const x1 = ev.clientX - r.left, y1 = ev.clientY - r.top;
-        const n = { id: uid(), slug: SLUG, src: SRC, x: Math.round(Math.min(x0, x1)), y: Math.round(Math.min(y0, y1)), w: Math.round(Math.max(220, Math.abs(x1 - x0))), h: Math.round(Math.max(110, Math.abs(y1 - y0))), text: '', near: headingAbove(Math.min(y0, y1)), at: Date.now() };
-        store.notes.push(n); save(); snd('press'); setTool('text'); drawNote(n).querySelector('textarea').focus(); };
+        newNote(Math.min(x0, ev.clientX) + scrollX, Math.min(y0, ev.clientY) + scrollY, Math.abs(ev.clientX - x0), Math.abs(ev.clientY - y0)); };
       addEventListener('pointermove', mv); addEventListener('pointerup', up); });
   }
-
   /* ---------- the widget ---------- */
   const host = doc.createElement('div'); host.className = 'ed-host'; const SR = host.attachShadow({ mode: 'open' });
   const sysCss = doc.createElement('style'), ownCss = doc.createElement('style'); ownCss.textContent = WCSS; SR.append(sysCss, ownCss);
-  fetch(CFG.css || root + 'heyrav.css').then(r => r.text()).then(t => { sysCss.textContent = t.replace(/:root\b/g, ':host').replace(/\[data-theme="dark"\]/g, ':host([data-theme="dark"])'); }).catch(() => {});
-  const syncTheme = () => host.setAttribute('data-theme', html.dataset.theme === 'dark' ? 'dark' : 'light'); syncTheme();
+  fetch(CFG.css || root + 'heyrav.css').then(r => r.text()).then(t => { sysText = t.replace(/:root\b/g, ':host').replace(/\[data-theme="dark"\]/g, ':host([data-theme="dark"])'); sysCss.textContent = sysText; styleNotes(); }).catch(() => {});
+  const syncTheme = () => { const th = html.dataset.theme === 'dark' ? 'dark' : 'light'; host.setAttribute('data-theme', th); noteHosts.forEach(h => h.setAttribute('data-theme', th)); }; syncTheme();
   new MutationObserver(syncTheme).observe(html, { attributes: true, attributeFilter: ['data-theme'] });
   const W = doc.createElement('div'); W.className = 'ed'; W.setAttribute('role', 'region'); W.setAttribute('aria-label', 'Edit this site');
   const tipBtn = (attrs, ic, label, key, extra = '') => `<span class="tip"><button type="button" class="btn btn-quiet btn-icon" ${attrs} aria-label="${label}">${icon(ic)}${extra}</button><span role="tooltip">${label}${key ? `<span class="kbd">${key}</span>` : ''}</span></span>`;
@@ -271,9 +390,9 @@
       const P = { review: renderReview, pr: renderPR, signin: renderSignin, copy: renderCopy }[s];
       panel.hidden = !P; if (P) { panel.innerHTML = ''; P(panel); panel.scrollTop = 0; }
     });
-    if (s === 'off') { finishEdit(); noteLayer(false); doc.querySelectorAll('.ed-can').forEach(e => e.classList.remove('ed-can')); doc.querySelectorAll('.ed-note').forEach(e => e.remove()); }
+    if (s === 'off') { finishEdit(); noteLayer(false); doc.querySelectorAll('.ed-can').forEach(e => e.classList.remove('ed-can')); doc.querySelectorAll('.ed-note').forEach(e => e.remove()); noteHosts.clear(); }
     else if (!html.classList.contains('ed-ready')) { html.classList.add('ed-ready'); getPristine().then(() => { mark(); restore(); }); window.clarity && window.clarity('stop'); }
-    else if (!doc.querySelector('.ed-can')) { mark(); store.notes.filter(n => n.slug === SLUG && !doc.querySelector(`.ed-note[data-id="${n.id}"]`)).forEach(drawNote); }
+    else if (!doc.querySelector('.ed-can')) { mark(); store.notes.filter(n => n.slug === SLUG && !doc.querySelector(`.ed-note[data-id="${n.id}"]`)).forEach(n => drawNote(n)); }
   }
   function setTool(t, heard) { finishEdit(); if (heard && t !== tool) snd('select'); tool = t; html.className = html.className.replace(/\bed-t-\w+/g, '').trim() + ' ed-t-' + t;
     W.querySelectorAll('[data-tool]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tool === t))); noteLayer(t === 'note'); }
@@ -282,14 +401,19 @@
     const s = W.querySelector('.ed-saved'); s.classList.remove('pulse'); void s.offsetWidth; s.classList.add('pulse');
     W.querySelector('[data-saved]').textContent = n ? `${store.changes.length} change${store.changes.length === 1 ? '' : 's'}${store.notes.length ? `, ${store.notes.filter(x => norm(x.text)).length} notes` : ''} saved on this device` : 'Nothing changed yet';
     if (state === 'review') { const t = panel.scrollTop; panel.innerHTML = ''; renderReview(panel); panel.scrollTop = t; } }
-  function mark() { const a = article(); if (!a) return; a.querySelectorAll(BLOCK + ',' + TEXT).forEach(e => { if (!inSkip(e) && !e.closest('.d-stage')) e.classList.add('ed-can'); }); }
+  function mark() {
+    scopeAll(BLOCK + ',' + TEXT).forEach(e => { if (!inSkip(e) && !e.closest('.d-stage')) e.classList.add('ed-can'); });
+    // and every other element that holds words of its own (labels, facts, captions in spans) - all text is editable
+    scopeAll('*').forEach(e => { if (e.classList.contains('ed-can') || inSkip(e) || e.closest(TEXT) || e.closest('.d-stage') || e.closest('svg')) return;
+      if ([...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) e.classList.add('ed-can'); });
+  }
   let restored = false;
   function restore() {
     if (!restored) { restored = true;
       for (const c of mine()) { const el = liveFor(c.tag, c.ord), p = list(pristine, c.tag)[c.ord];
         if (!el || !p || (c.type === 'text' ? p.innerHTML : p.outerHTML) !== c.before) { c.stale = true; continue; } delete c.stale;
         if (c.type === 'text') { el.innerHTML = c.after; el.classList.add('ed-changed'); } else if (c.type === 'remove') el.classList.add('ed-gone'); else placeNew(el, c); } }
-    store.notes.filter(n => n.slug === SLUG).forEach(drawNote); save();
+    store.notes.filter(n => n.slug === SLUG).forEach(n => drawNote(n)); save();
   }
 
   /* ---------- panel states ---------- */
@@ -399,7 +523,7 @@
     if (c.type === 'text') { el.innerHTML = c.before; el.classList.remove('ed-changed'); } else el.classList.remove('ed-gone'); }
 
   doc.addEventListener('click', e => {
-    if (state === 'off' || state === 'signin') return; const a = article(); if (!a || !a.contains(e.target) || e.target.closest('.ed-note,.ed-draw')) return;
+    if (state === 'off' || state === 'signin') return; const a = rootOf(e.target); if (!a || e.target.closest('.ed-note,.ed-draw,.ed-notes')) return;
     if (e.target.closest('[contenteditable="true"]')) return;
     if (e.target.closest('a,button,summary,label,input,select,textarea,[role="tab"],[role="switch"]')) e.preventDefault();
     if (tool === 'text') { const el = textTarget(e.target); if (el) { e.preventDefault(); e.stopPropagation(); startEdit(el); } else finishEdit(); }
@@ -414,6 +538,7 @@
     if (editing) { if (e.key === 'Escape' || (e.key === 'Enter' && !e.shiftKey)) { e.preventDefault(); const el = editing; finishEdit(); el.blur(); } return; }
     if (state === 'off' || state === 'signin' || e.metaKey || e.ctrlKey || e.altKey || /INPUT|TEXTAREA|SELECT/.test((e.target.tagName || '')) || e.target.isContentEditable) return;
     const k = { t: 'text', r: 'remove', a: 'add', n: 'note' }[e.key.toLowerCase()]; if (k) { e.preventDefault(); setTool(k, true); }
+    if (e.key === 'Enter' && tool === 'note' && state === 'bar') { e.preventDefault(); newNote(scrollX + innerWidth / 2 - 160, scrollY + innerHeight * .3, 320, 200); return; }
     if (e.key === 'Escape') { e.preventDefault(); snd(state === 'bar' ? 'close' : 'collapse'); state === 'bar' ? setState('off') : setState('bar'); }
   });
   doc.addEventListener('focusout', e => { if (editing && e.target === editing) setTimeout(() => { if (editing && doc.activeElement !== editing) finishEdit(); }, 0); });
@@ -421,7 +546,7 @@
 
   /* ---------- start ---------- */
   function boot() {
-    if (!article()) return; SR.append(W); doc.body.append(host); const sc = article(); if (getComputedStyle(sc).position === 'static') sc.style.position = 'relative'; counts(); setTool('text');
+    if (!roots().length) return; SR.append(W); doc.body.append(host); counts(); setTool('text');
     const wants = /(^|[#&?])edit($|[&=])/.test(location.hash + location.search);
     if (wants && location.hash === '#edit') history.replaceState(null, '', location.pathname + location.search);
     if (!ls.get(UNLOCK)) setState(wants ? 'signin' : 'off');
